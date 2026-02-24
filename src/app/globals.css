@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+@source "../**/*.{js,jsx,ts,tsx,mdx}";
+@source "./**/*.{js,jsx,ts,tsx,mdx}";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, sans-serif;
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+
+  --radius-4xl: 2rem;
+}
+
+/* =========================================================
+   LIGHT ONLY (SVA palette)
+   Primary (Navy):     #0B2D5B
+   Accent (Crimson):   #B11226
+   Background:         #F7F8FA
+   Surface/Card:       #FFFFFF
+   Border/Line:        #E5E7EB
+   Text:               #0B1220
+   ========================================================= */
+:root {
+  --background: #f7f8fa;
+  --foreground: #0b1220;
+
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+
+  --primary: #0b2d5b;
+  --primary-foreground: #f7f8fa;
+
+  --secondary: #eef3fb;
+  --secondary-foreground: #0b1220;
+
+  --accent: #b11226;
+  --accent-foreground: #ffffff;
+
+  --muted: #f1f5fb;
+  --muted-foreground: #475569;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #b11226;
+
+  --radius: 1rem;
+
+  --navy-tint: rgba(11, 45, 91, 0.08);
+  --navy-tint-strong: rgba(11, 45, 91, 0.14);
+  --crimson-tint: rgba(177, 18, 38, 0.12);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground selection:bg-accent/20 selection:text-accent antialiased transition-colors duration-500 text-base md:text-lg;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl font-bold tracking-tight text-primary;
+    font-size: clamp(40px, 8vw, 64px);
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-semibold tracking-tight text-primary;
+    font-size: clamp(32px, 6vw, 48px);
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-semibold text-primary;
+    font-size: clamp(24px, 4vw, 32px);
+  }
+
+  p {
+    @apply leading-relaxed text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(11, 45, 91, 0.12);
+  }
+
+  .bg-navy-wash {
+    background:
+      radial-gradient(900px 450px at 15% 10%, rgba(11, 45, 91, 0.12), transparent 60%),
+      radial-gradient(700px 350px at 85% 20%, rgba(177, 18, 38, 0.08), transparent 55%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+  }
+
+  .divider-navy {
+    border-color: rgba(11, 45, 91, 0.14);
+  }
+
+  .shadow-master {
+    box-shadow: 0 20px 80px -15px rgba(11, 18, 32, 0.10);
+  }
+
+  .shadow-hover {
+    box-shadow: 0 40px 100px -20px rgba(11, 18, 32, 0.14);
+  }
+
+  .shadow-upper {
+    box-shadow: 0 -20px 80px -15px rgba(11, 18, 32, 0.06);
+  }
+
+  .shadow-3xl {
+    box-shadow: 0 35px 60px -15px rgba(11, 45, 91, 0.18);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
