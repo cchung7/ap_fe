@@ -37,6 +37,9 @@ export function Navbar() {
   const navLinks = React.useMemo(() => {
     const links = [...baseNavLinks];
 
+    // ✅ Hotfix: keep initial render stable until auth state is known
+    if (loading) return links;
+
     if (isAuthed) {
       links.push({ name: "My Profile", href: "/profile", icon: User });
     }
@@ -50,7 +53,7 @@ export function Navbar() {
     }
 
     return links;
-  }, [isAuthed, isAdmin]);
+  }, [loading, isAuthed, isAdmin]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
@@ -132,6 +135,7 @@ export function Navbar() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
+          {/* ✅ Hotfix: keep this subtree stable while loading */}
           {!loading && (
             <>
               {/* Non-user */}
@@ -147,9 +151,7 @@ export function Navbar() {
                     "transition-all"
                   )}
                 >
-                  <Link href="/login">
-                    Log In
-                  </Link>
+                  <Link href="/login">Log In</Link>
                 </Button>
               )}
 
@@ -207,9 +209,7 @@ export function Navbar() {
                   transition={{ type: "spring", damping: 25, stiffness: 200 }}
                   className="fixed inset-y-0 right-0 z-70 w-full max-w-sm bg-background p-6 flex flex-col shadow-2xl border-l border-border/40"
                 >
-                  <Dialog.Title className="sr-only">
-                    Mobile Navigation
-                  </Dialog.Title>
+                  <Dialog.Title className="sr-only">Mobile Navigation</Dialog.Title>
 
                   <div className="flex items-center justify-between mb-12">
                     <div className="font-heading font-black uppercase text-xl">
@@ -258,12 +258,12 @@ export function Navbar() {
                         <Button
                           asChild
                           size="lg"
-                          className={cn("w-full rounded-full font-black uppercase tracking-widest")}
+                          className={cn(
+                            "w-full rounded-full font-black uppercase tracking-widest"
+                          )}
                           onClick={() => setMobileMenuOpen(false)}
                         >
-                          <Link href="/login">
-                            Log In
-                          </Link>
+                          <Link href="/login">Log In</Link>
                         </Button>
                       )}
 
@@ -272,7 +272,9 @@ export function Navbar() {
                         <Button
                           type="button"
                           size="lg"
-                          className={cn("w-full rounded-full font-black uppercase tracking-widest")}
+                          className={cn(
+                            "w-full rounded-full font-black uppercase tracking-widest"
+                          )}
                           onClick={handleLogout}
                         >
                           Logout
@@ -280,7 +282,6 @@ export function Navbar() {
                       )}
                     </div>
                   )}
-
                 </motion.div>
               </Dialog.Content>
             </Dialog.Portal>

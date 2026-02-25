@@ -177,30 +177,27 @@ export const HeroSection = () => {
               transition={{ duration: 0.6, delay: 0.18 }}
               className="flex flex-wrap justify-center gap-3 mt-3 sm:mt-4 md:mt-5"
             >
-              {!loading && !isAuthed && (
-                <Button 
-                  asChild size="lg" 
-                  className="rounded-full">
-                  <a href="/login">
-                    Log In
-                  </a>
-                </Button>
-              )}
+              {/* ✅ Hotfix: stable subtree while loading */}
+              {loading ? null : (
+                <>
+                  {!isAuthed && (
+                    <Button asChild size="lg" className="rounded-full">
+                      <a href="/login">Log In</a>
+                    </Button>
+                  )}
 
-              {!loading && isAuthed && (
-                <Button asChild size="lg" className="rounded-full">
-                  <a href="/profile">
-                    My Profile
-                  </a>
-                </Button>
-              )}
+                  {isAuthed && (
+                    <Button asChild size="lg" className="rounded-full">
+                      <a href="/profile">My Profile</a>
+                    </Button>
+                  )}
 
-              {!loading && isAdmin && (
-                <Button asChild size="lg" className="rounded-full">
-                  <a href="/admin">
-                    Admin Dashboard
-                  </a>
-                </Button>
+                  {isAdmin && (
+                    <Button asChild size="lg" className="rounded-full">
+                      <a href="/admin">Admin Dashboard</a>
+                    </Button>
+                  )}
+                </>
               )}
             </motion.div>
 
