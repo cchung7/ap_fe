@@ -32,7 +32,7 @@ function isSafeInternalPath(path: string | null): path is string {
   return true;
 }
 
-export default function LoginPage() {
+export default function LoginClient() {
   const searchParams = useSearchParams();
   const nextParam = useMemo(() => searchParams.get("next"), [searchParams]);
 
