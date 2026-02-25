@@ -410,10 +410,10 @@ export default function SignUpPage() {
               </form>
             </CardContent>
           </Card>
-
           <p className="mt-10 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
-            All Rights Reserved. &copy; {new Date().getFullYear()} SVA | UTDallas
-            Chapter
+            All Rights Reserved. &copy;{" "}
+            <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
+            SVA | UTDallas Chapter
           </p>
         </div>
       </div>

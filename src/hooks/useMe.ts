@@ -22,7 +22,7 @@ type MeState = {
 
 const DEDUPE_MS = 800;
 
-// IMPORTANT: while logged out, avoid spammy 401s
+// IMPORTANT: while logged out, avoid spammy calls
 const LOGGED_OUT_COOLDOWN_MS = 30_000; // 30s (tweak to 60_000 if you want)
 
 let state: MeState = {
@@ -56,21 +56,20 @@ async function fetchMe(): Promise<Me | null> {
     cache: "no-store",
   });
 
-  if (res.status === 401) return null;
-
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Failed to fetch /api/auth/me (${res.status})`);
   }
 
-  return (await res.json()) as Me;
+  const json = (await res.json()) as { me?: Me | null };
+  return json.me ?? null;
 }
 
 async function refreshInternal(opts?: { force?: boolean }) {
   const now = Date.now();
   const force = Boolean(opts?.force);
 
-  // If we KNOW we're logged out, don't keep refetching /me (it will 401)
+  // If we KNOW we're logged out, don't keep refetching /me
   if (!force && state.lastResultWasNull) {
     const age = now - state.lastFetchedAt;
     if (age < LOGGED_OUT_COOLDOWN_MS) return;
