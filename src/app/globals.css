@@ -62,6 +62,9 @@
   --accent: #b11226;
   --accent-foreground: #ffffff;
 
+  --orange: #e87500;
+  --orange-ring: #e87500;
+
   --muted: #f1f5fb;
   --muted-foreground: #475569;
 
@@ -74,6 +77,8 @@
   --navy-tint: rgba(11, 45, 91, 0.08);
   --navy-tint-strong: rgba(11, 45, 91, 0.14);
   --crimson-tint: rgba(177, 18, 38, 0.12);
+
+  
 }
 
 @layer base {

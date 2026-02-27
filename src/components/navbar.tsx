@@ -93,14 +93,14 @@ export function Navbar() {
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        "bg-background/90 backdrop-blur-md border-b border-border/40 py-1",
+        "bg-background/90 backdrop-blur-md border-b border-border/40 py-2",
         scrolled && "bg-background"
       )}
     >
       <div className="container mx-auto px-6 flex items-center justify-between gap-1">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative h-8 w-8 shrink-0">
+          <div className="relative h-10 w-10 shrink-0">
             <Image
               src="/logo/logo.png"
               alt="SVA Logo"
@@ -110,8 +110,9 @@ export function Navbar() {
             />
           </div>
 
-          <span className="font-heading font-black text-sm sm:text-base md:text-xl tracking-tighter uppercase whitespace-nowrap">
-            SVA <span className="text-accent italic">{/* UT-Dallas */}</span>
+          <span className="font-heading font-black text-base sm:text-base lg:text-lg tracking-tighter uppercase whitespace-nowrap">
+            SVA -
+            <span className="text-[#e87500] italic">UT-Dallas</span>
           </span>
         </Link>
 

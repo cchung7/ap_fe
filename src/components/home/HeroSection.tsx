@@ -160,14 +160,14 @@ export const HeroSection = () => {
 
       <div className="relative z-10">
         <div className="container max-w-5xl mx-auto px-6">
-          <div className="relative mt-3 sm:mt-6 md:mt-8 text-center">
+          <div className="relative mt-6 sm:mt-6 md:mt-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.08 }}
               className="text-2xl sm:text-3xl md:text-4xl font-semibold italic text-[#E87500]"
             >
-              *UT-Dallas Chapter
+              {/* *UT-Dallas Chapter */}
             </motion.div>
 
             {/* Auth-aware CTAs */}
@@ -177,7 +177,6 @@ export const HeroSection = () => {
               transition={{ duration: 0.6, delay: 0.18 }}
               className="flex flex-wrap justify-center gap-3 mt-3 sm:mt-4 md:mt-5"
             >
-              {/* ✅ Hotfix: stable subtree while loading */}
               {loading ? null : (
                 <>
                   {!isAuthed && (
@@ -188,7 +187,9 @@ export const HeroSection = () => {
 
                   {isAuthed && (
                     <Button asChild size="lg" className="rounded-full">
-                      <a href="/profile">My Profile</a>
+                      <a href="/profile">
+                        View My Profile
+                      </a>
                     </Button>
                   )}
 

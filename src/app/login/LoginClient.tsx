@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import * as React from "react";
+import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { useMe } from "@/hooks/useMe";
+
+import { Eye, EyeOff, ChevronLeft, Lock, Mail } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -13,12 +20,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Lock, Mail } from "lucide-react";
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
-type MeResponse = {
+type MePayload = {
   role?: "ADMIN" | "MEMBER" | string;
   subRole?: string;
   [key: string]: unknown;
@@ -33,14 +36,25 @@ function isSafeInternalPath(path: string | null): path is string {
 }
 
 export default function LoginClient() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const nextParam = useMemo(() => searchParams.get("next"), [searchParams]);
+
+  const { loading: meLoading, isAuthed, isAdmin, refresh } = useMe();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  React.useEffect(() => {
+    if (meLoading) return;
+    if (!isAuthed) return;
+
+    router.replace(isAdmin ? "/admin" : "/");
+    router.refresh();
+  }, [meLoading, isAuthed, isAdmin, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,26 +75,23 @@ export default function LoginClient() {
         throw new Error(data.message || "Login failed");
       }
 
-      // Determine role using /api/auth/me (cookie is httpOnly, so client cannot read it)
+      // Force-refresh global auth store for immediate Navbar/Hero update
+      await refresh(true);
+
+      // Determine role using /api/auth/me
       const meRes = await fetch("/api/auth/me", {
         method: "GET",
         credentials: "include",
+        cache: "no-store",
       });
 
-      const meData: MeResponse = await meRes.json();
-
-      if (!meRes.ok) {
-        const fallback = isSafeInternalPath(nextParam) ? nextParam : "/";
-        window.location.href = fallback;
-        return;
-      }
-
-      const role = (meData.role || "").toString();
+      const meJson = await meRes.json();
+      const meData = (meJson?.me ?? null) as MePayload | null;
 
       const safeNext = isSafeInternalPath(nextParam) ? nextParam : null;
-      const nextIsAdminRoute = Boolean(
-        safeNext && safeNext.startsWith("/admin")
-      );
+      const nextIsAdminRoute = Boolean(safeNext && safeNext.startsWith("/admin"));
+
+      const role = (meData?.role || "").toString();
 
       let destination = "/";
 
@@ -101,7 +112,7 @@ export default function LoginClient() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background Image (BPC style) */}
+      {/* Background Image */}
       <Image
         src="/auth/sva_auth.jpg"
         alt="SVA Authentication Background"
@@ -111,10 +122,8 @@ export default function LoginClient() {
         className="object-cover object-center"
       />
 
-      {/* Lighter overlay (less dark) */}
+      {/* Lighter overlay */}
       <div className="absolute inset-0 bg-black/10" />
-
-      {/* Optional: Decorative glow elements over the photo (subtle) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[110px]" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-accent/10 blur-[110px]" />
@@ -122,7 +131,6 @@ export default function LoginClient() {
 
       {/* Page content */}
       <div className="relative z-10 min-h-screen px-6 pt-8 pb-24">
-        {/* Centered card */}
         <div className="flex flex-col items-center justify-start pt-6">
           <Card className="w-full max-w-md border-2 border-border/40 bg-card/90 backdrop-blur-xl shadow-2xl">
             <CardHeader className="space-y-4 text-center pb-8 pt-4">
@@ -143,14 +151,20 @@ export default function LoginClient() {
               </CardTitle>
 
               <CardDescription className="text-muted-foreground font-medium uppercase tracking-widest text-xs">
-                <span>Don&apos;t have an account?</span>
-                <br />
-                <Link
-                  href="/signup"
-                  className="underline underline-offset-4 hover:text-foreground transition-colors text-accent font-semibold"
-                >
-                  Sign up
-                </Link>
+                {!meLoading && !isAuthed ? (
+                  <>
+                    <span>Don&apos;t have an account?</span>
+                    <br />
+                    <Link
+                      href="/signup"
+                      className="underline underline-offset-4 hover:text-foreground transition-colors text-accent font-semibold"
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                ) : (
+                  <span />
+                )}
               </CardDescription>
             </CardHeader>
 
@@ -223,7 +237,6 @@ export default function LoginClient() {
                   {loading ? "Authenticating..." : "Sign In"}
                 </Button>
 
-                {/* Back link moved below form, centered */}
                 <div className="pt-2 text-center">
                   <Link
                     href="/"
@@ -237,7 +250,7 @@ export default function LoginClient() {
             </CardContent>
           </Card>
 
-          <p className="mt-10 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
+          <p className="mt-4 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
             All Rights Reserved. &copy;{" "}
             <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
             SVA | UTDallas Chapter

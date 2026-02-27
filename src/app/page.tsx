@@ -45,10 +45,10 @@ export default function Home() {
                   Preview
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-foreground">
-                  Top Members (Points)
+                  Members
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Ranking preview (points system is phased).
+                  Ranking preview.
                 </p>
               </div>
 

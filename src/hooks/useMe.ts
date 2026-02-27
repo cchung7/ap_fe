@@ -15,15 +15,13 @@ type MeState = {
   loading: boolean;
   error: Error | null;
 
-  // Deduping/cooldown
   lastFetchedAt: number;
   lastResultWasNull: boolean;
 };
 
 const DEDUPE_MS = 800;
 
-// IMPORTANT: while logged out, avoid spammy calls
-const LOGGED_OUT_COOLDOWN_MS = 30_000; // 30s (tweak to 60_000 if you want)
+const LOGGED_OUT_COOLDOWN_MS = 30_000; // 30s
 
 let state: MeState = {
   data: null,
@@ -69,13 +67,11 @@ async function refreshInternal(opts?: { force?: boolean }) {
   const now = Date.now();
   const force = Boolean(opts?.force);
 
-  // If we KNOW we're logged out, don't keep refetching /me
   if (!force && state.lastResultWasNull) {
     const age = now - state.lastFetchedAt;
     if (age < LOGGED_OUT_COOLDOWN_MS) return;
   }
 
-  // Standard dedupe for rapid calls across components
   if (!force && now - state.lastFetchedAt < DEDUPE_MS) return;
 
   setState({ loading: true, error: null, lastFetchedAt: now });
@@ -89,7 +85,6 @@ async function refreshInternal(opts?: { force?: boolean }) {
       lastResultWasNull: me === null,
     });
   } catch (err: any) {
-    // If anything weird happens, don't spin forever
     setState({
       data: null,
       loading: false,
@@ -113,7 +108,6 @@ export function useMe() {
 
   React.useEffect(() => {
     const onFocus = () => {
-      // Revalidate on focus, but logged-out state is cooldown-throttled.
       refreshInternal();
     };
     window.addEventListener("focus", onFocus);
@@ -129,7 +123,6 @@ export function useMe() {
     error: snap.error,
     isAuthed,
     isAdmin,
-    // `force=true` is what you want after login/logout
     refresh: async (force = true) => {
       await refreshInternal({ force });
     },

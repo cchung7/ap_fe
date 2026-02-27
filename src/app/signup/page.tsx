@@ -1,9 +1,11 @@
+// D:\ap_fe\src\app\signup\page.tsx
 "use client";
 
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, Camera, Mail, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { majors } from "@/data/majors";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageCropDialog } from "@/components/profile/ImageCropDialog";
+import { useMe } from "@/hooks/useMe";
 
 const academicYearOptions = [
   "UG Freshman",
@@ -30,6 +33,18 @@ const academicYearOptions = [
 type AcademicYear = (typeof academicYearOptions)[number];
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const { loading, isAuthed, isAdmin } = useMe();
+
+  // ✅ If already authed, bounce away
+  React.useEffect(() => {
+    if (loading) return;
+    if (!isAuthed) return;
+
+    router.replace(isAdmin ? "/admin" : "/");
+    router.refresh();
+  }, [loading, isAuthed, isAdmin, router]);
+
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [firstName, setFirstName] = React.useState("");
@@ -48,9 +63,7 @@ export default function SignUpPage() {
   // Limit preview suggestions to 6 at a time (datalist is browser-controlled; this caps supplied options)
   const majorSuggestions = React.useMemo(() => {
     const q = major.trim().toLowerCase();
-    const list = q
-      ? majors.filter((m) => m.toLowerCase().includes(q))
-      : majors;
+    const list = q ? majors.filter((m) => m.toLowerCase().includes(q)) : majors;
     return list.slice(0, 6);
   }, [major]);
 
@@ -410,7 +423,7 @@ export default function SignUpPage() {
               </form>
             </CardContent>
           </Card>
-          <p className="mt-10 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
+          <p className="mt-4 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
             All Rights Reserved. &copy;{" "}
             <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
             SVA | UTDallas Chapter

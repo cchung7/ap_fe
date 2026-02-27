@@ -8,7 +8,6 @@ function decodeMockJwtPayload(token: string): any | null {
     if (parts.length < 2) return null;
     const payloadSeg = parts[1];
 
-    // base64url -> base64
     let b64 = payloadSeg.replace(/-/g, "+").replace(/_/g, "/");
     while (b64.length % 4 !== 0) b64 += "=";
 
@@ -19,40 +18,66 @@ function decodeMockJwtPayload(token: string): any | null {
   }
 }
 
+function redirectToLogin(req: NextRequest, pathname: string) {
+  const url = req.nextUrl.clone();
+  url.pathname = "/login";
+  url.searchParams.set("next", pathname);
+  return NextResponse.redirect(url);
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Only gate /admin (and nested routes)
-  if (!pathname.startsWith("/admin")) {
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname === "/favicon.ico"
+  ) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.get("access_token")?.value;
-  if (!token) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", pathname);
-    return NextResponse.redirect(url);
+  const token = req.cookies.get("access_token")?.value ?? "";
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAuthOnlyRoute =
+    pathname.startsWith("/profile") || pathname.startsWith("/members");
+
+  if (pathname.startsWith("/events")) {
+    return NextResponse.next();
   }
 
-  // In mock mode, we can decode the role directly from the token payload
-  if (USE_MOCK_AUTH) {
-    const payload = decodeMockJwtPayload(token);
-    const role = (payload?.role || "").toString();
-    if (role !== "ADMIN") {
+  if (pathname === "/login" || pathname === "/signup") {
+    if (token) {
       const url = req.nextUrl.clone();
       url.pathname = "/";
+      url.searchParams.delete("next");
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
   }
 
-  // Real backend mode:
-  // We can't safely verify JWT in edge without keys; rely on backend route guards later.
-  // Minimal behavior: if token exists, allow. Your server should still enforce admin.
+  if (!isAdminRoute && !isAuthOnlyRoute) {
+    return NextResponse.next();
+  }
+
+  if (!token) {
+    return redirectToLogin(req, pathname);
+  }
+
+  if (USE_MOCK_AUTH && isAdminRoute) {
+    const payload = decodeMockJwtPayload(token);
+    const role = (payload?.role || "").toString();
+
+    if (role !== "ADMIN") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url);
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/profile", "/members", "/login", "/signup"],
 };
