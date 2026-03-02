@@ -17,7 +17,7 @@ export const mockEvents: Event[] = [
   },
   {
     id: "evt_002",
-    title: "SVA Social Night",
+    title: "SVA Socials Night",
     category: "SOCIAL",
     startsAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(),
     location: "Richardson – Community Lounge",
@@ -44,5 +44,18 @@ export const mockEvents: Event[] = [
     capacity: 50,
     description:
       "Large volunteer day with community partners. Exact details posted closer to date.",
+  },
+    {
+    id: "evt_005",
+    title: "Campus Volunteer Outreach 2",
+    category: "VOLUNTEERING",
+    startsAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3).toISOString(),
+    endsAt: new Date(
+      Date.now() + 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 90
+    ).toISOString(),
+    location: "UT Dallas – Student Union",
+    capacity: 40,
+    description:
+      "Volunteer service block supporting campus partners. Attendance-based points will be enabled later.",
   },
 ];

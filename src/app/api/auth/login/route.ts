@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app/api/auth/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { proxyToBackend } from "@/lib/proxy";
 
 import { mockAuthUsers } from "@/data/mockAuthUsers";
 import { createMockJwt } from "@/lib/mockJwt";
@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Put role in JWT payload so middleware can gate /admin
       const token = createMockJwt({
         sub: user.id,
         email: user.email,
@@ -38,10 +37,10 @@ export async function POST(request: NextRequest) {
         subRole: user.subRole,
         status: user.status,
         iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1h
+        exp: Math.floor(Date.now() / 1000) + 60 * 60,
       });
 
-      const nextResponse = NextResponse.json(
+      const res = NextResponse.json(
         {
           message: "Mock login successful",
           role: user.role,
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
 
-      nextResponse.cookies.set("access_token", token, {
+      res.cookies.set("access_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -60,48 +59,16 @@ export async function POST(request: NextRequest) {
         maxAge: 60 * 60,
       });
 
-      return nextResponse;
+      return res;
     }
 
     // -----------------------------
-    // REAL BACKEND MODE (Phase II)
+    // REAL BACKEND MODE (proxy)
     // -----------------------------
-    const response = await fetch("https://api.jayportfolio.me/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(data, { status: response.status });
-    }
-
-    const backendCookies = response.headers.get("set-cookie");
-
-    let token = data.access_token || data.token;
-
-    if (!token && backendCookies) {
-      const match = backendCookies.match(/access_token=([^;]+)/);
-      if (match) token = match[1];
-    }
-
-    const nextResponse = NextResponse.json(data, { status: 200 });
-
-    if (token) {
-      nextResponse.cookies.set("access_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60,
-      });
-    }
-
-    return nextResponse;
+    // ap_be login route is /api/auth/login
+    return proxyToBackend(request, "/api/auth/login");
   } catch (error: any) {
-    console.error("API Route Error:", error);
+    console.error("FE API Route Error (/api/auth/login):", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

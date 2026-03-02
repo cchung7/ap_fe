@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
+import { proxyToBackend } from "@/lib/proxy";
 
-const BACKEND_ME_URL = "https://api.jayportfolio.me/auth/me";
 const USE_MOCK_AUTH = process.env.NEXT_PUBLIC_MOCK_AUTH === "true";
 
 type MockMe = {
@@ -26,22 +26,14 @@ export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get("access_token")?.value;
 
-    // -----------------------------
-    // MOCK AUTH MODE (frontend-only)
-    // -----------------------------
     if (USE_MOCK_AUTH) {
-      if (!token) {
-        return NextResponse.json({ me: null }, { status: 200 });
-      }
+      if (!token) return NextResponse.json({ me: null }, { status: 200 });
 
       const parts = token.split(".");
-      if (parts.length < 2) {
-        return NextResponse.json({ me: null }, { status: 200 });
-      }
+      if (parts.length < 2) return NextResponse.json({ me: null }, { status: 200 });
 
       const payload = base64UrlDecodeToJson<MockMe>(parts[1]);
 
-      // Optional exp check
       const now = Math.floor(Date.now() / 1000);
       if (typeof payload.exp === "number" && payload.exp < now) {
         const res = NextResponse.json({ me: null }, { status: 200 });
@@ -52,31 +44,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ me: payload }, { status: 200 });
     }
 
-    // -----------------------------
-    // REAL BACKEND MODE
-    // -----------------------------
-    if (!token) {
-      return NextResponse.json({ me: null }, { status: 200 });
-    }
-
-    const response = await fetch(BACKEND_ME_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      // Backend says unauthenticated → normalize to 200
-      return NextResponse.json({ me: null }, { status: 200 });
-    }
-
-    const data = await response.json();
-    return NextResponse.json({ me: data }, { status: 200 });
-
+    // REAL BACKEND MODE: proxy to ap_be /api/auth/me
+    return proxyToBackend(request, "/api/auth/me");
   } catch (error: any) {
-    console.error("API Route Error (/api/auth/me):", error);
+    console.error("FE API Route Error (/api/auth/me):", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

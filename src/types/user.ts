@@ -17,6 +17,10 @@ export type User = {
   role: UserRole;
   status: UserStatus;
 
+  subRole?: string;
+  major?: string;
+  academicYear?: string;
+
   createdAt?: string;
   updatedAt?: string;
 };

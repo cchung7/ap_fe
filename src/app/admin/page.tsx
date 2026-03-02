@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { useMe } from "@/hooks/useMe";
 import AdminHeader from "./_components/AdminHeader/AdminHeader";
+import { AdminShell } from "./_components/AdminShell/AdminShell";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -19,17 +20,12 @@ export default function AdminDashboard() {
     }
   }, [loading, isAdmin, router]);
 
-  if (loading) {
-    return null;
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
+  if (loading) return null;
+  if (!isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-12 px-6">
-      <div className="container max-w-7xl mx-auto space-y-8">
+    <AdminShell>
+      <div className="space-y-8">
         <AdminHeader />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -81,6 +77,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminShell>
   );
 }

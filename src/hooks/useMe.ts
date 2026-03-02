@@ -19,8 +19,14 @@ type MeState = {
   lastResultWasNull: boolean;
 };
 
-const DEDUPE_MS = 800;
+type ApiResponse<T> = {
+  statusCode?: number;
+  success?: boolean;
+  message?: string;
+  data?: T;
+};
 
+const DEDUPE_MS = 800;
 const LOGGED_OUT_COOLDOWN_MS = 30_000; // 30s
 
 let state: MeState = {
@@ -59,8 +65,11 @@ async function fetchMe(): Promise<Me | null> {
     throw new Error(text || `Failed to fetch /api/auth/me (${res.status})`);
   }
 
-  const json = (await res.json()) as { me?: Me | null };
-  return json.me ?? null;
+  const json = (await res.json()) as ApiResponse<{ me: Me | null }>;
+  // Backward compatible fallback:
+  const direct = (json as any)?.me as Me | null | undefined;
+
+  return json?.data?.me ?? direct ?? null;
 }
 
 async function refreshInternal(opts?: { force?: boolean }) {
@@ -107,9 +116,7 @@ export function useMe() {
   }, []);
 
   React.useEffect(() => {
-    const onFocus = () => {
-      refreshInternal();
-    };
+    const onFocus = () => refreshInternal();
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, []);

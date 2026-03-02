@@ -14,14 +14,30 @@ function Section({
   if (users.length === 0) return null;
 
   return (
-    <section className="space-y-3">
-      <div className="text-xs font-black uppercase tracking-[0.25em] text-muted-foreground">
-        {title}
+    <section className="space-y-6">
+      {/* Centered section title */}
+      <div className="text-center">
+        <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--accent)]">
+          {title}
+        </h2>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {users.map((u) => (
-          <MemberCard key={u.id} user={u} />
-        ))}
+
+      {/* ✅ Center card containers on the page */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-6xl">
+          <div
+            className="
+              grid
+              gap-4
+              justify-center
+              grid-cols-[repeat(auto-fit,minmax(280px,1fr))]
+            "
+          >
+            {users.map((u) => (
+              <MemberCard key={u.id} user={u} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -37,26 +53,12 @@ export function MemberGrid({
   const ranked = rankUsers(users, txs);
 
   const admins = ranked.filter((u) => u.role === "ADMIN");
-
-  // Pending: prefer status signal; if legacy isVerified exists, treat false as pending
-  const pending = ranked.filter(
-    (u) =>
-      u.role !== "ADMIN" &&
-      (u.status === "PENDING" || u.isVerified === false)
-  );
-
-  const verified = ranked.filter(
-    (u) =>
-      u.role !== "ADMIN" &&
-      u.status !== "PENDING" &&
-      u.isVerified !== false
-  );
+  const members = ranked.filter((u) => u.role !== "ADMIN");
 
   return (
-    <div className="space-y-10">
-      <Section title="Admins" users={admins} />
-      <Section title="Pending Members" users={pending} />
-      <Section title="Verified Members" users={verified} />
+    <div className="mt-2 space-y-16">
+      <Section title="Leadership" users={admins} />
+      <Section title="Membership" users={members} />
     </div>
   );
 }

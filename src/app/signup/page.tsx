@@ -22,11 +22,11 @@ import { ImageCropDialog } from "@/components/profile/ImageCropDialog";
 import { useMe } from "@/hooks/useMe";
 
 const academicYearOptions = [
-  "UG Freshman",
-  "UG Sophomore",
-  "UG Junior",
-  "UG Senior",
-  "Graduate Student",
+  "Freshman",
+  "Sophomore",
+  "Junior",
+  "Senior",
+  "Postgrad",
   "Alumni",
 ] as const;
 
@@ -36,7 +36,6 @@ export default function SignUpPage() {
   const router = useRouter();
   const { loading, isAuthed, isAdmin } = useMe();
 
-  // ✅ If already authed, bounce away
   React.useEffect(() => {
     if (loading) return;
     if (!isAuthed) return;

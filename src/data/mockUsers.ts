@@ -10,6 +10,9 @@ export const mockUsers: User[] = [
     isVerified: true,
     role: "ADMIN",
     status: "ACTIVE",
+    subRole: "President",
+    major: "Computer Science",
+    academicYear: "Postgrad",
   },
   {
     id: "2",
@@ -19,6 +22,8 @@ export const mockUsers: User[] = [
     isVerified: true,
     role: "MEMBER",
     status: "ACTIVE",
+    major: "Information Technology and Systems",
+    academicYear: "Senior",
   },
   {
     id: "3",
@@ -28,5 +33,7 @@ export const mockUsers: User[] = [
     isVerified: true,
     role: "MEMBER",
     status: "ACTIVE",
+    major: "Mechanical Engineering",
+    academicYear: "Junior",
   },
 ];

@@ -22,7 +22,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const baseNavLinks = [
   { name: "Home", href: "/", icon: User },
@@ -32,6 +32,9 @@ const baseNavLinks = [
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin");
+
   const { loading, isAuthed, isAdmin, refresh } = useMe();
 
   const navLinks = React.useMemo(() => {
@@ -180,7 +183,13 @@ export function Navbar() {
             variant="ghost"
             size="icon"
             className="md:hidden rounded-full"
-            onClick={() => setMobileMenuOpen(true)}
+            onClick={() => {
+              if (isAdminRoute) {
+                window.dispatchEvent(new Event("admin-sidebar-toggle"));
+                return;
+              }
+              setMobileMenuOpen(true);
+            }}
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -188,107 +197,111 @@ export function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <Dialog.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <Dialog.Portal forceMount>
-              <Dialog.Overlay asChild>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm"
-                />
-              </Dialog.Overlay>
+      {!isAdminRoute && (
+        <Dialog.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <Dialog.Portal forceMount>
+                <Dialog.Overlay asChild>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm"
+                  />
+                </Dialog.Overlay>
 
-              <Dialog.Content asChild>
-                <motion.div
-                  aria-describedby=""
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                  className="fixed inset-y-0 right-0 z-70 w-full max-w-sm bg-background p-6 flex flex-col shadow-2xl border-l border-border/40"
-                >
-                  <Dialog.Title className="sr-only">Mobile Navigation</Dialog.Title>
+                <Dialog.Content asChild>
+                  <motion.div
+                    aria-describedby=""
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                    className="fixed inset-y-0 right-0 z-70 w-full max-w-sm bg-background p-6 flex flex-col shadow-2xl border-l border-border/40"
+                  >
+                    <Dialog.Title className="sr-only">
+                      Mobile Navigation
+                    </Dialog.Title>
 
-                  <div className="flex items-center justify-between mb-12">
-                    <div className="font-heading font-black uppercase text-xl">
-                      Menu
+                    <div className="flex items-center justify-between mb-12">
+                      <div className="font-heading font-black uppercase text-xl">
+                        Menu
+                      </div>
+                      <Dialog.Close asChild>
+                        <Button variant="ghost" size="icon">
+                          <X className="h-6 w-6" />
+                        </Button>
+                      </Dialog.Close>
                     </div>
-                    <Dialog.Close asChild>
-                      <Button variant="ghost" size="icon">
-                        <X className="h-6 w-6" />
-                      </Button>
-                    </Dialog.Close>
-                  </div>
 
-                  <div className="flex flex-col gap-2">
-                    {navLinks.map((link, i) => {
-                      const Icon = link.icon;
-                      return (
-                        <motion.div
-                          key={link.name}
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * i }}
-                        >
-                          <Link
-                            href={link.href}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="text-3xl font-black italic tracking-tighter uppercase flex items-center justify-between group"
+                    <div className="flex flex-col gap-2">
+                      {navLinks.map((link, i) => {
+                        const Icon = link.icon;
+                        return (
+                          <motion.div
+                            key={link.name}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * i }}
                           >
-                            <span className="flex items-center gap-2">
-                              <Icon className="h-6 w-6 text-accent" />
-                              {link.name}
-                            </span>
-                            <ArrowUpRight className="h-6 w-6 text-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0" />
-                          </Link>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="flex-1" />
-
-                  {/* Bottom CTA */}
-                  {!loading && (
-                    <div className="pt-6 border-t border-border/40 space-y-2">
-                      {/* Non-user: Log In (primary) */}
-                      {!isAuthed && (
-                        <Button
-                          asChild
-                          size="lg"
-                          className={cn(
-                            "w-full rounded-full font-black uppercase tracking-widest"
-                          )}
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <Link href="/login">Log In</Link>
-                        </Button>
-                      )}
-
-                      {/* Member/Admin: Logout (primary) */}
-                      {isAuthed && (
-                        <Button
-                          type="button"
-                          size="lg"
-                          className={cn(
-                            "w-full rounded-full font-black uppercase tracking-widest"
-                          )}
-                          onClick={handleLogout}
-                        >
-                          Logout
-                        </Button>
-                      )}
+                            <Link
+                              href={link.href}
+                              onClick={() => setMobileMenuOpen(false)}
+                              className="text-3xl font-black italic tracking-tighter uppercase flex items-center justify-between group"
+                            >
+                              <span className="flex items-center gap-2">
+                                <Icon className="h-6 w-6 text-accent" />
+                                {link.name}
+                              </span>
+                              <ArrowUpRight className="h-6 w-6 text-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0" />
+                            </Link>
+                          </motion.div>
+                        );
+                      })}
                     </div>
-                  )}
-                </motion.div>
-              </Dialog.Content>
-            </Dialog.Portal>
-          )}
-        </AnimatePresence>
-      </Dialog.Root>
+
+                    <div className="flex-1" />
+
+                    {/* Bottom CTA */}
+                    {!loading && (
+                      <div className="pt-6 border-t border-border/40 space-y-2">
+                        {/* Non-user: Log In (primary) */}
+                        {!isAuthed && (
+                          <Button
+                            asChild
+                            size="lg"
+                            className={cn(
+                              "w-full rounded-full font-black uppercase tracking-widest"
+                            )}
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Link href="/login">Log In</Link>
+                          </Button>
+                        )}
+
+                        {/* Member/Admin: Logout (primary) */}
+                        {isAuthed && (
+                          <Button
+                            type="button"
+                            size="lg"
+                            className={cn(
+                              "w-full rounded-full font-black uppercase tracking-widest"
+                            )}
+                            onClick={handleLogout}
+                          >
+                            Logout
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                </Dialog.Content>
+              </Dialog.Portal>
+            )}
+          </AnimatePresence>
+        </Dialog.Root>
+      )}
     </motion.header>
   );
 }
