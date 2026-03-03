@@ -98,16 +98,11 @@ export default function EventsPage() {
 
             return (
               <section key={cat} className="space-y-5">
-                <div className="space-y-1 text-center">
-                  <h2
-                    className="
-                      text-3xl md:text-4xl
-                      font-black tracking-tight
-                      text-[var(--accent)]
-                    "
-                  >
+                <div className="text-center">
+                  <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
                     {categoryLabel[cat]}:
-                  </h2>
+                  </p>
+                  <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
                 </div>
 
                 <div className="max-w-6xl mx-auto">

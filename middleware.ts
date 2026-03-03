@@ -39,8 +39,7 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value ?? "";
 
   const isAdminRoute = pathname.startsWith("/admin");
-  const isAuthOnlyRoute =
-    pathname.startsWith("/profile") || pathname.startsWith("/members");
+  const isAuthOnlyRoute = pathname.startsWith("/profile");
 
   if (pathname.startsWith("/events")) {
     return NextResponse.next();
@@ -79,5 +78,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile", "/members", "/login", "/signup"],
+  matcher: ["/admin/:path*", "/profile", "/login", "/signup"],
 };

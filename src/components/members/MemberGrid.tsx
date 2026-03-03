@@ -15,14 +15,14 @@ function Section({
 
   return (
     <section className="space-y-6">
-      {/* Centered section title */}
+      {/* Centered section title (standardized like Home "Our Mission") */}
       <div className="text-center">
-        <h2 className="text-2xl md:text-3xl font-black tracking-tight text-[var(--accent)]">
-          {title}
-        </h2>
+        <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+          {title}:
+        </p>
+        <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
       </div>
 
-      {/* ✅ Center card containers on the page */}
       <div className="flex justify-center">
         <div className="w-full max-w-6xl">
           <div

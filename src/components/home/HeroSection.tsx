@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useMe } from "@/hooks/useMe";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
@@ -11,8 +10,6 @@ import * as React from "react";
 const slides = ["/hero/sva_1.jpg", "/hero/sva_2.jpg", "/hero/sva_3.jpg"];
 
 export const HeroSection = () => {
-  const { loading, isAuthed, isAdmin } = useMe();
-
   const containerRef = React.useRef<HTMLElement | null>(null);
 
   const { scrollYProgress } = useScroll({
@@ -116,13 +113,7 @@ export const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className={cn(
-                    "mx-auto w-full max-w-none",
-                    "text-4xl sm:text-5xl md:text-6xl lg:text-6xl",
-                    "leading-[1.05] tracking-tight",
-                    "text-[#0b2d5b]",
-                    "[text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
-                  )}
+                  className="mx-auto w-full max-w-none text-4xl sm:text-5xl md:text-6xl lg:text-6xl leading-[1.05] tracking-tight text-[#0b2d5b] [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
                 >
                   Student Veterans Association (SVA)
                 </motion.h1>
@@ -161,67 +152,21 @@ export const HeroSection = () => {
       <div className="relative z-10">
         <div className="container max-w-5xl mx-auto px-6">
           <div className="relative mt-6 sm:mt-6 md:mt-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.08 }}
-              className="text-2xl sm:text-3xl md:text-4xl font-semibold italic text-[#E87500]"
-            >
-              {/* *UT-Dallas Chapter */}
-            </motion.div>
+            {/* Mission — standardized */}
+            <div className="mt-16">
+              <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+                Our Mission:
+              </p>
 
-            {/* Auth-aware CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.18 }}
-              className="flex flex-wrap justify-center gap-3 mt-3 sm:mt-4 md:mt-5"
-            >
-              {loading ? null : (
-                <>
-                  {!isAuthed && (
-                    <Button asChild size="lg" className="rounded-full">
-                      {/* <a href="/login">Log In</a> */}
-                    </Button>
-                  )}
+              <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
 
-                  {isAuthed && (
-                    <Button asChild size="lg" className="rounded-full">
-                      <a href="/profile">
-                        View My Profile
-                      </a>
-                    </Button>
-                  )}
-
-                  {isAdmin && (
-                    <Button asChild size="lg" className="rounded-full">
-                      <a href="/admin">Admin Dashboard</a>
-                    </Button>
-                  )}
-                </>
-              )}
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.26 }}
-              className="mt-16 text-2xl md:text-3xl font-semibold tracking-tight"
-            >
-              Our Mission:
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.32 }}
-              className="mt-2 text-muted-foreground text-base md:text-lg font-medium max-w-xl mx-auto"
-            >
-              We work to empower UT Dallas military-connected students and
-              supporters through advocacy, mentorship, and resources that
-              advance academic success, professional development, and community
-              engagement.
-            </motion.p>
+              <p className="mt-4 text-muted-foreground text-base md:text-lg font-medium max-w-xl mx-auto">
+                We work to empower UT Dallas military-connected students and
+                supporters through advocacy, mentorship, and resources that
+                advance academic success, professional development, and
+                community engagement.
+              </p>
+            </div>
           </div>
         </div>
       </div>
