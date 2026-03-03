@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// D:\ap_fe\src\app\profile\page.tsx
 "use client";
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useMe } from "@/hooks/useMe";
 import {
   Camera,
   Mail,
@@ -15,37 +18,53 @@ import {
   Clock,
 } from "lucide-react";
 
-type ProfileStatus = "ACTIVE" | "PENDING";
+type ProfileStatus = "ACTIVE" | "PENDING" | "SUSPENDED";
 type ProfileRole = "ADMIN" | "MEMBER";
 
-type ProfileModel = {
-  name: string;
-  email: string;
-  role: ProfileRole;
-  status: ProfileStatus;
-  profileImage?: string; // future: persisted url
-};
-
 export default function ProfilePage() {
+  const router = useRouter();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Phase 1 placeholder "me"
-  const [me] = React.useState<ProfileModel>({
-    name: "Member Name",
-    email: "member@sva-utdallas.org",
-    role: "MEMBER",
-    status: "ACTIVE",
-    profileImage: "", // optional baseline
-  });
+  const { me, loading } = useMe();
 
-  const [form, setForm] = React.useState({ name: me.name });
-
-  const [imagePreview, setImagePreview] = React.useState<string>(
-    me.profileImage || ""
+  // Derived display fields (safe defaults)
+  const resolvedName = React.useMemo(() => (me?.name || "").toString(), [me]);
+  const resolvedEmail = React.useMemo(
+    () => (me?.email || "").toString(),
+    [me]
   );
+  const resolvedRole = React.useMemo(
+    () => ((me?.role || "MEMBER") as ProfileRole),
+    [me]
+  );
+  const resolvedStatus = React.useMemo(
+    () => ((me?.status || "PENDING") as ProfileStatus),
+    [me]
+  );
+
+  // ✅ Hooks must run unconditionally, so states are declared before any return
+  const [form, setForm] = React.useState({ name: "" });
+
+  const [imagePreview, setImagePreview] = React.useState<string>("");
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
 
-  // Cleanup blob URLs on unmount
+  // Redirect non-authed users to login
+  React.useEffect(() => {
+    if (loading) return;
+    if (me) return;
+    router.replace("/login?next=/profile");
+  }, [loading, me, router]);
+
+  // Sync form values when "me" changes
+  React.useEffect(() => {
+    if (!me) return;
+    setForm({ name: resolvedName || "" });
+    // Keep imagePreview as-is (Phase 1 local preview only)
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [me, resolvedName]);
+
+  // Cleanup blob URLs
   React.useEffect(() => {
     return () => {
       setImagePreview((prev) => {
@@ -54,19 +73,6 @@ export default function ProfilePage() {
       });
     };
   }, []);
-
-  // Reset when "me" changes (future: API fetch)
-  React.useEffect(() => {
-    setForm({ name: me.name });
-
-    setImagePreview((prev) => {
-      if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
-      return me.profileImage || "";
-    });
-
-    setSelectedImage(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }, [me]);
 
   const onPickImage = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -93,22 +99,24 @@ export default function ProfilePage() {
 
     setImagePreview((prev) => {
       if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
-      return me.profileImage || "";
+      return "";
     });
 
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const onReset = () => {
-    setForm({ name: me.name });
+    setForm({ name: resolvedName || "" });
     onRemoveImage();
   };
 
   const isDirty =
-    form.name.trim() !== me.name.trim() || Boolean(selectedImage);
+    form.name.trim() !== (resolvedName || "").trim() || Boolean(selectedImage);
 
-  const removeDisabled =
-    !selectedImage && imagePreview === (me.profileImage || "");
+  const removeDisabled = !selectedImage && imagePreview === "";
+
+  // ✅ Now it is safe to early-return (after hooks have run)
+  if (loading || !me) return null;
 
   return (
     <div className="min-h-screen bg-background pt-32 pb-12 px-6">
@@ -129,7 +137,7 @@ export default function ProfilePage() {
             variant="outline"
             className="border border-border/40 bg-card/50 backdrop-blur-xl rounded-full px-4 py-2"
           >
-            {me.role === "ADMIN" ? (
+            {resolvedRole === "ADMIN" ? (
               <span className="inline-flex items-center gap-2">
                 <Shield size={14} className="text-accent" />
                 Admin
@@ -146,15 +154,20 @@ export default function ProfilePage() {
             variant="outline"
             className="border border-border/40 bg-card/50 backdrop-blur-xl rounded-full px-4 py-2"
           >
-            {me.status === "ACTIVE" ? (
+            {resolvedStatus === "ACTIVE" ? (
               <span className="inline-flex items-center gap-2">
                 <CheckCircle2 size={14} className="text-success" />
                 Active
               </span>
-            ) : (
+            ) : resolvedStatus === "PENDING" ? (
               <span className="inline-flex items-center gap-2">
                 <Clock size={14} className="text-warning" />
                 Pending
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <Clock size={14} className="text-warning" />
+                Suspended
               </span>
             )}
           </Badge>
@@ -274,7 +287,7 @@ export default function ProfilePage() {
                     disabled
                     title="Persistence will be wired after backend/profile endpoints exist."
                   >
-                    Save (Coming Soon)
+                    Save Changes
                   </Button>
                 </div>
               </div>
@@ -298,7 +311,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Email (read-only for now) */}
+                {/* Email */}
                 <div className="space-y-2">
                   <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-1">
                     Email
@@ -306,7 +319,7 @@ export default function ProfilePage() {
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
-                      value={me.email}
+                      value={resolvedEmail}
                       disabled
                       className="pl-10 h-12 rounded-xl bg-secondary/10 border-border/40 opacity-90 cursor-not-allowed"
                     />
@@ -331,7 +344,6 @@ export default function ProfilePage() {
               </AnimatePresence>
             </div>
 
-            {/* Future seam: password change */}
             <div className="mt-8 rounded-[2.5rem] border-2 border-dashed border-border/40 bg-secondary/5 p-10 text-center">
               <p className="text-sm font-medium text-muted-foreground">
                 Password change will be added later (after auth flow is

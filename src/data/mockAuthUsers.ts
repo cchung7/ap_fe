@@ -16,7 +16,7 @@ export type MockAuthUser = {
 export const mockAuthUsers: MockAuthUser[] = [
   {
     id: "mock_admin_1",
-    name: "Dummy Admin",
+    name: "Test Admin",
     email: "admin@sva-utdallas.org",
     password: "Admin123!",
     role: "ADMIN",
@@ -25,7 +25,7 @@ export const mockAuthUsers: MockAuthUser[] = [
   },
   {
     id: "mock_user_1",
-    name: "Dummy Member",
+    name: "Test Member",
     email: "member@sva-utdallas.org",
     password: "Member123!",
     role: "MEMBER",

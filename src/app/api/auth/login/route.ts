@@ -7,6 +7,11 @@ import { createMockJwt } from "@/lib/mockJwt";
 
 const USE_MOCK_AUTH = process.env.NEXT_PUBLIC_MOCK_AUTH === "true";
 
+export async function OPTIONS(request: NextRequest) {
+  if (USE_MOCK_AUTH) return new NextResponse(null, { status: 204 });
+  return proxyToBackend(request, "/api/auth/login");
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -51,7 +56,7 @@ export async function POST(request: NextRequest) {
         { status: 200 }
       );
 
-      res.cookies.set("access_token", token, {
+      res.cookies.set("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -65,13 +70,9 @@ export async function POST(request: NextRequest) {
     // -----------------------------
     // REAL BACKEND MODE (proxy)
     // -----------------------------
-    // ap_be login route is /api/auth/login
     return proxyToBackend(request, "/api/auth/login");
   } catch (error: any) {
     console.error("FE API Route Error (/api/auth/login):", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

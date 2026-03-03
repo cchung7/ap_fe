@@ -86,7 +86,7 @@ export default function LoginClient() {
       });
 
       const meJson = await meRes.json();
-      const meData = (meJson?.me ?? null) as MePayload | null;
+      const meData = (meJson?.data?.me ?? meJson?.me ?? null) as MePayload | null;
 
       const safeNext = isSafeInternalPath(nextParam) ? nextParam : null;
       const nextIsAdminRoute = Boolean(safeNext && safeNext.startsWith("/admin"));

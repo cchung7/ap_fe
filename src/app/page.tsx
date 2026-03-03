@@ -3,6 +3,7 @@
 import { AboutSection } from "@/components/home/AboutSection";
 import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSection } from "@/components/home/HeroSection";
+import { CarouselSection } from "@/components/home/CarouselSection";
 
 import { mockUsers } from "@/data/mockUsers";
 import { mockPointsTransactions } from "@/data/mockPointsTransactions";
@@ -33,6 +34,7 @@ export default function Home() {
     <div className="flex flex-col w-full overflow-hidden bg-background">
       <HeroSection />
       <AboutSection />
+      <CarouselSection />
 
       {/* PREVIEWS (baseline requirement) */}
       <section className="py-10 px-6 bg-background">

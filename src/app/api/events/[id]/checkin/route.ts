@@ -7,4 +7,4 @@ export async function POST(
 ) {
   const { id } = await ctx.params;
   return proxyToBackend(req, `/api/events/${id}/checkin`);
-}
+} 

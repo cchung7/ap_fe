@@ -36,7 +36,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.get("access_token")?.value ?? "";
+  const token = req.cookies.get("token")?.value ?? "";
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isAuthOnlyRoute = pathname.startsWith("/profile");

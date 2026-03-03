@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\navbar.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,6 @@ export function Navbar() {
   const navLinks = React.useMemo(() => {
     const links = [...baseNavLinks];
 
-    // ✅ Hotfix: keep initial render stable until auth state is known
     if (loading) return links;
 
     if (isAuthed) {
@@ -127,7 +127,7 @@ export function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="px-1 py-2 rounded-full text-[11px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all duration-300 relative group flex items-center gap-2"
+                className="px-1 py-2 rounded-full text-[11px] uppercase tracking-widest text-muted-foreground hover:text-accent transition-all duration-300 relative group flex items-center gap-2"
               >
                 <Icon className="h-5 w-5 mb-0.5 group-hover:text-accent transition-colors" />
                 {link.name}
@@ -139,24 +139,49 @@ export function Navbar() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* ✅ Hotfix: keep this subtree stable while loading */}
           {!loading && (
             <>
               {/* Non-user */}
               {!isAuthed && (
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className={cn(
-                    "hidden md:inline-flex rounded-full",
-                    "h-9 px-4",
-                    "font-bold uppercase tracking-widest text-[11px]",
-                    "transition-all"
-                  )}
-                >
-                  <Link href="/login">Log In</Link>
-                </Button>
+                <>
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    className={cn(
+                      "hidden md:inline-flex rounded-full",
+                      "h-9 px-4",
+                      "font-bold uppercase tracking-widest text-[11px]",
+                      "transition-all",
+                      "bg-muted/60",
+                      // ✅ force override outline variant bg
+                      "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
+                      // ✅ subtle glow like footer
+                      "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
+                    )}
+                  >
+                    <Link href="/login">Log In</Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    className={cn(
+                      "hidden md:inline-flex rounded-full",
+                      "h-9 px-4",
+                      "font-bold uppercase tracking-widest text-[11px]",
+                      "transition-all",
+                      "bg-muted/60",
+                      // ✅ force override outline variant bg
+                      "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
+                      // ✅ subtle glow like footer
+                      "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
+                    )}
+                  >
+                    <Link href="/signup">Sign Up</Link>
+                  </Button>
+                </>
               )}
 
               {/* Member/Admin: Logout */}
@@ -169,7 +194,12 @@ export function Navbar() {
                     "hidden md:inline-flex rounded-full",
                     "h-9 px-4",
                     "font-black uppercase tracking-widest text-[11px]",
-                    "transition-all"
+                    "transition-all",
+                    "bg-muted/60",
+                    // ✅ force override outline variant bg
+                    "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
+                    // ✅ subtle glow like footer
+                    "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
                   )}
                   onClick={handleLogout}
                 >
@@ -250,7 +280,7 @@ export function Navbar() {
                               onClick={() => setMobileMenuOpen(false)}
                               className="text-3xl font-black italic tracking-tighter uppercase flex items-center justify-between group"
                             >
-                              <span className="flex items-center gap-2">
+                              <span className="flex items-center gap-2 text-foreground group-hover:text-accent transition-colors">
                                 <Icon className="h-6 w-6 text-accent" />
                                 {link.name}
                               </span>
@@ -266,18 +296,31 @@ export function Navbar() {
                     {/* Bottom CTA */}
                     {!loading && (
                       <div className="pt-6 border-t border-border/40 space-y-2">
-                        {/* Non-user: Log In (primary) */}
                         {!isAuthed && (
-                          <Button
-                            asChild
-                            size="lg"
-                            className={cn(
-                              "w-full rounded-full font-black uppercase tracking-widest"
-                            )}
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <Link href="/login">Log In</Link>
-                          </Button>
+                          <div className="space-y-3">
+                            <Button
+                              asChild
+                              size="lg"
+                              className={cn(
+                                "w-full rounded-full font-black uppercase tracking-widest"
+                              )}
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <Link href="/login">Log In</Link>
+                            </Button>
+
+                            <Button
+                              asChild
+                              size="lg"
+                              className={cn(
+                                "w-full rounded-full font-black uppercase tracking-widest",
+                                "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+                              )}
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <Link href="/signup">Sign Up</Link>
+                            </Button>
+                          </div>
                         )}
 
                         {/* Member/Admin: Logout (primary) */}

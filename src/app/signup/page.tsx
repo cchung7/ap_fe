@@ -4,7 +4,15 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, Camera, Mail, User } from "lucide-react";
+import {
+  ChevronLeft,
+  Camera,
+  Mail,
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { majors } from "@/data/majors";
@@ -33,8 +41,10 @@ const academicYearOptions = [
 type AcademicYear = (typeof academicYearOptions)[number];
 
 export default function SignUpPage() {
+  const PROFILE_PIC_ENABLED = false;
+
   const router = useRouter();
-  const { loading, isAuthed, isAdmin } = useMe();
+  const { loading, isAuthed, isAdmin, refresh } = useMe();
 
   React.useEffect(() => {
     if (loading) return;
@@ -52,6 +62,14 @@ export default function SignUpPage() {
   const [academicYear, setAcademicYear] = React.useState<AcademicYear | "">("");
   const [major, setMajor] = React.useState("");
 
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState("");
+
   const [imagePreview, setImagePreview] = React.useState<string>("");
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
 
@@ -59,7 +77,7 @@ export default function SignUpPage() {
   const [cropOpen, setCropOpen] = React.useState(false);
   const [rawPreview, setRawPreview] = React.useState<string>("");
 
-  // Limit preview suggestions to 6 at a time (datalist is browser-controlled; this caps supplied options)
+  // Limit preview suggestions to 6 at a time
   const majorSuggestions = React.useMemo(() => {
     const q = major.trim().toLowerCase();
     const list = q ? majors.filter((m) => m.toLowerCase().includes(q)) : majors;
@@ -74,15 +92,17 @@ export default function SignUpPage() {
   }, [imagePreview, rawPreview]);
 
   const onPickImage = () => {
+    if (!PROFILE_PIC_ENABLED) return;
     if (fileInputRef.current) fileInputRef.current.value = "";
     fileInputRef.current?.click();
   };
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!PROFILE_PIC_ENABLED) return;
+
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // open crop modal with raw selection
     const url = URL.createObjectURL(file);
 
     setRawPreview((prev) => {
@@ -96,6 +116,8 @@ export default function SignUpPage() {
   };
 
   const onRemoveImage = () => {
+    if (!PROFILE_PIC_ENABLED) return;
+
     setSelectedImage(null);
 
     setImagePreview((prev) => {
@@ -113,16 +135,53 @@ export default function SignUpPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // FE stub: later this will POST to your backend.
-    alert("Signup (FE stub): backend wiring will be added later.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.trim().toLowerCase(),
+          academicYear,
+          major: major.trim(),
+          password,
+          // profileImageUrl intentionally omitted while feature is disabled
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error((data as any)?.message || "Signup failed");
+      }
+
+      await refresh(true);
+
+      router.replace("/");
+      router.refresh();
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      setError(err.message || "An error occurred during signup");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background Image (BPC style) */}
       <Image
         src="/auth/sva_auth.jpg"
         alt="SVA Authentication Background"
@@ -132,23 +191,21 @@ export default function SignUpPage() {
         className="object-cover object-center"
       />
 
-      {/* Lighter overlay (less dark) */}
       <div className="absolute inset-0 bg-black/10" />
 
-      {/* Optional: Decorative glow elements over the photo (subtle) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[110px]" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-accent/10 blur-[110px]" />
       </div>
 
-      {/* Page content */}
       <div className="relative z-10 min-h-screen px-6 pt-8 pb-24">
-        {/* Crop dialog */}
+        {/* Keep dialog scaffold, but effectively disabled */}
         <ImageCropDialog
-          open={cropOpen}
-          onOpenChange={setCropOpen}
-          imageSrc={rawPreview}
+          open={PROFILE_PIC_ENABLED ? cropOpen : false}
+          onOpenChange={PROFILE_PIC_ENABLED ? setCropOpen : () => {}}
+          imageSrc={PROFILE_PIC_ENABLED ? rawPreview : ""}
           onCancel={() => {
+            if (!PROFILE_PIC_ENABLED) return;
             setRawPreview((prev) => {
               if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
               return "";
@@ -156,7 +213,8 @@ export default function SignUpPage() {
             if (fileInputRef.current) fileInputRef.current.value = "";
           }}
           onCropped={({ file, previewUrl }) => {
-            // raw preview is no longer needed once we have cropped output
+            if (!PROFILE_PIC_ENABLED) return;
+
             setRawPreview((prev) => {
               if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
               return "";
@@ -173,7 +231,6 @@ export default function SignUpPage() {
           }}
         />
 
-        {/* Centered card */}
         <div className="flex flex-col items-center justify-start pt-6">
           <Card className="w-full max-w-2xl border-2 border-border/40 bg-card/90 backdrop-blur-xl shadow-2xl">
             <CardHeader className="space-y-4 text-center pb-8 pt-6">
@@ -194,8 +251,7 @@ export default function SignUpPage() {
               </CardTitle>
 
               <CardDescription className="text-muted-foreground font-medium uppercase tracking-widest text-xs">
-                Already have an account?{" "}
-                <br />
+                Already have an account? <br />
                 <Link
                   href="/login"
                   className="underline underline-offset-4 hover:text-foreground transition-colors text-accent font-semibold"
@@ -207,7 +263,7 @@ export default function SignUpPage() {
 
             <CardContent>
               <form onSubmit={onSubmit} className="space-y-8">
-                {/* Profile picture (optional) */}
+                {/* Profile picture (optional) - DISABLED scaffold */}
                 <div className="space-y-3">
                   <div className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1">
                     Profile Picture (Optional)
@@ -217,8 +273,19 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={onPickImage}
-                      className="relative h-28 w-28 rounded-full border-2 border-dashed border-primary/40 overflow-hidden hover:bg-secondary/30 transition-colors group"
+                      disabled={!PROFILE_PIC_ENABLED}
+                      className={[
+                        "relative h-28 w-28 rounded-full border-2 border-dashed overflow-hidden transition-colors group",
+                        PROFILE_PIC_ENABLED
+                          ? "border-primary/40 hover:bg-secondary/30"
+                          : "border-border/40 bg-secondary/10 opacity-60 cursor-not-allowed",
+                      ].join(" ")}
                       aria-label="Upload profile picture"
+                      title={
+                        PROFILE_PIC_ENABLED
+                          ? "Upload profile picture"
+                          : "Profile pictures are temporarily disabled"
+                      }
                     >
                       {imagePreview ? (
                         <>
@@ -248,6 +315,7 @@ export default function SignUpPage() {
                       className="hidden"
                       accept="image/*"
                       onChange={onImageChange}
+                      disabled={!PROFILE_PIC_ENABLED}
                     />
 
                     <div className="mt-4 flex gap-2">
@@ -256,6 +324,12 @@ export default function SignUpPage() {
                         variant="outline"
                         className="rounded-2xl border-border/40"
                         onClick={onPickImage}
+                        disabled={!PROFILE_PIC_ENABLED}
+                        title={
+                          PROFILE_PIC_ENABLED
+                            ? "Select image"
+                            : "Temporarily disabled"
+                        }
                       >
                         Select
                       </Button>
@@ -264,11 +338,23 @@ export default function SignUpPage() {
                         variant="outline"
                         className="rounded-2xl border-border/40"
                         onClick={onRemoveImage}
-                        disabled={!selectedImage && !imagePreview}
+                        disabled={!PROFILE_PIC_ENABLED || (!selectedImage && !imagePreview)}
+                        title={
+                          PROFILE_PIC_ENABLED
+                            ? "Remove selection"
+                            : "Temporarily disabled"
+                        }
                       >
                         Remove
                       </Button>
                     </div>
+
+                    {!PROFILE_PIC_ENABLED && (
+                      <p className="mt-3 text-xs text-muted-foreground italic text-center">
+                        Profile picture upload is temporarily disabled. You can
+                        create your account now and add a photo later.
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -380,7 +466,6 @@ export default function SignUpPage() {
                       Current Major
                     </Label>
 
-                    {/* Autocomplete via datalist; list is alphabetical */}
                     <Input
                       id="major"
                       value={major}
@@ -402,14 +487,95 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
+                {/* Password */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password"
+                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                    >
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        placeholder="Create a password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((p) => !p)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="confirmPassword"
+                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                    >
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        placeholder="Confirm password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((p) => !p)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        aria-label={
+                          showConfirmPassword
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm font-medium text-center">
+                    {error}
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                  disabled={submitting}
                 >
-                  Create Account
+                  {submitting ? "Creating..." : "Create Account"}
                 </Button>
 
-                {/* Back link moved below form, centered */}
                 <div className="pt-2 text-center">
                   <Link
                     href="/"
@@ -422,6 +588,7 @@ export default function SignUpPage() {
               </form>
             </CardContent>
           </Card>
+
           <p className="mt-4 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
             All Rights Reserved. &copy;{" "}
             <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}

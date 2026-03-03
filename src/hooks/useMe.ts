@@ -7,6 +7,7 @@ type Me = {
   subRole?: string;
   email?: string;
   name?: string;
+  status?: "ACTIVE" | "PENDING" | "SUSPENDED" | string;
   [key: string]: unknown;
 };
 
@@ -65,11 +66,16 @@ async function fetchMe(): Promise<Me | null> {
     throw new Error(text || `Failed to fetch /api/auth/me (${res.status})`);
   }
 
-  const json = (await res.json()) as ApiResponse<{ me: Me | null }>;
-  // Backward compatible fallback:
-  const direct = (json as any)?.me as Me | null | undefined;
+  const json = (await res.json()) as any;
 
-  return json?.data?.me ?? direct ?? null;
+  // Preferred (new normalized FE route shape):
+  if (json && typeof json === "object" && "me" in json) {
+    return (json.me as Me | null) ?? null;
+  }
+
+  // Backward compatible with older wrappers:
+  const wrapped = json as ApiResponse<{ me: Me | null }>;
+  return wrapped?.data?.me ?? null;
 }
 
 async function refreshInternal(opts?: { force?: boolean }) {

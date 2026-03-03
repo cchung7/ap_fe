@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\home\ContactSection.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,10 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-8 md:py-12 px-6 bg-background">
+    <section
+      id="contact"
+      className="py-8 md:py-12 pb-28 md:pb-36 px-6 bg-background"
+    >
       <div className="container max-w-6xl mx-auto">
         {/* Stacked layout: Info first, Form second */}
         <div className="flex flex-col gap-6">
@@ -140,7 +144,6 @@ export const ContactSection = () => {
 
             <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
               <div className="space-y-6">
-                {/* Full Name */}
                 <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Full Name
@@ -150,11 +153,10 @@ export const ContactSection = () => {
                     name="fullName"
                     type="text"
                     placeholder="Your name"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  "
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0"
                   />
                 </div>
 
-                {/* Email Address */}
                 <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Email Address
@@ -164,11 +166,10 @@ export const ContactSection = () => {
                     name="email"
                     type="email"
                     placeholder="you@utdallas.edu"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0 "
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0"
                   />
                 </div>
 
-                {/* Body (Message) Input */}
                 <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Message
@@ -177,12 +178,11 @@ export const ContactSection = () => {
                     required
                     name="body"
                     placeholder="How can we help?"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  min-h-32 "
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0 min-h-32"
                   />
                 </div>
               </div>
 
-              {/* Submit Button */}
               <Button
                 disabled={isSubmitting}
                 className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:bg-accent hover:text-white"
@@ -193,7 +193,7 @@ export const ContactSection = () => {
                   </>
                 ) : (
                   <>
-                    Send Message{" "}
+                    Send Message
                     <ArrowRight
                       size={16}
                       className="ml-2 transition-transform group-hover:translate-x-1"

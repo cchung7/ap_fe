@@ -43,7 +43,7 @@ export default function EventsPage() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-12 sm:px-6 sm:pt-36 lg:px-8 space-y-10">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
         {/* Header */}
         <header className="space-y-2 text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-primary">
@@ -115,4 +115,4 @@ export default function EventsPage() {
       </div>
     </div>
   );
-}
+} 
