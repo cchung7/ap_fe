@@ -80,7 +80,7 @@ export default function EventsPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-lg font-black uppercase tracking-widest text-muted-foreground">
-                    Total Events Found:
+                    Total Events:
                   </p>
                   <p className="text-3xl font-black tracking-tight text-foreground">
                     {upcoming.length}

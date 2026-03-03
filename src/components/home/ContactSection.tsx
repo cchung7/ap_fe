@@ -56,82 +56,9 @@ export const ContactSection = () => {
   return (
     <section id="contact" className="py-8 md:py-12 px-6 bg-background">
       <div className="container max-w-6xl mx-auto">
-        {/* Stacked layout: Form first, Info second */}
+        {/* Stacked layout: Info first, Form second */}
         <div className="flex flex-col gap-6">
-          {/* Form Side (now on top) */}
-          <div className="bg-secondary/30 p-8 md:p-20 rounded-[2.5rem] border border-border/40 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-3 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-all duration-1000">
-              <Rocket className="h-16 w-16" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
-              <div className="space-y-6">
-                {/* Full Name */}
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Full Name
-                  </label>
-                  <input
-                    required
-                    name="fullName"
-                    type="text"
-                    placeholder="Your name"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  "
-                  />
-                </div>
-
-                {/* Email Address */}
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Email Address
-                  </label>
-                  <input
-                    required
-                    name="email"
-                    type="email"
-                    placeholder="you@utdallas.edu"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0 "
-                  />
-                </div>
-
-                {/* Body (Message) Input */}
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Message
-                  </label>
-                  <textarea
-                    required
-                    name="body"
-                    placeholder="How can we help?"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  min-h-32 "
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                disabled={isSubmitting}
-                className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:bg-accent hover:text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    Sending{" "}
-                    <Loader2 className="ml-2 animate-spin" size={16} />
-                  </>
-                ) : (
-                  <>
-                    Send Message{" "}
-                    <ArrowRight
-                      size={16}
-                      className="ml-2 transition-transform group-hover:translate-x-1"
-                    />
-                  </>
-                )}
-              </Button>
-            </form>
-          </div>
-
-          {/* Contact Info Side (now below) */}
+          {/* Contact Info Side (now on top) */}
           <div className="space-y-3 flex flex-col items-center text-center">
             <div className="space-y-6 flex flex-col items-center text-center">
               <h2 className="text-xs font-black uppercase tracking-[0.5em] text-accent">
@@ -141,9 +68,10 @@ export const ContactSection = () => {
                 Lead with purpose
               </h3>
               <p className="text-lg text-muted-foreground font-medium max-w-xl leading-relaxed">
-                The Student Veterans Association supports UT Dallas military-connected
-                students through advocacy, mentorship, and campus community. Reach out
-                with questions, ideas, or ways you’d like to get involved.
+                The Student Veterans Association supports UT Dallas
+                military-connected students through advocacy, mentorship, and
+                campus community. Reach out with questions, ideas, or ways you’d
+                like to get involved.
               </p>
             </div>
 
@@ -202,6 +130,78 @@ export const ContactSection = () => {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Form Side (now below the header/info) */}
+          <div className="bg-secondary/30 p-8 md:p-20 rounded-[2.5rem] border border-border/40 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-3 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-all duration-1000">
+              <Rocket className="h-16 w-16" />
+            </div>
+
+            <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
+              <div className="space-y-6">
+                {/* Full Name */}
+                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                    Full Name
+                  </label>
+                  <input
+                    required
+                    name="fullName"
+                    type="text"
+                    placeholder="Your name"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  "
+                  />
+                </div>
+
+                {/* Email Address */}
+                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                    Email Address
+                  </label>
+                  <input
+                    required
+                    name="email"
+                    type="email"
+                    placeholder="you@utdallas.edu"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0 "
+                  />
+                </div>
+
+                {/* Body (Message) Input */}
+                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
+                    Message
+                  </label>
+                  <textarea
+                    required
+                    name="body"
+                    placeholder="How can we help?"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0  min-h-32 "
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                disabled={isSubmitting}
+                className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:bg-accent hover:text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    Sending <Loader2 className="ml-2 animate-spin" size={16} />
+                  </>
+                ) : (
+                  <>
+                    Send Message{" "}
+                    <ArrowRight
+                      size={16}
+                      className="ml-2 transition-transform group-hover:translate-x-1"
+                    />
+                  </>
+                )}
+              </Button>
+            </form>
           </div>
         </div>
       </div>
