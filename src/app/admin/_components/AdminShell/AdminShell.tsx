@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useMe } from "@/hooks/useMe";
 import {
   LayoutDashboard,
   Users,
@@ -25,6 +26,24 @@ const navItems = [
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { loading, isAuthed, isAdmin } = useMe();
+
+  // ✅ BPC-style gate: redirect non-admins out of /admin
+  React.useEffect(() => {
+    if (loading) return;
+
+    if (!isAuthed) {
+      const next = pathname || "/admin";
+      router.replace(`/login?next=${encodeURIComponent(next)}`);
+      return;
+    }
+
+    if (!isAdmin) {
+      router.replace("/");
+      return;
+    }
+  }, [loading, isAuthed, isAdmin, router, pathname]);
 
   // mobile drawer open
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -69,62 +88,62 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const SidebarContent = ({ compact }: { compact: boolean }) => (
     <div className="space-y-4">
       <div className="space-y-2">
-      {navItems.map((item) => {
+        {navItems.map((item) => {
           const active =
-          pathname === item.href ||
-          (item.href !== "/admin" && pathname?.startsWith(item.href));
+            pathname === item.href ||
+            (item.href !== "/admin" && pathname?.startsWith(item.href));
 
           return (
-          <Link
+            <Link
               key={item.href}
               href={item.href}
               className={cn(
-              "group flex items-center justify-between rounded-2xl border transition-all",
-              compact ? "px-3 py-3" : "px-4 py-3",
-              active
+                "group flex items-center justify-between rounded-2xl border transition-all",
+                compact ? "px-3 py-3" : "px-4 py-3",
+                active
                   ? "border-accent/75 bg-accent/10 shadow-lg shadow-accent/10"
                   : "border-border/70 bg-background/30 hover:border-accent/70 hover:bg-secondary/30"
               )}
               title={compact ? item.name : undefined}
-          >
+            >
               <div className={cn("flex items-center gap-3", compact && "gap-0")}>
-              <div
+                <div
                   className={cn(
-                  "h-10 w-10 rounded-2xl flex items-center justify-center transition-colors",
-                  active
+                    "h-10 w-10 rounded-2xl flex items-center justify-center transition-colors",
+                    active
                       ? "bg-accent text-white"
                       : "bg-secondary text-primary group-hover:bg-accent group-hover:text-white"
                   )}
-              >
+                >
                   <item.icon size={18} />
-              </div>
+                </div>
 
-              {!compact && (
+                {!compact && (
                   <div className="leading-tight">
-                  <p className="text-xs font-black uppercase tracking-widest">
+                    <p className="text-xs font-black uppercase tracking-widest">
                       {item.name}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {item.name === "Dashboard"
-                      ? "Manage Dashboard"
-                      : `Manage ${item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}`}
-                  </p>
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {item.name === "Dashboard"
+                        ? "Manage Dashboard"
+                        : `Manage ${item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}`}
+                    </p>
                   </div>
-              )}
+                )}
               </div>
 
               {!compact && (
-              <ChevronRight
+                <ChevronRight
                   size={18}
                   className={cn(
-                  "opacity-40 transition-all group-hover:opacity-80 group-hover:translate-x-0.5",
-                  active && "opacity-80"
+                    "opacity-40 transition-all group-hover:opacity-80 group-hover:translate-x-0.5",
+                    active && "opacity-80"
                   )}
-              />
+                />
               )}
-          </Link>
+            </Link>
           );
-      })}
+        })}
       </div>
 
       {!compact && (
@@ -170,6 +189,23 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
+  // ✅ While gating happens, keep UI stable
+  if (loading || !isAuthed || !isAdmin) {
+    return (
+      <div className="min-h-screen bg-background pt-32 px-6">
+        <div className="container max-w-7xl mx-auto">
+          <div className="rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-8 shadow-master">
+            <div className="text-sm font-semibold text-muted-foreground">
+              Checking access…
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const SidebarW = collapsed ? "lg:pl-[96px]" : "lg:pl-[340px]";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Fixed Desktop Sidebar */}
@@ -196,10 +232,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile Drawer (opened by Navbar button via window event) */}
+      {/* Mobile Drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
-          {/* backdrop */}
           <button
             type="button"
             aria-label="Close admin menu"
@@ -207,7 +242,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             onClick={() => setMobileOpen(false)}
           />
 
-          {/* drawer */}
           <div className="absolute left-0 top-0 h-full w-[90%] max-w-[360px] bg-background border-r border-border/70 shadow-2xl">
             <div className="pt-24 px-6 pb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -241,8 +275,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {/* Content area: shifted on desktop to make room for fixed sidebar */}
-      <div className={cn("pt-32 pb-12 px-6", sidebarW)}>
+      {/* Content area */}
+      <div className={cn("pt-32 pb-12 px-6", SidebarW)}>
         <div className="container max-w-7xl mx-auto">{children}</div>
       </div>
     </div>

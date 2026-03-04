@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\members\page.tsx
 "use client";
 
 import { MemberGrid } from "@/components/members/MemberGrid";
@@ -144,6 +145,36 @@ export default function MembersPage() {
     setOffsetPx(clampOffset(idx * stepPx));
   }, [offsetPx, stepPx, maxIdx, clampOffset, stopRaf]);
 
+  // -------------------------------------------------
+  // Graceful degradation for fewer/zero members data
+  // -------------------------------------------------
+  const safeUsers = React.useMemo(() => {
+    const incoming = Array.isArray(mockUsers) ? mockUsers : [];
+    const u = [...incoming];
+
+    // Ensure at least 3 "cards" exist for layout/structure consistency.
+    while (u.length < 3) {
+      u.push({
+        id: `placeholder_user_${u.length}`,
+        name: "-",
+        email: "-",
+        role: "-",
+        subRole: undefined,
+        status: undefined,
+        pointsTotal: 0,
+        academicYear: undefined,
+        major: undefined,
+        profileImageUrl: undefined,
+      } as any);
+    }
+
+    return u;
+  }, []);
+
+  const safeTxs = React.useMemo(() => {
+    return Array.isArray(mockPointsTransactions) ? mockPointsTransactions : [];
+  }, []);
+
   return (
     <div className="w-full overflow-x-hidden">
       <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
@@ -267,7 +298,7 @@ export default function MembersPage() {
 
         {/* Centered content width */}
         <div className="max-w-6xl mx-auto w-full">
-          <MemberGrid users={mockUsers} txs={mockPointsTransactions} />
+          <MemberGrid users={safeUsers as any} txs={safeTxs as any} />
         </div>
       </div>
     </div>

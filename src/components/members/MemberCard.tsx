@@ -25,7 +25,7 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
 
         /* Hover lift (keeps rounding stable) */
         hover:-translate-y-[4px]
-
+    
         /* Hover shadow */
         hover:shadow-hover
       "

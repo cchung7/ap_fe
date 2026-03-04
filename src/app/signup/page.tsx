@@ -14,6 +14,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { majors } from "@/data/majors";
 import { Button } from "@/components/ui/button";
@@ -40,18 +41,60 @@ const academicYearOptions = [
 
 type AcademicYear = (typeof academicYearOptions)[number];
 
-export default function SignUpPage() {
-  const PROFILE_PIC_ENABLED = false;
+function extractApiErrorMessage(data: any, fallback: string) {
+  const msg =
+    typeof data?.message === "string" && data.message.trim() ? data.message : "";
 
+  const sources = Array.isArray(data?.errorSources) ? data.errorSources : [];
+
+  const lines =
+    sources
+      .map((s: any) => {
+        if (!s) return "";
+        if (typeof s === "string") return s;
+        if (typeof s === "object") {
+          const p = s.path ?? s.type ?? "";
+          const m = s.message ?? s.details ?? "";
+          const line = [p, m].filter(Boolean).join(": ");
+          return line || "";
+        }
+        return "";
+      })
+      .filter(Boolean)
+      .slice(0, 4) || [];
+
+  if (msg) return msg;
+  if (lines.length) return lines.join(" | ");
+  return fallback;
+}
+
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function isValidMajor(value: string) {
+  const v = value.trim().toLowerCase();
+  if (!v) return false;
+  return majors.some((m) => m.trim().toLowerCase() === v);
+}
+
+export default function SignUpPage() {
   const router = useRouter();
   const { loading, isAuthed, isAdmin, refresh } = useMe();
 
+  const PROFILE_PIC_DISABLED = true;
+
+  const didSubmitNavigateRef = React.useRef(false);
+  const [isPending, startTransition] = React.useTransition();
+
   React.useEffect(() => {
+    if (didSubmitNavigateRef.current) return;
     if (loading) return;
     if (!isAuthed) return;
 
-    router.replace(isAdmin ? "/admin" : "/");
-    router.refresh();
+    startTransition(() => {
+      router.replace(isAdmin ? "/admin" : "/");
+    });
   }, [loading, isAuthed, isAdmin, router]);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -73,15 +116,26 @@ export default function SignUpPage() {
   const [imagePreview, setImagePreview] = React.useState<string>("");
   const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
 
-  // crop modal state
   const [cropOpen, setCropOpen] = React.useState(false);
   const [rawPreview, setRawPreview] = React.useState<string>("");
 
-  // Limit preview suggestions to 6 at a time
+  const [majorOpen, setMajorOpen] = React.useState(false);
+
+  const clearError = React.useCallback(() => {
+    if (error) setError("");
+  }, [error]);
+
+
   const majorSuggestions = React.useMemo(() => {
     const q = major.trim().toLowerCase();
-    const list = q ? majors.filter((m) => m.toLowerCase().includes(q)) : majors;
-    return list.slice(0, 6);
+    if (!q) return [];
+
+    const starts = majors.filter((m) => m.toLowerCase().startsWith(q));
+    const contains = majors.filter(
+      (m) => !m.toLowerCase().startsWith(q) && m.toLowerCase().includes(q)
+    );
+
+    return [...starts, ...contains].slice(0, 10);
   }, [major]);
 
   React.useEffect(() => {
@@ -92,13 +146,13 @@ export default function SignUpPage() {
   }, [imagePreview, rawPreview]);
 
   const onPickImage = () => {
-    if (!PROFILE_PIC_ENABLED) return;
+    if (PROFILE_PIC_DISABLED) return;
     if (fileInputRef.current) fileInputRef.current.value = "";
     fileInputRef.current?.click();
   };
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!PROFILE_PIC_ENABLED) return;
+    if (PROFILE_PIC_DISABLED) return;
 
     const file = e.target.files?.[0];
     if (!file) return;
@@ -116,7 +170,7 @@ export default function SignUpPage() {
   };
 
   const onRemoveImage = () => {
-    if (!PROFILE_PIC_ENABLED) return;
+    if (PROFILE_PIC_DISABLED) return;
 
     setSelectedImage(null);
 
@@ -135,46 +189,84 @@ export default function SignUpPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const showBannerError = (msg: string) => {
+    setError(msg);
+    toast.error(msg);
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    const fn = firstName.trim();
+    const ln = lastName.trim();
+    const em = email.trim().toLowerCase();
+    const ay = (academicYear || "").toString().trim();
+    const mj = major.trim();
+
+    if (!fn) return showBannerError("First name is required.");
+    if (!ln) return showBannerError("Last name is required.");
+    if (!em) return showBannerError("Email is required.");
+    if (!isValidEmail(em)) return showBannerError("Please enter a valid email.");
+    if (!ay) return showBannerError("Academic year is required.");
+    if (!mj) return showBannerError("Major is required.");
+
+    if (!isValidMajor(mj)) {
+      return showBannerError("Please select a major from the list.");
+    }
+
+    if (!password) return showBannerError("Password is required.");
+    if (!confirmPassword) return showBannerError("Confirm password is required.");
+
+    if (password.length < 8) {
+      return showBannerError("Password must be at least 8 characters.");
+    }
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+      return showBannerError("Passwords do not match.");
     }
 
     setSubmitting(true);
 
     try {
+      const payload: any = {
+        firstName: fn,
+        lastName: ln,
+        email: em,
+        academicYear: ay,
+        major: mj,
+        password,
+      };
+
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: email.trim().toLowerCase(),
-          academicYear,
-          major: major.trim(),
-          password,
-          // profileImageUrl intentionally omitted while feature is disabled
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error((data as any)?.message || "Signup failed");
+        const msg = extractApiErrorMessage(data, "Signup failed");
+        showBannerError(msg);
+        return;
       }
 
-      await refresh(true);
+      toast.success("Account created!", {
+        description: "Your account is pending admin approval.",
+      });
 
-      router.replace("/");
-      router.refresh();
+      void refresh(true);
+
+      didSubmitNavigateRef.current = true;
+      startTransition(() => {
+        router.replace("/");
+      });
     } catch (err: any) {
       console.error("Signup error:", err);
-      setError(err.message || "An error occurred during signup");
+      const msg = err?.message || "An error occurred during signup";
+      showBannerError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -199,13 +291,11 @@ export default function SignUpPage() {
       </div>
 
       <div className="relative z-10 min-h-screen px-6 pt-8 pb-24">
-        {/* Keep dialog scaffold, but effectively disabled */}
         <ImageCropDialog
-          open={PROFILE_PIC_ENABLED ? cropOpen : false}
-          onOpenChange={PROFILE_PIC_ENABLED ? setCropOpen : () => {}}
-          imageSrc={PROFILE_PIC_ENABLED ? rawPreview : ""}
+          open={PROFILE_PIC_DISABLED ? false : cropOpen}
+          onOpenChange={setCropOpen}
+          imageSrc={rawPreview}
           onCancel={() => {
-            if (!PROFILE_PIC_ENABLED) return;
             setRawPreview((prev) => {
               if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
               return "";
@@ -213,8 +303,6 @@ export default function SignUpPage() {
             if (fileInputRef.current) fileInputRef.current.value = "";
           }}
           onCropped={({ file, previewUrl }) => {
-            if (!PROFILE_PIC_ENABLED) return;
-
             setRawPreview((prev) => {
               if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
               return "";
@@ -262,9 +350,10 @@ export default function SignUpPage() {
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={onSubmit} className="space-y-8">
-                {/* Profile picture (optional) - DISABLED scaffold */}
-                <div className="space-y-3">
+              <form onSubmit={onSubmit} noValidate className="space-y-8">
+
+                {/* Profile picture (optional) */}
+                {/* <div className="space-y-3">
                   <div className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1">
                     Profile Picture (Optional)
                   </div>
@@ -273,23 +362,22 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={onPickImage}
-                      disabled={!PROFILE_PIC_ENABLED}
-                      className={[
-                        "relative h-28 w-28 rounded-full border-2 border-dashed overflow-hidden transition-colors group",
-                        PROFILE_PIC_ENABLED
-                          ? "border-primary/40 hover:bg-secondary/30"
-                          : "border-border/40 bg-secondary/10 opacity-60 cursor-not-allowed",
-                      ].join(" ")}
+                      disabled={PROFILE_PIC_DISABLED}
+                      className={`relative h-28 w-28 rounded-full border-2 border-dashed border-primary/40 overflow-hidden transition-colors group
+                        ${
+                          PROFILE_PIC_DISABLED
+                            ? "opacity-50 cursor-not-allowed bg-secondary/10"
+                            : "hover:bg-secondary/30"
+                        }`}
                       aria-label="Upload profile picture"
                       title={
-                        PROFILE_PIC_ENABLED
-                          ? "Upload profile picture"
-                          : "Profile pictures are temporarily disabled"
+                        PROFILE_PIC_DISABLED
+                          ? "Profile photos will be enabled later."
+                          : "Upload profile picture"
                       }
                     >
                       {imagePreview ? (
                         <>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={imagePreview}
                             alt="Profile preview"
@@ -307,6 +395,14 @@ export default function SignUpPage() {
                           </span>
                         </div>
                       )}
+
+                      {PROFILE_PIC_DISABLED && (
+                        <div className="absolute inset-0 flex items-end justify-center pb-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                            Coming soon
+                          </span>
+                        </div>
+                      )}
                     </button>
 
                     <input
@@ -315,7 +411,7 @@ export default function SignUpPage() {
                       className="hidden"
                       accept="image/*"
                       onChange={onImageChange}
-                      disabled={!PROFILE_PIC_ENABLED}
+                      disabled={PROFILE_PIC_DISABLED}
                     />
 
                     <div className="mt-4 flex gap-2">
@@ -324,12 +420,7 @@ export default function SignUpPage() {
                         variant="outline"
                         className="rounded-2xl border-border/40"
                         onClick={onPickImage}
-                        disabled={!PROFILE_PIC_ENABLED}
-                        title={
-                          PROFILE_PIC_ENABLED
-                            ? "Select image"
-                            : "Temporarily disabled"
-                        }
+                        disabled={PROFILE_PIC_DISABLED}
                       >
                         Select
                       </Button>
@@ -338,25 +429,16 @@ export default function SignUpPage() {
                         variant="outline"
                         className="rounded-2xl border-border/40"
                         onClick={onRemoveImage}
-                        disabled={!PROFILE_PIC_ENABLED || (!selectedImage && !imagePreview)}
-                        title={
-                          PROFILE_PIC_ENABLED
-                            ? "Remove selection"
-                            : "Temporarily disabled"
+                        disabled={
+                          PROFILE_PIC_DISABLED ||
+                          (!selectedImage && !imagePreview)
                         }
                       >
                         Remove
                       </Button>
                     </div>
-
-                    {!PROFILE_PIC_ENABLED && (
-                      <p className="mt-3 text-xs text-muted-foreground italic text-center">
-                        Profile picture upload is temporarily disabled. You can
-                        create your account now and add a photo later.
-                      </p>
-                    )}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Names */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -372,10 +454,12 @@ export default function SignUpPage() {
                       <Input
                         id="firstName"
                         value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        onChange={(e) => {
+                          clearError();
+                          setFirstName(e.target.value);
+                        }}
                         className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
                         placeholder="John"
-                        required
                       />
                     </div>
                   </div>
@@ -392,10 +476,12 @@ export default function SignUpPage() {
                       <Input
                         id="lastName"
                         value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={(e) => {
+                          clearError();
+                          setLastName(e.target.value);
+                        }}
                         className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
                         placeholder="Doe"
-                        required
                       />
                     </div>
                   </div>
@@ -415,10 +501,12 @@ export default function SignUpPage() {
                       id="email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        clearError();
+                        setEmail(e.target.value);
+                      }}
                       className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
                       placeholder="netid@utdallas.edu"
-                      required
                     />
                   </div>
                 </div>
@@ -435,9 +523,10 @@ export default function SignUpPage() {
                     <select
                       id="academicYear"
                       value={academicYear}
-                      onChange={(e) =>
-                        setAcademicYear(e.target.value as AcademicYear)
-                      }
+                      onChange={(e) => {
+                        clearError();
+                        setAcademicYear(e.target.value as AcademicYear);
+                      }}
                       className={`w-full h-12 rounded-xl bg-secondary/20 border border-border/40 px-3 focus:outline-none focus:border-accent
                         ${
                           academicYear === ""
@@ -445,7 +534,6 @@ export default function SignUpPage() {
                             : "text-xs text-primary"
                         }
                     `}
-                      required
                     >
                       <option value="" disabled>
                         Select...
@@ -466,20 +554,48 @@ export default function SignUpPage() {
                       Current Major
                     </Label>
 
-                    <Input
-                      id="major"
-                      value={major}
-                      onChange={(e) => setMajor(e.target.value)}
-                      className="h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
-                      placeholder="Start typing..."
-                      list="majors-list"
-                      required
-                    />
-                    <datalist id="majors-list">
-                      {majorSuggestions.map((m) => (
-                        <option key={m} value={m} />
-                      ))}
-                    </datalist>
+                    <div className="relative">
+                      <Input
+                        id="major"
+                        value={major}
+                        onChange={(e) => {
+                          clearError();
+                          setMajor(e.target.value);
+                          setMajorOpen(true);
+                        }}
+                        onFocus={() => {
+                          if (major.trim()) setMajorOpen(true);
+                        }}
+                        onBlur={() => {
+                          window.setTimeout(() => setMajorOpen(false), 120);
+                        }}
+                        className="h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        placeholder="Start typing..."
+                      />
+
+                      {majorOpen && majorSuggestions.length > 0 && (
+                        <div className="absolute z-50 mt-2 w-full rounded-xl border border-border/40 bg-card/95 backdrop-blur-md shadow-xl overflow-hidden">
+                          <ul className="max-h-56 overflow-auto py-1">
+                            {majorSuggestions.map((m) => (
+                              <li key={m}>
+                                <button
+                                  type="button"
+                                  className="w-full text-left px-3 py-2 text-xs text-primary hover:bg-secondary/40 transition-colors"
+                                  onMouseDown={(ev) => ev.preventDefault()}
+                                  onClick={() => {
+                                    clearError();
+                                    setMajor(m);
+                                    setMajorOpen(false);
+                                  }}
+                                >
+                                  {m}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
 
                     <p className="text-xs text-muted-foreground italic">
                       Non-case sensitive.
@@ -502,10 +618,12 @@ export default function SignUpPage() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => {
+                          clearError();
+                          setPassword(e.target.value);
+                        }}
                         className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
                         placeholder="Create a password"
-                        required
                       />
                       <button
                         type="button"
@@ -537,10 +655,12 @@ export default function SignUpPage() {
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={(e) => {
+                          clearError();
+                          setConfirmPassword(e.target.value);
+                        }}
                         className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
                         placeholder="Confirm password"
-                        required
                       />
                       <button
                         type="button"
@@ -571,7 +691,7 @@ export default function SignUpPage() {
                 <Button
                   type="submit"
                   className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
-                  disabled={submitting}
+                  disabled={submitting || isPending}
                 >
                   {submitting ? "Creating..." : "Create Account"}
                 </Button>

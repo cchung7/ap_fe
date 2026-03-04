@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\events\page.tsx
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -17,15 +18,18 @@ const categoryLabel: Record<EventCategory, string> = {
 export default function EventsPage() {
   const [loading] = React.useState(false);
 
-  const events: Event[] = React.useMemo(() => mockEvents, []);
+  const events: Event[] = React.useMemo(() => (Array.isArray(mockEvents) ? mockEvents : []), []);
 
   const upcoming = React.useMemo(() => {
     const now = Date.now();
     return events
-      .filter((e) => new Date(e.startsAt).getTime() >= now)
+      .filter((e: any) => {
+        const t = new Date(e?.startsAt || "").getTime();
+        return Number.isFinite(t) && t >= now;
+      })
       .sort(
-        (a, b) =>
-          new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+        (a: any, b: any) =>
+          new Date(a?.startsAt || "").getTime() - new Date(b?.startsAt || "").getTime()
       );
   }, [events]);
 
@@ -35,7 +39,11 @@ export default function EventsPage() {
       SOCIAL: [],
       PROFESSIONAL_DEVELOPMENT: [],
     };
-    for (const e of upcoming) groups[e.category].push(e);
+    for (const e of upcoming as any[]) {
+      const cat = (e?.category || "VOLUNTEERING") as EventCategory;
+      if (!groups[cat]) continue;
+      groups[cat].push(e as any);
+    }
     return groups;
   }, [upcoming]);
 
@@ -106,7 +114,7 @@ export default function EventsPage() {
                 </div>
 
                 <div className="max-w-6xl mx-auto">
-                  <EventsGrid events={list} />
+                  <EventsGrid events={Array.isArray(list) ? list : []} />
                 </div>
               </section>
             );
@@ -115,4 +123,4 @@ export default function EventsPage() {
       </div>
     </div>
   );
-} 
+}
