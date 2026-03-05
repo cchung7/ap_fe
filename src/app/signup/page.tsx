@@ -35,7 +35,7 @@ const academicYearOptions = [
   "Sophomore",
   "Junior",
   "Senior",
-  "Postgrad",
+  "Graduate",
   "Alumni",
 ] as const;
 

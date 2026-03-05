@@ -115,7 +115,7 @@ export const HeroSection = () => {
                   transition={{ duration: 0.6 }}
                   className="mx-auto w-full max-w-none text-[2.6rem] sm:text-5xl md:text-[3.4rem] lg:text-6xl leading-[1.05] tracking-tight text-[#0b2d5b] [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
                 >
-                  Student Veterans Association  
+                  UTD Student Veterans Association
                 </motion.h1>
               </div>
             </div>

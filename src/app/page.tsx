@@ -7,6 +7,7 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { CarouselSection } from "@/components/home/CarouselSection";
+import { ProfileBadge } from "@/components/ui/ProfileBadge";
 
 type TopUser = {
   id: string;
@@ -15,6 +16,7 @@ type TopUser = {
   pointsTotal: number;
   subRole?: string | null;
   academicYear?: string | null;
+  major?: string | null;
 };
 
 type UpcomingEvent = {
@@ -112,6 +114,7 @@ export default function Home() {
         pointsTotal: 0,
         subRole: null,
         academicYear: null,
+        major: null,
       });
     }
     return rows;
@@ -139,7 +142,7 @@ export default function Home() {
       <section className="py-10 px-6 bg-background">
         <div className="container max-w-6xl mx-auto space-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Top Members */}
+            {/* Top Members Leaderboard Section */}
             <div className="rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-8 shadow-master">
               <div className="space-y-2">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -161,6 +164,13 @@ export default function Home() {
                     const rank = idx + 1;
                     const isPlaceholder = u.name === "-";
 
+                    const medalBg =
+                      rank === 1
+                        ? "/backgrounds/medal_gold.png"
+                        : rank === 2
+                        ? "/backgrounds/medal_silver.png"
+                        : "/backgrounds/medal_bronze.png";
+
                     return (
                       <div
                         key={u.id}
@@ -171,7 +181,22 @@ export default function Home() {
                           overflow-hidden
                         "
                       >
-                        {/* Rank (no trophy logic) */}
+                        {/* Transparent medal background */}
+                        <div
+                          className="
+                            pointer-events-none
+                            absolute inset-0
+                            rounded-2xl
+                            bg-[length:140%_auto]
+                            bg-center
+                            bg-no-repeat
+                            opacity-[0.22]
+                          "
+                          style={{ backgroundImage: `url('${medalBg}')` }}
+                          aria-hidden
+                        />
+
+                        {/* Rank */}
                         <div className="absolute left-5 top-4 z-10 text-sm font-black leading-none">
                           #{rank}
                         </div>
@@ -181,9 +206,8 @@ export default function Home() {
                           {isPlaceholder ? "—" : `${u.pointsTotal ?? 0} pts`}
                         </div>
 
-                        {/* CONTENT STACK (MemberCard-like) */}
+                        {/* CONTENT STACK */}
                         <div className="relative z-[1] min-w-0 text-center">
-                          {/* Create a consistent top padding so centered content clears the HUD */}
                           <div className="pt-6" />
 
                           {/* Name */}
@@ -197,7 +221,7 @@ export default function Home() {
                             </div>
                           )}
 
-                          {/* Badges (centered, like MemberCard) */}
+                          {/* Badges */}
                           <div className="mt-3 flex justify-center gap-2 flex-wrap min-h-[28px]">
                             {isPlaceholder ? (
                               <span className="text-xs text-muted-foreground">
@@ -206,37 +230,22 @@ export default function Home() {
                             ) : (
                               <>
                                 {u.subRole && (
-                                  <span
-                                    className="
-                                      inline-flex items-center
-                                      rounded-full
-                                      px-3 py-1
-                                      text-[11px] font-black uppercase tracking-widest
-                                      text-white
-                                      bg-[var(--accent)]/60
-                                      border border-[var(--accent)]/30
-                                      backdrop-blur-sm
-                                    "
-                                  >
+                                  <ProfileBadge variant="subRole">
                                     {u.subRole}
-                                  </span>
+                                  </ProfileBadge>
                                 )}
 
                                 {u.academicYear && (
-                                  <span
-                                    className="
-                                      inline-flex items-center
-                                      rounded-full
-                                      px-3 py-1
-                                      text-[11px] font-black uppercase tracking-widest
-                                      text-white
-                                      bg-[var(--primary)]/60
-                                      border border-[var(--primary)]/30
-                                      backdrop-blur-sm
-                                    "
-                                  >
+                                  <ProfileBadge variant="academicYear">
                                     {u.academicYear}
-                                  </span>
+                                  </ProfileBadge>
+                                )}
+
+                                {/* Major badge (to the right of academicYear) */}
+                                {u.major && (
+                                  <ProfileBadge variant="major" title={u.major}>
+                                    {u.major}
+                                  </ProfileBadge>
                                 )}
                               </>
                             )}

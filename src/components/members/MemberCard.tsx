@@ -1,5 +1,6 @@
-// src/components/members/MemberCard.tsx
+// D:\ap_fe\src\components\members\MemberCard.tsx
 import type { UserWithPoints } from "@/types/userWithPoints";
+import { ProfileBadge } from "@/components/ui/ProfileBadge";
 
 export function MemberCard({ user }: { user: UserWithPoints }) {
   return (
@@ -69,38 +70,14 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
           <div className="flex justify-center gap-2 flex-wrap">
             {/* Sub-role badge */}
             {user.subRole && (
-              <span
-                className="
-                  inline-flex items-center
-                  rounded-full
-                  px-3 py-1
-                  text-[11px] font-black uppercase tracking-widest
-                  text-white
-                  bg-[var(--accent)]/60
-                  border border-[var(--accent)]/30
-                  backdrop-blur-sm
-                "
-              >
-                {user.subRole}
-              </span>
+              <ProfileBadge variant="subRole">{user.subRole}</ProfileBadge>
             )}
 
             {/* Academic year badge */}
             {user.academicYear && (
-              <span
-                className="
-                  inline-flex items-center
-                  rounded-full
-                  px-3 py-1
-                  text-[11px] font-black uppercase tracking-widest
-                  text-white
-                  bg-[var(--primary)]/60
-                  border border-[var(--primary)]/30
-                  backdrop-blur-sm
-                "
-              >
+              <ProfileBadge variant="academicYear">
                 {user.academicYear}
-              </span>
+              </ProfileBadge>
             )}
           </div>
         )}

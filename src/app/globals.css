@@ -62,8 +62,10 @@
   --accent: #b11226;
   --accent-foreground: #ffffff;
 
-  --orange: #e87500;
+  --utd-orange: #e87500;
   --orange-ring: #e87500;
+
+  --utd-green: #053d2c;
 
   --muted: #f1f5fb;
   --muted-foreground: #475569;

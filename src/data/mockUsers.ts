@@ -12,7 +12,7 @@ export const mockUsers: User[] = [
     status: "ACTIVE",
     subRole: "President",
     major: "Computer Science",
-    academicYear: "Grad+",
+    academicYear: "Graduate",
   },
   {
     id: "2",
