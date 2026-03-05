@@ -184,8 +184,8 @@ export default function MembersPage() {
             Our Members
           </h1>
           <div className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-            Leadership and members of the Student Veterans Association, organized
-            by role and participation.
+            Members of the Student Veterans Association, 
+            united by purpose and recognized for their contributions.
           </div>
         </header>
 

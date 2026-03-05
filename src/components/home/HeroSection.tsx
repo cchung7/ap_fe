@@ -113,9 +113,9 @@ export const HeroSection = () => {
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="mx-auto w-full max-w-none text-4xl sm:text-5xl md:text-6xl lg:text-6xl leading-[1.05] tracking-tight text-[#0b2d5b] [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
+                  className="mx-auto w-full max-w-none text-[2.6rem] sm:text-5xl md:text-[3.4rem] lg:text-6xl leading-[1.05] tracking-tight text-[#0b2d5b] [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
                 >
-                  Student Veterans Association (SVA)
+                  Student Veterans Association  
                 </motion.h1>
               </div>
             </div>
@@ -129,7 +129,7 @@ export const HeroSection = () => {
                 onClick={goToPrevious}
                 size="icon-lg"
                 variant="ghost"
-                className="absolute top-1/2 -translate-y-1/2 z-30 left-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
+                className="absolute top-1/2 -t  ranslate-y-1/2 z-30 left-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
               >
                 <ChevronLeft className="h-6 w-6 stroke-[2.5]" />
               </Button>

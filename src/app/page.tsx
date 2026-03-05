@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\page.tsx
 "use client";
 
 import * as React from "react";
@@ -12,6 +13,8 @@ type TopUser = {
   name: string;
   role: string;
   pointsTotal: number;
+  subRole?: string | null;
+  academicYear?: string | null;
 };
 
 type UpcomingEvent = {
@@ -37,7 +40,9 @@ export default function Home() {
   const [topMembers, setTopMembers] = React.useState<TopUser[]>([]);
   const [loadingMembers, setLoadingMembers] = React.useState(true);
 
-  const [upcomingEvents, setUpcomingEvents] = React.useState<UpcomingEvent[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = React.useState<UpcomingEvent[]>(
+    []
+  );
   const [loadingEvents, setLoadingEvents] = React.useState(true);
 
   React.useEffect(() => {
@@ -105,6 +110,8 @@ export default function Home() {
         name: "-",
         role: "-",
         pointsTotal: 0,
+        subRole: null,
+        academicYear: null,
       });
     }
     return rows;
@@ -150,24 +157,94 @@ export default function Home() {
                     Loading members…
                   </div>
                 ) : (
-                  memberRows.map((u, idx) => (
-                    <div
-                      key={u.id}
-                      className="flex items-center justify-between rounded-2xl border border-border/40 bg-secondary/10 px-5 py-4"
-                    >
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-black">
-                          #{idx + 1} — {u.name || "-"}
+                  memberRows.map((u, idx) => {
+                    const rank = idx + 1;
+                    const isPlaceholder = u.name === "-";
+
+                    return (
+                      <div
+                        key={u.id}
+                        className="
+                          relative
+                          rounded-2xl border border-border/40 bg-secondary/10
+                          px-5 py-4
+                          overflow-hidden
+                        "
+                      >
+                        {/* Rank (no trophy logic) */}
+                        <div className="absolute left-5 top-4 z-10 text-sm font-black leading-none">
+                          #{rank}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {u.role || "-"}
+
+                        {/* Points */}
+                        <div className="absolute right-5 top-4 z-10 text-sm font-black leading-none whitespace-nowrap">
+                          {isPlaceholder ? "—" : `${u.pointsTotal ?? 0} pts`}
+                        </div>
+
+                        {/* CONTENT STACK (MemberCard-like) */}
+                        <div className="relative z-[1] min-w-0 text-center">
+                          {/* Create a consistent top padding so centered content clears the HUD */}
+                          <div className="pt-6" />
+
+                          {/* Name */}
+                          {isPlaceholder ? (
+                            <div className="text-sm text-muted-foreground font-black truncate">
+                              —
+                            </div>
+                          ) : (
+                            <div className="text-sm font-black truncate">
+                              {u.name}
+                            </div>
+                          )}
+
+                          {/* Badges (centered, like MemberCard) */}
+                          <div className="mt-3 flex justify-center gap-2 flex-wrap min-h-[28px]">
+                            {isPlaceholder ? (
+                              <span className="text-xs text-muted-foreground">
+                                &nbsp;
+                              </span>
+                            ) : (
+                              <>
+                                {u.subRole && (
+                                  <span
+                                    className="
+                                      inline-flex items-center
+                                      rounded-full
+                                      px-3 py-1
+                                      text-[11px] font-black uppercase tracking-widest
+                                      text-white
+                                      bg-[var(--accent)]/60
+                                      border border-[var(--accent)]/30
+                                      backdrop-blur-sm
+                                    "
+                                  >
+                                    {u.subRole}
+                                  </span>
+                                )}
+
+                                {u.academicYear && (
+                                  <span
+                                    className="
+                                      inline-flex items-center
+                                      rounded-full
+                                      px-3 py-1
+                                      text-[11px] font-black uppercase tracking-widest
+                                      text-white
+                                      bg-[var(--primary)]/60
+                                      border border-[var(--primary)]/30
+                                      backdrop-blur-sm
+                                    "
+                                  >
+                                    {u.academicYear}
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-sm font-black">
-                        {u.name === "-" ? "-" : `${u.pointsTotal ?? 0} pts`}
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </div>
