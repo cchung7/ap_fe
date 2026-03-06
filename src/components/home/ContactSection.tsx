@@ -60,18 +60,33 @@ export const ContactSection = () => {
       className="py-8 md:py-12 pb-28 md:pb-36 px-6 bg-background"
     >
       <div className="container max-w-6xl mx-auto">
-        {/* Stacked layout: Info first, Form second */}
         <div className="flex flex-col gap-6">
-          {/* Contact Info Side (now on top) */}
           <div className="space-y-3 flex flex-col items-center text-center">
-            <div className="space-y-6 flex flex-col items-center text-center">
-              <h2 className="text-xs font-black uppercase tracking-[0.5em] text-accent">
+            <div className="space-y-5 flex flex-col items-center text-center">
+              <h2 className="text-sm font-black uppercase tracking-[0.45em] text-accent">
                 Connect
               </h2>
-              <h3 className="text-5xl font-black tracking-tighter italic leading-tight">
+
+              {/* Section title */}
+              <h3
+                className="
+                  ui-title
+                  leading-[1.05]
+                  tracking-tight
+                  text-primary/80
+                  italic
+                  [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
+                  text-[2.35rem]
+                  sm:text-5xl
+                  md:text-[3.2rem]
+                  lg:text-6xl
+                "
+              >
                 Lead with purpose
               </h3>
-              <p className="text-lg text-muted-foreground font-medium max-w-xl leading-relaxed">
+
+              {/* Standardized body */}
+              <p className="ui-body text-muted-foreground max-w-xl mx-auto font-medium">
                 The Student Veterans Association supports UT Dallas
                 military-connected students through advocacy, mentorship, and
                 campus community. Reach out with questions, ideas, or ways you’d

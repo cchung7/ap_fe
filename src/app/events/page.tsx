@@ -3,6 +3,7 @@
 "use client";
 
 import { Calendar } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import * as React from "react";
 
 import type { Event, EventCategory } from "@/types/events";
@@ -17,8 +18,28 @@ const categoryLabel: Record<EventCategory, string> = {
 
 export default function EventsPage() {
   const [loading] = React.useState(false);
+  const headerRef = React.useRef<HTMLElement | null>(null);
 
-  const events: Event[] = React.useMemo(() => (Array.isArray(mockEvents) ? mockEvents : []), []);
+  const { scrollYProgress: headerScrollYProgress } = useScroll({
+    target: headerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const headerOpacity = useTransform(
+    headerScrollYProgress,
+    [0, 0.55],
+    [1, 0]
+  );
+  const headerScale = useTransform(
+    headerScrollYProgress,
+    [0, 0.55],
+    [1, 0.96]
+  );
+
+  const events: Event[] = React.useMemo(
+    () => (Array.isArray(mockEvents) ? mockEvents : []),
+    []
+  );
 
   const upcoming = React.useMemo(() => {
     const now = Date.now();
@@ -29,7 +50,8 @@ export default function EventsPage() {
       })
       .sort(
         (a: any, b: any) =>
-          new Date(a?.startsAt || "").getTime() - new Date(b?.startsAt || "").getTime()
+          new Date(a?.startsAt || "").getTime() -
+          new Date(b?.startsAt || "").getTime()
       );
   }, [events]);
 
@@ -51,17 +73,57 @@ export default function EventsPage() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 sm:px-6 sm:pt-36 lg:px-8 space-y-26">
         {/* Header */}
-        <header className="space-y-2 text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-primary">
+        <motion.header
+          ref={headerRef}
+          style={{
+            opacity: headerOpacity,
+            scale: headerScale,
+            willChange: "transform, opacity",
+          }}
+          className="space-y-4 text-center transform-gpu"
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="
+              mx-auto
+              w-full
+              max-w-none
+              ui-title
+              leading-[1.05]
+              tracking-tight
+              text-[#0b2d5b]/80
+              [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
+              text-[2.35rem]
+              sm:text-5xl
+              md:text-[3.2rem]
+              lg:text-6xl
+            "
+          >
             Upcoming Events
-          </h1>
-          <div className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08 }}
+            className="
+              ui-body
+              mt-4
+              text-muted-foreground
+              leading-relaxed
+              max-w-xl
+              mx-auto
+              font-medium
+            "
+          >
             Explore upcoming UT-Dallas SVA events and opportunities for
             engagement. Earn attendance-based points for participation.
-          </div>
-        </header>
+          </motion.div>
+        </motion.header>
 
         {/* Summary */}
         <div className="flex justify-center">

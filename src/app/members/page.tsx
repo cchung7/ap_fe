@@ -2,10 +2,9 @@
 "use client";
 
 import { MemberGrid } from "@/components/members/MemberGrid";
-import { mockUsers } from "@/data/mockUsers";
-import { mockPointsTransactions } from "@/data/mockPointsTransactions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
@@ -19,6 +18,19 @@ const memberSlides = [
   { src: "/members/m6.jpg", alt: "Member highlight 6" },
 ];
 
+type MemberUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  subRole?: string | null;
+  status?: string | null;
+  pointsTotal?: number | null;
+  academicYear?: string | null;
+  major?: string | null;
+  profileImageUrl?: string | null;
+};
+
 export default function MembersPage() {
   const slideCount = memberSlides.length;
 
@@ -26,7 +38,64 @@ export default function MembersPage() {
   const [offsetPx, setOffsetPx] = React.useState(0);
 
   const viewportRef = React.useRef<HTMLDivElement | null>(null);
+  const headerRef = React.useRef<HTMLElement | null>(null);
   const [viewportPx, setViewportPx] = React.useState(900);
+
+  const { scrollYProgress: headerScrollYProgress } = useScroll({
+    target: headerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const headerOpacity = useTransform(
+    headerScrollYProgress,
+    [0, 0.55],
+    [1, 0]
+  );
+  const headerScale = useTransform(
+    headerScrollYProgress,
+    [0, 0.55],
+    [1, 0.96]
+  );
+
+  // ---------------------------------------
+  // LIVE MEMBERS (from BE)
+  // ---------------------------------------
+  const [users, setUsers] = React.useState<MemberUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = React.useState(true);
+
+  React.useEffect(() => {
+    let alive = true;
+
+    async function runUsers() {
+      try {
+        setLoadingUsers(true);
+
+        const res = await fetch("/api/users", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const json = await res.json().catch(() => ({}));
+        const list = (json as any)?.data ?? (json as any)?.users ?? [];
+
+        if (!alive) return;
+        setUsers(Array.isArray(list) ? list : []);
+      } catch {
+        if (!alive) return;
+        setUsers([]);
+      } finally {
+        if (!alive) return;
+        setLoadingUsers(false);
+      }
+    }
+
+    runUsers();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   React.useEffect(() => {
     const el = viewportRef.current;
@@ -70,7 +139,7 @@ export default function MembersPage() {
   }, [maxIdx]);
 
   React.useEffect(() => {
-    setOffsetPx((prev) => {
+    setOffsetPx(() => {
       const next = slideIdx * stepPx;
       return clampOffset(next);
     });
@@ -145,49 +214,58 @@ export default function MembersPage() {
     setOffsetPx(clampOffset(idx * stepPx));
   }, [offsetPx, stepPx, maxIdx, clampOffset, stopRaf]);
 
-  // -------------------------------------------------
-  // Graceful degradation for fewer/zero members data
-  // -------------------------------------------------
-  const safeUsers = React.useMemo(() => {
-    const incoming = Array.isArray(mockUsers) ? mockUsers : [];
-    const u = [...incoming];
-
-    // Ensure at least 3 "cards" exist for layout/structure consistency.
-    while (u.length < 3) {
-      u.push({
-        id: `placeholder_user_${u.length}`,
-        name: "-",
-        email: "-",
-        role: "-",
-        subRole: undefined,
-        status: undefined,
-        pointsTotal: 0,
-        academicYear: undefined,
-        major: undefined,
-        profileImageUrl: undefined,
-      } as any);
-    }
-
-    return u;
-  }, []);
-
-  const safeTxs = React.useMemo(() => {
-    return Array.isArray(mockPointsTransactions) ? mockPointsTransactions : [];
-  }, []);
-
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
-        {/* Header */}
-        <header className="space-y-2 text-center">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-primary">
+      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-26">
+        <motion.header
+          ref={headerRef}
+          style={{
+            opacity: headerOpacity,
+            scale: headerScale,
+            willChange: "transform, opacity",
+          }}
+          className="space-y-4 text-center transform-gpu"
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="
+              mx-auto
+              w-full
+              max-w-none
+              ui-title
+              leading-[1.05]
+              tracking-tight
+              text-[#0b2d5b]/80
+              [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
+              text-[2.35rem]
+              sm:text-5xl
+              md:text-[3.2rem]
+              lg:text-6xl
+            "
+          >
             Our Members
-          </h1>
-          <div className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-            Members of the Student Veterans Association, 
-            united by purpose and recognized for their contributions.
-          </div>
-        </header>
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08 }}
+            className="
+              ui-body
+              mt-4
+              text-muted-foreground
+              leading-relaxed
+              max-w-xl
+              mx-auto
+              font-medium
+            "
+          >
+            Student veterans at UT Dallas building community, supporting one
+            another, and continuing a legacy of service.
+          </motion.div>
+        </motion.header>
 
         {/* Member photo carousel */}
         <div className="w-full">
@@ -298,7 +376,15 @@ export default function MembersPage() {
 
         {/* Centered content width */}
         <div className="max-w-6xl mx-auto w-full">
-          <MemberGrid users={safeUsers as any} txs={safeTxs as any} />
+          {loadingUsers ? (
+            <div className="rounded-2xl border-2 border-dashed border-border/40 bg-secondary/5 p-10 text-center text-sm text-muted-foreground">
+              Loading members…
+            </div>
+          ) : (
+            <MemberGrid
+              users={Array.isArray(users) ? (users as any) : ([] as any)}
+            />
+          )}
         </div>
       </div>
     </div>

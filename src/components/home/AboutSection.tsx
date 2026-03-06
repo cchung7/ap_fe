@@ -21,13 +21,13 @@ export const AboutSection = () => {
             </div>
 
             <div className="max-w-3xl space-y-2 text-center mx-auto pt-14 sm:pt-16">
-              <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+              <p className="ui-title text-3xl md:text-4xl lg:text-5xl">
                 Our Vision:
               </p>
 
               <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
 
-              <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto font-medium">
+              <p className="ui-body mt-4 text-muted-foreground leading-relaxed max-w-xl mx-auto font-medium">
                 Empowering military-connected students at UT Dallas to lead with
                 purpose, serve with pride, and thrive together in a resilient
                 community of excellence.
@@ -50,7 +50,7 @@ export const AboutSection = () => {
                 key={stat.label}
                 className="p-5 sm:p-8 rounded-3xl bg-secondary/30 border border-border/40 hover:border-accent/40 transition-all duration-500 group min-w-0 text-center"
               >
-                <div className="mx-auto w-fit flex items-start gap-[2px] text-4xl font-heading font-black tracking-tight text-foreground mb-2 group-hover:text-accent transition-colors">
+                <div className="mx-auto w-fit flex items-start gap-[2px] text-4xl font-heading font-black tracking-tight text-foreground/90 mb-2 group-hover:text-accent transition-colors">
                   <AnimatedCounter value={stat.value} />
                   {stat.suffix && (
                     <span className="text-3xl leading-none translate-y-[2px]">

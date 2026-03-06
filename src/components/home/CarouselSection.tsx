@@ -147,7 +147,7 @@ export const CarouselSection = () => {
     <section className="px-6 bg-background relative overflow-hidden">
       <div className="container max-w-6xl mx-auto">
         <div className="mt-12 text-center">
-          <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+          <p className="ui-title text-3xl md:text-4xl lg:text-5xl">
             Our Sponsors:
           </p>
 

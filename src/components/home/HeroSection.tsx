@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\home\HeroSection.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -108,14 +109,26 @@ export const HeroSection = () => {
 
           <div className="absolute bottom-0 left-0 right-0 z-[15]">
             <div className="w-full px-4 pb-4 sm:pb-6">
-              <div className="text-center pointer-events-none">
+              <div className="text-center pointer-events-none space-y-2">
                 <motion.h1
-                  initial={{ opacity: 0, y: 14 }}
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="mx-auto w-full max-w-none text-[2.6rem] sm:text-5xl md:text-[3.4rem] lg:text-6xl leading-[1.05] tracking-tight text-[#0b2d5b] [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]"
+                  className="
+                    mx-auto
+                    w-full
+                    max-w-none
+                    leading-[1.05]
+                    text-[#0b2d5b]/80
+                    [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
+                    text-[2.35rem]
+                    sm:text-5xl
+                    md:text-[3.2rem]
+                    lg:text-6xl
+                    ui-title
+                  "
                 >
-                  UTD Student Veterans Association
+                  UTD: Student Veterans Association
                 </motion.h1>
               </div>
             </div>
@@ -153,14 +166,14 @@ export const HeroSection = () => {
         <div className="container max-w-5xl mx-auto px-6">
           <div className="relative mt-6 sm:mt-6 md:mt-8 text-center">
             {/* Mission — standardized */}
-            <div className="mt-16">
-              <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+            <div className="mt-16 space-y-2">
+              <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
                 Our Mission:
-              </p>
+              </h2>
 
               <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
 
-              <p className="mt-4 text-muted-foreground text-base md:text-lg font-medium max-w-xl mx-auto">
+              <p className="ui-body mt-4 text-muted-foreground leading-relaxed max-w-xl mx-auto font-medium">
                 We work to empower UT Dallas military-connected students and
                 supporters through advocacy, mentorship, and resources that
                 advance academic success, professional development, and

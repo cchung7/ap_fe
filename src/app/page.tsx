@@ -146,12 +146,16 @@ export default function Home() {
             <div className="rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-8 shadow-master">
               <div className="space-y-2">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Preview
+                  Leaderboard
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-foreground">
                   Members
                 </h2>
-                <p className="text-sm text-muted-foreground">Ranking preview.</p>
+                
+                <p className="text-sm text-muted-foreground font-medium">
+                  Recognizing leadership, service, and contributions to the
+                  community.
+                </p>
               </div>
 
               <div className="mt-6 space-y-3">
@@ -210,16 +214,24 @@ export default function Home() {
                         <div className="relative z-[1] min-w-0 text-center">
                           <div className="pt-6" />
 
-                          {/* Name */}
-                          {isPlaceholder ? (
-                            <div className="text-sm text-muted-foreground font-black truncate">
-                              —
-                            </div>
-                          ) : (
-                            <div className="text-sm font-black truncate">
-                              {u.name}
-                            </div>
-                          )}
+                          {/* Name (truncate sooner with a mid-boundary safe region) */}
+                          <div className="px-6">
+                            {isPlaceholder ? (
+                              <div
+                                className="text-sm text-muted-foreground font-black truncate"
+                                title="—"
+                              >
+                                —
+                              </div>
+                            ) : (
+                              <div
+                                className="text-sm font-black truncate"
+                                title={u.name}
+                              >
+                                {u.name}
+                              </div>
+                            )}
+                          </div>
 
                           {/* Badges */}
                           <div className="mt-3 flex justify-center gap-2 flex-wrap min-h-[28px]">
@@ -262,13 +274,13 @@ export default function Home() {
             <div className="rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-8 shadow-master">
               <div className="space-y-2">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Preview
+                  Noticeboard
                 </p>
                 <h2 className="text-2xl font-black tracking-tight text-foreground">
                   Upcoming Events
                 </h2>
-                <p className="text-sm text-muted-foreground">
-                  Next three events (published schedule).
+                <p className="text-sm text-muted-foreground font-medium">
+                  Supporting connection, leadership, and service through community involvement.
                 </p>
               </div>
 

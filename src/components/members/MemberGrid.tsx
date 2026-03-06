@@ -1,7 +1,5 @@
-// src/components/members/MemberGrid.tsx
+// D:\ap_fe\src\components\members\MemberGrid.tsx
 import type { User } from "@/types/user";
-import type { PointsTransaction } from "@/types/pointsTransaction";
-import { rankUsers } from "@/lib/userRanking";
 import { MemberCard } from "./MemberCard";
 
 function Section({
@@ -9,13 +7,13 @@ function Section({
   users,
 }: {
   title: string;
-  users: ReturnType<typeof rankUsers>;
+  users: User[];
 }) {
   if (users.length === 0) return null;
 
   return (
     <section className="space-y-6">
-      {/* Centered section title (standardized like Home "Our Mission") */}
+      {/* Centered section title */}
       <div className="text-center">
         <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
           {title}:
@@ -34,7 +32,7 @@ function Section({
             "
           >
             {users.map((u) => (
-              <MemberCard key={u.id} user={u} />
+              <MemberCard key={u.id} user={u as any} />
             ))}
           </div>
         </div>
@@ -43,22 +41,20 @@ function Section({
   );
 }
 
-export function MemberGrid({
-  users,
-  txs,
-}: {
-  users: User[];
-  txs: PointsTransaction[];
-}) {
-  const ranked = rankUsers(users, txs);
+export function MemberGrid({ users }: { users: User[] }) {
+  const ranked = [...(Array.isArray(users) ? users : [])].sort((a: any, b: any) => {
+    const ap = Number(a?.pointsTotal ?? 0);
+    const bp = Number(b?.pointsTotal ?? 0);
+    return bp - ap;
+  });
 
-  const admins = ranked.filter((u) => u.role === "ADMIN");
-  const members = ranked.filter((u) => u.role !== "ADMIN");
+  const admins = ranked.filter((u: any) => u.role === "ADMIN");
+  const members = ranked.filter((u: any) => u.role !== "ADMIN");
 
   return (
     <div className="mt-2 space-y-16">
-      <Section title="Leadership" users={admins} />
-      <Section title="Membership" users={members} />
+      <Section title="Leadership" users={admins as any} />
+      <Section title="Membership" users={members as any} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* D:\ap_fe\src\app\globals.css */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 @import "tailwindcss";
@@ -79,8 +80,6 @@
   --navy-tint: rgba(11, 45, 91, 0.08);
   --navy-tint-strong: rgba(11, 45, 91, 0.14);
   --crimson-tint: rgba(177, 18, 38, 0.12);
-
-  
 }
 
 @layer base {
@@ -127,9 +126,21 @@
 
   .bg-navy-wash {
     background:
-      radial-gradient(900px 450px at 15% 10%, rgba(11, 45, 91, 0.12), transparent 60%),
-      radial-gradient(700px 350px at 85% 20%, rgba(177, 18, 38, 0.08), transparent 55%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+      radial-gradient(
+        900px 450px at 15% 10%,
+        rgba(11, 45, 91, 0.12),
+        transparent 60%
+      ),
+      radial-gradient(
+        700px 350px at 85% 20%,
+        rgba(177, 18, 38, 0.08),
+        transparent 55%
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.6),
+        rgba(255, 255, 255, 0)
+      );
   }
 
   .divider-navy {
@@ -150,6 +161,131 @@
 
   .shadow-3xl {
     box-shadow: 0 35px 60px -15px rgba(11, 45, 91, 0.18);
+  }
+
+  /* =========================================
+     Standardized typography utilities
+     ========================================= */
+
+  /* Small uppercase eyebrow label (ex: "Preview") */
+  .ui-eyebrow {
+    @apply text-[10px] font-black uppercase tracking-widest text-muted-foreground;
+  }
+
+  /* Bold title (ex: "Members", section titles) */
+  .ui-title {
+    @apply font-black tracking-tight text-foreground/90;
+  }
+
+  /* Body copy used in cards/sections */
+  .ui-body {
+    @apply text-base md:text-lg lg:text-xl;
+  }
+
+  /* ==============================
+     Neon stagelight utilities
+     ============================== */
+
+  /* Neon stagelight title wrapper */
+  .neon-stage {
+    position: relative;
+    display: inline-block;
+    isolation: isolate; /* keeps blur layers contained */
+  }
+
+  /* The actual title text */
+  .neon-stage > .neon-stage__text {
+    position: relative;
+    z-index: 2;
+    letter-spacing: -0.02em;
+    text-shadow:
+      0 0 10px rgba(177, 18, 38, 0.35),
+      0 0 22px rgba(177, 18, 38, 0.25),
+      0 0 38px rgba(232, 117, 0, 0.18);
+  }
+
+  /* Soft halo behind text */
+  .neon-stage::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 55%;
+    transform: translate(-50%, -50%);
+    width: 130%;
+    height: 170%;
+    border-radius: 9999px;
+    filter: blur(18px);
+    opacity: 0.85;
+    background:
+      radial-gradient(
+        circle at 50% 45%,
+        rgba(177, 18, 38, 0.38),
+        rgba(232, 117, 0, 0.18) 35%,
+        transparent 70%
+      );
+    pointer-events: none;
+  }
+
+  /* Spotlight cone / beam */
+  .neon-stage::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: -55%;
+    transform: translateX(-50%);
+    width: 220%;
+    height: 260%;
+    border-radius: 9999px;
+    filter: blur(28px);
+    opacity: 0.55;
+
+    background:
+      conic-gradient(
+        from 180deg at 50% 32%,
+        transparent 0deg,
+        rgba(177, 18, 38, 0.22) 18deg,
+        rgba(232, 117, 0, 0.16) 32deg,
+        rgba(177, 18, 38, 0.22) 46deg,
+        transparent 64deg,
+        transparent 360deg
+      ),
+      radial-gradient(
+        circle at 50% 40%,
+        rgba(11, 45, 91, 0.10),
+        transparent 60%
+      );
+
+    pointer-events: none;
+  }
+
+  /* Optional subtle sweep animation */
+  @keyframes neonStageSweep {
+    0% {
+      transform: translateX(-50%) rotate(-3deg);
+      opacity: 0.48;
+    }
+    50% {
+      transform: translateX(-50%) rotate(3deg);
+      opacity: 0.62;
+    }
+    100% {
+      transform: translateX(-50%) rotate(-3deg);
+      opacity: 0.48;
+    }
+  }
+
+  .neon-stage--animate::after {
+    animation: neonStageSweep 5.5s ease-in-out infinite;
+    transform-origin: 50% 40%;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .neon-stage--animate::after {
+      animation: none;
+    }
   }
 }
 

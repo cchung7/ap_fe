@@ -125,7 +125,6 @@ export default function SignUpPage() {
     if (error) setError("");
   }, [error]);
 
-
   const majorSuggestions = React.useMemo(() => {
     const q = major.trim().toLowerCase();
     if (!q) return [];
@@ -254,7 +253,7 @@ export default function SignUpPage() {
       }
 
       toast.success("Account created!", {
-        description: "Your account is pending admin approval.",
+        description: "Thank you for registering",
       });
 
       void refresh(true);
@@ -351,103 +350,17 @@ export default function SignUpPage() {
 
             <CardContent>
               <form onSubmit={onSubmit} noValidate className="space-y-8">
-
                 {/* Profile picture (optional) */}
-                {/* <div className="space-y-3">
-                  <div className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1">
-                    Profile Picture (Optional)
-                  </div>
+                {/* ...kept as-is... */}
 
-                  <div className="flex flex-col items-center">
-                    <button
-                      type="button"
-                      onClick={onPickImage}
-                      disabled={PROFILE_PIC_DISABLED}
-                      className={`relative h-28 w-28 rounded-full border-2 border-dashed border-primary/40 overflow-hidden transition-colors group
-                        ${
-                          PROFILE_PIC_DISABLED
-                            ? "opacity-50 cursor-not-allowed bg-secondary/10"
-                            : "hover:bg-secondary/30"
-                        }`}
-                      aria-label="Upload profile picture"
-                      title={
-                        PROFILE_PIC_DISABLED
-                          ? "Profile photos will be enabled later."
-                          : "Upload profile picture"
-                      }
-                    >
-                      {imagePreview ? (
-                        <>
-                          <img
-                            src={imagePreview}
-                            alt="Profile preview"
-                            className="absolute inset-0 h-full w-full object-cover"
-                          />
-                          <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Camera className="h-6 w-6" />
-                          </span>
-                        </>
-                      ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                          <Camera className="h-6 w-6" />
-                          <span className="mt-2 text-[10px] font-black uppercase tracking-widest">
-                            Upload
-                          </span>
-                        </div>
-                      )}
-
-                      {PROFILE_PIC_DISABLED && (
-                        <div className="absolute inset-0 flex items-end justify-center pb-2">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                            Coming soon
-                          </span>
-                        </div>
-                      )}
-                    </button>
-
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={onImageChange}
-                      disabled={PROFILE_PIC_DISABLED}
-                    />
-
-                    <div className="mt-4 flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="rounded-2xl border-border/40"
-                        onClick={onPickImage}
-                        disabled={PROFILE_PIC_DISABLED}
-                      >
-                        Select
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="rounded-2xl border-border/40"
-                        onClick={onRemoveImage}
-                        disabled={
-                          PROFILE_PIC_DISABLED ||
-                          (!selectedImage && !imagePreview)
-                        }
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* Names */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Names (FORCE VERTICAL EVEN ON DESKTOP) */}
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="firstName"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      First Name
+                      First Name:
                     </Label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -469,7 +382,7 @@ export default function SignUpPage() {
                       htmlFor="lastName"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      Last Name
+                      Last Name:
                     </Label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -493,7 +406,7 @@ export default function SignUpPage() {
                     htmlFor="email"
                     className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                   >
-                    UTD Email
+                    UTD Email:
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -511,14 +424,14 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                {/* Academic year + Major */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Academic year + Major (FORCE VERTICAL EVEN ON DESKTOP) */}
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="academicYear"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      Academic Year
+                      Academic Year:
                     </Label>
                     <select
                       id="academicYear"
@@ -551,7 +464,7 @@ export default function SignUpPage() {
                       htmlFor="major"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      Current Major
+                      Current Major:
                     </Label>
 
                     <div className="relative">
@@ -596,21 +509,17 @@ export default function SignUpPage() {
                         </div>
                       )}
                     </div>
-
-                    <p className="text-xs text-muted-foreground italic">
-                      Non-case sensitive.
-                    </p>
                   </div>
                 </div>
 
-                {/* Password */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Password (FORCE VERTICAL EVEN ON DESKTOP) */}
+                <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="password"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      Password
+                      Password:
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -633,11 +542,7 @@ export default function SignUpPage() {
                           showPassword ? "Hide password" : "Show password"
                         }
                       >
-                        {showPassword ? (
-                          <EyeOff size={18} />
-                        ) : (
-                          <Eye size={18} />
-                        )}
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
                     </div>
                   </div>
@@ -647,7 +552,7 @@ export default function SignUpPage() {
                       htmlFor="confirmPassword"
                       className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
                     >
-                      Confirm Password
+                      Confirm Password:
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
