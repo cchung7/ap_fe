@@ -200,7 +200,7 @@ export const ContactSection = () => {
 
               <Button
                 disabled={isSubmitting}
-                className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:bg-accent hover:text-white"
+                className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
               >
                 {isSubmitting ? (
                   <>

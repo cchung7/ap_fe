@@ -33,9 +33,9 @@ function formatDateTime(iso: string) {
 function categoryBadgeClasses(category: EventCategory) {
   switch (category) {
     case "VOLUNTEERING":
-      return "bg-secondary text-secondary-foreground border-border/40";
-    case "SOCIAL":
       return "bg-accent/10 text-accent border-accent/20";
+    case "SOCIAL":
+      return "bg-secondary text-secondary-foreground border-border/40";
     case "PROFESSIONAL_DEVELOPMENT":
       return "bg-primary/10 text-primary border-primary/20";
     default:
@@ -123,13 +123,13 @@ export function EventCard({ event }: { event: Event }) {
         </div>
 
         <div className="mt-4 space-y-2 text-sm min-w-0">
-          <div className="flex items-start gap-2 text-muted-foreground min-w-0">
+          <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
             <Calendar size={16} className="mt-0.5 shrink-0" />
             <span className="break-words">{formatDateTime(event.startsAt)}</span>
           </div>
 
           {event.endsAt && (
-            <div className="flex items-start gap-2 text-muted-foreground min-w-0">
+            <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
               <Clock size={16} className="mt-0.5 shrink-0" />
               <span className="break-words">
                 Ends: {formatDateTime(event.endsAt)}
@@ -138,13 +138,13 @@ export function EventCard({ event }: { event: Event }) {
           )}
 
           {event.location && (
-            <div className="flex items-start gap-2 text-muted-foreground min-w-0">
+            <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
               <MapPin size={16} className="mt-0.5 shrink-0" />
               <span className="min-w-0 break-words">{event.location}</span>
             </div>
           )}
 
-          <div className="flex items-start gap-2 text-muted-foreground min-w-0">
+          <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
             <Users size={16} className="mt-0.5 shrink-0" />
             <span className="break-words">
               {typeof event.capacity === "number"
@@ -155,7 +155,7 @@ export function EventCard({ event }: { event: Event }) {
         </div>
 
         {event.description && (
-          <p className="mt-4 text-sm text-muted-foreground break-words">
+          <p className="mt-4 text-sm text-foreground/80 break-words">
             {event.description}
           </p>
         )}

@@ -95,7 +95,7 @@ export const HeroSection = () => {
               fill
               priority={idx === 0}
               unoptimized
-              className={cn(
+              className={cn(  
                 "absolute inset-0 object-cover",
                 "transition-opacity duration-1000 will-change-opacity",
                 idx === current ? "opacity-100 z-[1]" : "opacity-0 z-0"
@@ -107,7 +107,7 @@ export const HeroSection = () => {
           <div className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-b from-background/10 via-background/25 to-background/95" />
           <div className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-r from-primary/35 via-transparent to-transparent" />
 
-          <div className="absolute bottom-0 left-0 right-0 z-[15]">
+          <div className="absolute -bottom-2 left-0 right-0 z-[15]">
             <div className="w-full px-4 pb-4 sm:pb-6">
               <div className="text-center pointer-events-none space-y-2">
                 <motion.h1

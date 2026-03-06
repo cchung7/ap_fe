@@ -2,13 +2,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Calendar } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import * as React from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import type { Event, EventCategory } from "@/types/events";
 import { mockEvents } from "@/data/mockEvents";
 import { EventsGrid } from "@/components/events/EventsGrid";
+import { EventsHeroSection } from "@/components/events/EventsHeroSection";
 
 const categoryLabel: Record<EventCategory, string> = {
   VOLUNTEERING: "Volunteering",
@@ -18,23 +20,6 @@ const categoryLabel: Record<EventCategory, string> = {
 
 export default function EventsPage() {
   const [loading] = React.useState(false);
-  const headerRef = React.useRef<HTMLElement | null>(null);
-
-  const { scrollYProgress: headerScrollYProgress } = useScroll({
-    target: headerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const headerOpacity = useTransform(
-    headerScrollYProgress,
-    [0, 0.55],
-    [1, 0]
-  );
-  const headerScale = useTransform(
-    headerScrollYProgress,
-    [0, 0.55],
-    [1, 0.96]
-  );
 
   const events: Event[] = React.useMemo(
     () => (Array.isArray(mockEvents) ? mockEvents : []),
@@ -73,93 +58,8 @@ export default function EventsPage() {
 
   return (
     <div className="w-full overflow-x-hidden">
-      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 sm:px-6 sm:pt-36 lg:px-8 space-y-26">
-        {/* Header */}
-        <motion.header
-          ref={headerRef}
-          style={{
-            opacity: headerOpacity,
-            scale: headerScale,
-            willChange: "transform, opacity",
-          }}
-          className="space-y-4 text-center transform-gpu"
-        >
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="
-              mx-auto
-              w-full
-              max-w-none
-              ui-title
-              leading-[1.05]
-              tracking-tight
-              text-[#0b2d5b]/80
-              [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
-              text-[2.35rem]
-              sm:text-5xl
-              md:text-[3.2rem]
-              lg:text-6xl
-            "
-          >
-            Upcoming Events
-          </motion.h1>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.08 }}
-            className="
-              ui-body
-              mt-4
-              text-muted-foreground
-              leading-relaxed
-              max-w-xl
-              mx-auto
-              font-medium
-            "
-          >
-            Explore upcoming UT-Dallas SVA events and opportunities for
-            engagement. Earn attendance-based points for participation.
-          </motion.div>
-        </motion.header>
-
-        {/* Summary */}
-        <div className="flex justify-center">
-          <div className="w-full max-w-md">
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-7 shadow-master text-center">
-              {/* Very-transparent background image */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute inset-0
-                  bg-[url('/backgrounds/mil.jpg')]
-                  bg-cover
-                  bg-center
-                  bg-no-repeat
-                  opacity-[0.18]
-                "
-                aria-hidden
-              />
-
-              {/* Content */}
-              <div className="relative z-10 flex flex-col items-center gap-3">
-                <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/15">
-                  <Calendar size={18} />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-lg font-black uppercase tracking-widest text-muted-foreground">
-                    Total Events:
-                  </p>
-                  <p className="text-3xl font-black tracking-tight text-foreground">
-                    {upcoming.length}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
+        <EventsHeroSection totalEvents={upcoming.length} />
 
         {/* Grouped Sections */}
         <div className="space-y-12">
@@ -169,9 +69,9 @@ export default function EventsPage() {
             return (
               <section key={cat} className="space-y-5">
                 <div className="text-center">
-                  <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+                  <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
                     {categoryLabel[cat]}:
-                  </p>
+                  </h2>
                   <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
                 </div>
 
@@ -181,6 +81,20 @@ export default function EventsPage() {
               </section>
             );
           })}
+        </div>
+
+        {/* Back to Home */}
+        <div className="pt-4 text-center">
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-7 text-base font-semibold tracking-wide shadow-none transition-all hover:-translate-y-0.5 hover:bg-accent"
+          >
+            <Link href="/">
+              <ArrowLeft className="h-5 w-5" />
+              Back to Home
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

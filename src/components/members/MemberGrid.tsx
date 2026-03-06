@@ -15,9 +15,9 @@ function Section({
     <section className="space-y-6">
       {/* Centered section title */}
       <div className="text-center">
-        <p className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+        <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
           {title}:
-        </p>
+        </h2>
         <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
       </div>
 
