@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import * as React from "react";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/hooks/useMe";
@@ -27,12 +27,69 @@ type MePayload = {
   [key: string]: unknown;
 };
 
+type LoginErrorPayload = {
+  message?: string;
+  errorSources?: unknown;
+  err?: unknown;
+  success?: boolean;
+};
+
 function isSafeInternalPath(path: string | null): path is string {
   if (!path) return false;
   if (!path.startsWith("/")) return false;
   if (path.startsWith("//")) return false;
   if (path.includes("://")) return false;
   return true;
+}
+
+function normalizeLoginError(
+  status: number,
+  payload: LoginErrorPayload
+): string {
+  const rawMessage = (payload?.message || "").trim().toLowerCase();
+
+  if (status === 400) {
+    if (rawMessage.includes("password")) {
+      return "The password you entered is incorrect. Please try again.";
+    }
+
+    return payload?.message || "Unable to sign in with the provided credentials.";
+  }
+
+  if (status === 401) {
+    return "Your sign-in session could not be established. Please try again.";
+  }
+
+  if (status === 403) {
+    if (rawMessage.includes("suspend")) {
+      return (
+        payload?.message ||
+        "This account has been suspended. Please contact an administrator."
+      );
+    }
+
+    if (rawMessage.includes("pending")) {
+      return (
+        payload?.message ||
+        "Your account is pending approval before it can be used to sign in."
+      );
+    }
+
+    return (
+      payload?.message ||
+      "Your account does not currently have access to sign in."
+    );
+  }
+
+  if (status === 404) {
+    return "No account was found for that email address. Please check your email or sign up.";
+  }
+
+  if (status >= 500) {
+    return "Something went wrong on the server while trying to sign you in. Please try again shortly.";
+  }
+
+  return payload?.message || "An unexpected error occurred during sign-in.";
 }
 
 export default function LoginClient() {
@@ -46,7 +103,6 @@ export default function LoginClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   React.useEffect(() => {
     if (meLoading) return;
@@ -59,33 +115,42 @@ export default function LoginClient() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
-      const data = await response.json();
+      const data = (await response.json().catch(() => ({}))) as LoginErrorPayload;
 
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        toast.error(normalizeLoginError(response.status, data));
+        return;
       }
 
-      // Force-refresh global auth store for immediate Navbar/Hero update
+      toast.success("Signed in successfully!", {
+        description: "Redirecting...",
+      });
+
       await refresh(true);
 
-      // Determine role using /api/auth/me
       const meRes = await fetch("/api/auth/me", {
         method: "GET",
         credentials: "include",
         cache: "no-store",
       });
 
-      const meJson = await meRes.json();
+      const meJson = (await meRes.json().catch(() => ({}))) as {
+        data?: { me?: MePayload | null };
+        me?: MePayload | null;
+      };
+
       const meData = (meJson?.data?.me ?? meJson?.me ?? null) as MePayload | null;
 
       const safeNext = isSafeInternalPath(nextParam) ? nextParam : null;
@@ -102,9 +167,11 @@ export default function LoginClient() {
       }
 
       window.location.href = destination;
-    } catch (err: any) {
-      console.error("Login error:", err);
-      setError(err.message || "An error occurred during login");
+    } catch (err: unknown) {
+      console.error("Unexpected login failure:", err);
+      toast.error(
+        "We could not reach the server. Please check your connection and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -112,7 +179,6 @@ export default function LoginClient() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Background Image */}
       <Image
         src="/auth/sva_auth.jpg"
         alt="SVA Authentication Background"
@@ -122,14 +188,12 @@ export default function LoginClient() {
         className="object-cover object-center"
       />
 
-      {/* Lighter overlay */}
       <div className="absolute inset-0 bg-black/10" />
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[110px]" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-accent/10 blur-[110px]" />
       </div>
 
-      {/* Page content */}
       <div className="relative z-10 min-h-screen px-6 pt-8 pb-24">
         <div className="flex flex-col items-center justify-start pt-6">
           <Card className="w-full max-w-md border-2 border-border/40 bg-card/90 backdrop-blur-xl shadow-2xl">
@@ -169,7 +233,7 @@ export default function LoginClient() {
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-6">
+              <form onSubmit={handleLogin} noValidate className="space-y-6">
                 <div className="space-y-2">
                   <Label
                     htmlFor="email"
@@ -222,12 +286,6 @@ export default function LoginClient() {
                     </button>
                   </div>
                 </div>
-
-                {error && (
-                  <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm font-medium text-center">
-                    {error}
-                  </div>
-                )}
 
                 <Button
                   type="submit"

@@ -13,7 +13,7 @@ export default function AdminMembersPage() {
         <AdminHeader
           title="Members"
           subtitle="Manage members, roles, and point balances"
-          actionLabel="Add Member"
+          actionLabel="New Member"
           onAddClick={() => {
             // placeholder
           }}

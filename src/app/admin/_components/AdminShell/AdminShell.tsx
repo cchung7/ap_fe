@@ -3,33 +3,50 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import { useMe } from "@/hooks/useMe";
+import { Button } from "@/components/ui/button";
+
 import {
   LayoutDashboard,
   Users,
   CalendarDays,
-  Table2,
   Settings,
   ChevronRight,
   PanelLeft,
   X,
-  Home,
   ArrowUpRight,
 } from "lucide-react";
 
 const navItems = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Members", href: "/admin/members", icon: Users },
-  { name: "Events", href: "/admin/events", icon: CalendarDays },
+  {
+    name: "Control Panel",
+    href: "/admin",
+    icon: LayoutDashboard,
+    subtitle: "System Overview",
+  },
+  {
+    name: "Manage All Members",
+    href: "/admin/members",
+    icon: Users,
+    subtitle: "Manage Members",
+  },
+  {
+    name: "Manage All Events",
+    href: "/admin/events",
+    icon: CalendarDays,
+    subtitle: "Manage Events",
+  },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loading, isAuthed, isAdmin } = useMe();
+  const { loading, isAuthed, isAdmin, refresh } = useMe();
 
-  // ✅ BPC-style gate: redirect non-admins out of /admin
   React.useEffect(() => {
     if (loading) return;
 
@@ -41,22 +58,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
     if (!isAdmin) {
       router.replace("/");
-      return;
     }
   }, [loading, isAuthed, isAdmin, router, pathname]);
 
-  // mobile drawer open
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  // desktop collapsed state
   const [collapsed, setCollapsed] = React.useState(false);
 
-  // close drawer on route change
   React.useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  // lock body scroll when mobile drawer open
   React.useEffect(() => {
     if (!mobileOpen) return;
     const prev = document.body.style.overflow;
@@ -66,7 +77,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     };
   }, [mobileOpen]);
 
-  // ✅ Listen for Navbar toggle (admin-only)
   React.useEffect(() => {
     const open = () => setMobileOpen(true);
     const close = () => setMobileOpen(false);
@@ -83,7 +93,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const sidebarW = collapsed ? "lg:pl-[96px]" : "lg:pl-[340px]";
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error("Logout error:", e);
+    } finally {
+      setMobileOpen(false);
+      await refresh();
+      router.replace("/");
+      router.refresh();
+    }
+  };
 
   const SidebarContent = ({ compact }: { compact: boolean }) => (
     <div className="space-y-4">
@@ -124,9 +148,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       {item.name}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {item.name === "Dashboard"
-                        ? "Manage Dashboard"
-                        : `Manage ${item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}`}
+                      {item.subtitle}
                     </p>
                   </div>
                 )}
@@ -162,34 +184,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       )}
-
-      {!compact && (
-        <div className="pt-2">
-          <Link
-            href="/"
-            className="group flex items-center justify-between rounded-3xl border border-border/80 bg-background/30 px-5 py-4 transition-all hover:border-accent/70 hover:bg-secondary/30"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-secondary flex items-center justify-center text-primary group-hover:bg-accent group-hover:text-white transition-all">
-                <Home size={18} />
-              </div>
-              <div className="leading-tight">
-                <p className="text-xs font-black uppercase tracking-widest">
-                  Back to Home
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Exit admin dashboard
-                </p>
-              </div>
-            </div>
-            <ArrowUpRight className="h-5 w-5 opacity-40 group-hover:opacity-80 transition-opacity" />
-          </Link>
-        </div>
-      )}
     </div>
   );
 
-  // ✅ While gating happens, keep UI stable
   if (loading || !isAuthed || !isAdmin) {
     return (
       <div className="min-h-screen bg-background pt-32 px-6">
@@ -233,47 +230,102 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Mobile Drawer */}
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50">
-          <button
-            type="button"
-            aria-label="Close admin menu"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
+      <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
+        <AnimatePresence>
+          {mobileOpen && (
+            <Dialog.Portal forceMount>
+              <Dialog.Overlay asChild>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden"
+                />
+              </Dialog.Overlay>
 
-          <div className="absolute left-0 top-0 h-full w-[90%] max-w-[360px] bg-background border-r border-border/70 shadow-2xl">
-            <div className="pt-24 px-6 pb-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
-                  <Table2 size={22} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/70">
-                    Admin
-                  </p>
-                  <p className="text-lg font-black tracking-tight">
-                    Control Panel
-                  </p>
-                </div>
-              </div>
+              <Dialog.Content asChild>
+                <motion.div
+                  aria-describedby=""
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                  className="fixed inset-y-0 right-0 z-[60] w-full max-w-sm bg-background p-6 flex flex-col shadow-2xl border-l border-border/40 lg:hidden"
+                >
+                  <Dialog.Title className="sr-only">
+                    Admin Navigation
+                  </Dialog.Title>
 
-              <button
-                type="button"
-                onClick={() => setMobileOpen(false)}
-                className="h-12 w-12 rounded-2xl border border-border/70 bg-secondary/20 flex items-center justify-center hover:border-accent/70 transition-all"
-                aria-label="Close admin menu"
-              >
-                <X size={18} />
-              </button>
-            </div>
+                  <div className="flex items-center justify-between mb-12">
+                    <div className="font-heading font-black uppercase text-xl ui-title">
+                      Menu (Admin)
+                    </div>
 
-            <div className="px-6 pb-10">
-              <SidebarContent compact={false} />
-            </div>
-          </div>
-        </div>
-      )}
+                    <Dialog.Close asChild>
+                      <Button variant="ghost" size="icon">
+                        <X className="h-6 w-6" />
+                      </Button>
+                    </Dialog.Close>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    {navItems.map((item, i) => {
+                      const Icon = item.icon;
+                      return (
+                        <motion.div
+                          key={item.href}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * i }}
+                        >
+                          <Link
+                            href={item.href}
+                            onClick={() => setMobileOpen(false)}
+                            className="text-3xl font-black italic tracking-tighter uppercase flex items-center justify-between group"
+                          >
+                            <span className="flex items-center gap-2 text-foreground group-hover:text-accent transition-colors">
+                              <Icon className="h-6 w-6 text-accent" />
+                              {item.name}
+                            </span>
+                            <ArrowUpRight className="h-6 w-6 text-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0" />
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex-1" />
+
+                  <div className="pt-6 border-t border-border/40 space-y-3">
+                    <Button
+                      asChild
+                      size="lg"
+                      className={cn(
+                        "w-full rounded-full font-black uppercase tracking-widest"
+                      )}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <Link href="/">Back to Home</Link>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      size="lg"
+                      className={cn(
+                        "w-full rounded-full font-black uppercase tracking-widest",
+                        "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+                      )}
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </div>
+                </motion.div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          )}
+        </AnimatePresence>
+      </Dialog.Root>
 
       {/* Content area */}
       <div className={cn("pt-32 pb-12 px-6", SidebarW)}>
