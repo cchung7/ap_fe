@@ -1,4 +1,5 @@
 // D:\ap_fe\src\components\members\MemberGrid.tsx
+// Page layout (e.g. Grouping + section rendering + empty/loading state) 
 import type { User } from "@/types/user";
 import { MemberCard } from "./MemberCard";
 

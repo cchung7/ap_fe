@@ -1,4 +1,5 @@
 // D:\ap_fe\src\components\members\MemberCard.tsx
+// Per-card presentation + interaction UX
 "use client";
 
 import * as React from "react";

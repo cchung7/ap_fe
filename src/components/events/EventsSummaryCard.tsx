@@ -15,7 +15,6 @@ function EventsSummaryCardInner({
     <div className="flex justify-center">
       <div className="w-full max-w-md">
         <div className="relative overflow-hidden rounded-[2.5rem] border border-border/40 bg-card/50 backdrop-blur-xl p-7 shadow-master text-center">
-          {/* Very-transparent background image */}
           <div
             className="
               pointer-events-none
@@ -29,11 +28,11 @@ function EventsSummaryCardInner({
             aria-hidden
           />
 
-          {/* Content */}
           <div className="relative z-10 flex flex-col items-center gap-3">
             <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/15">
               <Calendar size={18} />
             </div>
+
             <div className="space-y-1">
               <p className="text-lg font-black uppercase tracking-widest text-muted-foreground">
                 Total Events:

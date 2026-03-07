@@ -1,4 +1,6 @@
-// D:\ap_fe\src\app\members\page.tsx
+// D:\ap_fe\src\app\members\page.tsx 
+// [Members Main Page]: High-level composition + fetch + loading state
+
 "use client";
 
 import * as React from "react";

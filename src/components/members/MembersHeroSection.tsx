@@ -1,4 +1,5 @@
 // D:\ap_fe\src\components\members\MembersHeroSection.tsx
+// Page Title + Motion logic
 "use client";
 
 import * as React from "react";

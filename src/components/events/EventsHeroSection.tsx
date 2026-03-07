@@ -1,4 +1,6 @@
 // D:\ap_fe\src\components\events\EventsHeroSection.tsx
+// Page Title + Motion logic
+
 "use client";
 
 import * as React from "react";
@@ -25,6 +27,7 @@ export function EventsHeroSection({
     [0, 0.55],
     [1, 0]
   );
+
   const topSectionScale = useTransform(
     topSectionScrollYProgress,
     [0, 0.55],
@@ -39,7 +42,7 @@ export function EventsHeroSection({
         scale: topSectionScale,
         willChange: "transform, opacity",
       }}
-      className="space-y-6 transform-gpu"
+      className="space-y-14 transform-gpu"
     >
       <motion.header className="space-y-4 text-center">
         <motion.h1
@@ -79,7 +82,7 @@ export function EventsHeroSection({
           "
         >
           Explore upcoming UT-Dallas SVA events and opportunities for
-          engagement.
+          engagement. Members are awarded attendance-based points.
         </motion.div>
       </motion.header>
 

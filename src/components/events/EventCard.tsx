@@ -1,8 +1,12 @@
+// Per-card presentation + ineraction UX
 "use client";
 
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, Clock, MapPin, Users } from "lucide-react";
+import { Calendar, Clock, MapPin, Users } from "lucide-react";
 
 import type { Event, EventCategory } from "@/types/events";
 
@@ -16,6 +20,11 @@ const categoryBg: Record<EventCategory, string> = {
   VOLUNTEERING: "/backgrounds/volunteer.jpg",
   SOCIAL: "/backgrounds/socials.jpg",
   PROFESSIONAL_DEVELOPMENT: "/backgrounds/pd.jpg",
+};
+
+export type EventCardEvent = Event & {
+  isRegistered?: boolean;
+  viewerAuthenticated?: boolean;
 };
 
 function formatDateTime(iso: string) {
@@ -43,8 +52,24 @@ function categoryBadgeClasses(category: EventCategory) {
   }
 }
 
-export function EventCard({ event }: { event: Event }) {
+function EventCardInner({ event }: { event: EventCardEvent }) {
+  const router = useRouter();
   const bg = categoryBg[event.category];
+  const isLoggedIn = !!event.viewerAuthenticated;
+
+  const handleRegistration = React.useCallback(() => {
+    if (!isLoggedIn) {
+      router.push("/signup?next=/events");
+      return;
+    }
+
+    toast.info("Event registration flow will be enabled in a later phase.");
+  }, [isLoggedIn, router]);
+
+  const handleCheckIn = React.useCallback(() => {
+    if (!isLoggedIn) return;
+    toast.info("Event check-in flow will be enabled in a later phase.");
+  }, [isLoggedIn]);
 
   return (
     <div
@@ -60,23 +85,18 @@ export function EventCard({ event }: { event: Event }) {
         min-w-0
         overflow-hidden
 
-        /* 3D / depth */
         [perspective:1200px]
         transform-gpu
         transition-all
         duration-300
         ease-out
 
-        /* Hover lift + tilt */
         hover:-translate-y-[4px]
         hover:rotate-x-[1.5deg]
         hover:rotate-y-[-1.5deg]
-
-        /* Hover shadow */
         hover:shadow-hover
       "
     >
-      {/* Subtle glow layer */}
       <div
         className="
           pointer-events-none
@@ -91,7 +111,6 @@ export function EventCard({ event }: { event: Event }) {
         aria-hidden
       />
 
-      {/* Very-transparent category background image */}
       <div
         className="
           pointer-events-none
@@ -105,7 +124,6 @@ export function EventCard({ event }: { event: Event }) {
         aria-hidden
       />
 
-      {/* Content */}
       <div className="relative z-10">
         <div className="flex items-start justify-between gap-4 min-w-0">
           <div className="space-y-2 min-w-0">
@@ -164,22 +182,32 @@ export function EventCard({ event }: { event: Event }) {
           <Button
             variant="outline"
             className="rounded-2xl border-border/40 w-full sm:w-auto max-w-full"
-            disabled
-            title="Registration will be enabled in a later phase."
+            onClick={handleRegistration}
+            title={
+              isLoggedIn
+                ? "Registration flow will be enabled in a later phase."
+                : "Create an account to register for events."
+            }
           >
             Registration
           </Button>
 
           <Button
             className="rounded-2xl bg-primary text-primary-foreground w-full sm:w-auto max-w-full"
-            disabled
-            title="Event details view can be added as a modal in Phase 2."
+            onClick={handleCheckIn}
+            disabled={!isLoggedIn}
+            title={
+              isLoggedIn
+                ? "Check-in flow will be enabled in a later phase."
+                : "You must be logged in to check in."
+            }
           >
-            Details
-            <ArrowRight size={16} className="ml-2 shrink-0" />
+            Check-in
           </Button>
         </div>
       </div>
     </div>
   );
 }
+
+export const EventCard = React.memo(EventCardInner);
