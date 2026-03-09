@@ -1,15 +1,14 @@
-// src/app/layout.tsx
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 import "./globals.css";
-import { AppShell } from "@/components/AppShell";
 
-const inter = Inter({ subsets: ["latin"] });
+import type { Metadata } from "next";
+import * as React from "react";
+
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Student Veterans Association | UT Dallas",
-  description: "Student Veterans Association | UT-Dallas",
+  title: "Student Veterans Association",
+  description: "UT Dallas Student Veterans Association",
 };
 
 export default function RootLayout({
@@ -19,11 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} relative min-h-screen bg-background text-foreground scroll-smooth`}
-      >
-        <Toaster position="top-right" richColors />
-        <AppShell>{children}</AppShell>
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <Navbar />
+
+        <main className="min-h-screen">{children}</main>
+
+        <Footer />
       </body>
     </html>
   );

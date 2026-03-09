@@ -194,7 +194,7 @@ export default function Home() {
                             bg-[length:140%_auto]
                             bg-center
                             bg-no-repeat
-                            opacity-[0.22]
+                            opacity-[0.15]
                           "
                           style={{ backgroundImage: `url('${medalBg}')` }}
                           aria-hidden

@@ -19,6 +19,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        logout:
+          "border border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-foreground)] shadow-xs hover:bg-primary hover:text-primary-foreground hover:border-primary",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -57,6 +59,6 @@ function Button({
       {...props}
     />
   )
-} 
+}
 
 export { Button, buttonVariants }

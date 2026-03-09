@@ -1,29 +1,22 @@
-// D:\ap_fe\src\components\navbar.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DrawerMenu, type DrawerMenuItem } from "@/components/ui/DrawerMenu";
 import { cn } from "@/lib/utils";
 import { useMe } from "@/hooks/useMe";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from "framer-motion";
-import {
-  ArrowUpRight,
   CalendarDays,
   LayoutDashboard,
   Menu,
   User,
   Users,
-  X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 import { usePathname, useRouter } from "next/navigation";
+
+import { TopbarFrame } from "@/components/shared/TopbarFrame";
+import { BrandLockup } from "@/components/shared/BrandLockup";
 
 const baseNavLinks = [
   { name: "Home", href: "/", icon: User },
@@ -59,19 +52,6 @@ export function Navbar() {
   }, [loading, isAuthed, isAdmin]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [hidden, setHidden] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
-
-  const { scrollY } = useScroll();
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-
-    if (latest > previous && latest > 150) setHidden(true);
-    else setHidden(false);
-
-    setScrolled(latest > 50);
-  });
 
   const handleLogout = async () => {
     try {
@@ -89,130 +69,139 @@ export function Navbar() {
     }
   };
 
-  return (
-    <motion.header
-      variants={{ visible: { y: 0 }, hidden: { y: "-100%" } }}
-      animate={hidden ? "hidden" : "visible"}
-      transition={{ duration: 0.35, ease: "easeInOut" }}
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        "bg-background/90 backdrop-blur-md border-b border-border/40 py-2",
-        scrolled && "bg-background"
-      )}
-    >
-      <div className="container mx-auto px-6 flex items-center justify-between gap-1">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative h-10 w-10 shrink-0">
-            <Image
-              src="/logo/logo.png"
-              alt="SVA Logo"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
+  const mobileItems = React.useMemo<DrawerMenuItem[]>(
+    () =>
+      navLinks
+        .filter((link) => link.href !== "/admin")
+        .map((link) => ({
+          ...link,
+          name: link.name.toUpperCase(),
+        })),
+    [navLinks]
+  );
 
-          <span className="font-heading font-black text-base sm:text-base lg:text-lg tracking-tighter uppercase whitespace-nowrap">
-            SVA -
-            <span className="text-[#e87500] italic">UT-Dallas</span>
-          </span>
-        </Link>
+  const brand = (
+    <BrandLockup
+      href="/"
+      title={
+        <span className="font-heading font-black text-base lg:text-lg tracking-tighter uppercase whitespace-nowrap">
+          SVA -
+          <span className="text-[#e87500] italic">UT-Dallas</span>
+        </span>
+      }
+    />
+  );
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center bg-secondary/50 backdrop-blur-sm px-2 py-1.5 gap-5 rounded-full border border-border/40 font-bold">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            return (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="px-1 py-2 rounded-full text-[11px] uppercase tracking-widest text-muted-foreground hover:text-accent transition-all duration-300 relative group flex items-center gap-2"
-              >
-                <Icon className="h-5 w-5 mb-0.5 group-hover:text-accent transition-colors" />
-                {link.name}
-                <div className="absolute -bottom-1 left-1 right-1 h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
-              </Link>
-            );
-          })}
-        </nav>
+  const desktopNav = (
+    <nav className="flex items-center bg-secondary/50 backdrop-blur-sm px-2 py-1.5 gap-5 rounded-full border border-border/40 font-bold">
+      {navLinks.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Link
+            key={link.name}
+            href={link.href}
+            className="px-1 py-2 rounded-full text-[11px] uppercase tracking-widest text-muted-foreground hover:text-accent transition-all duration-300 relative group flex items-center gap-2 whitespace-nowrap"
+          >
+            <Icon className="h-5 w-5 mb-0.5 group-hover:text-accent transition-colors" />
+            {link.name}
+            <div className="absolute -bottom-1 left-1 right-1 h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
+          </Link>
+        );
+      })}
+    </nav>
+  );
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          {!loading && (
+  const sharedTopbarButtonClass = cn(
+    "h-9 rounded-full px-4",
+    "justify-center text-center",
+    "font-semibold tracking-tight text-sm"
+  );
+
+  const desktopActions = (
+    <>
+      {!loading && (
+        <>
+          {!isAuthed && (
             <>
-              {/* Non-user */}
-              {!isAuthed && (
-                <>
-                  <Button
-                    asChild
-                    size="sm"
-                    variant="outline"
-                    className={cn(
-                      "hidden md:inline-flex rounded-full",
-                      "h-9 px-4",
-                      "font-bold uppercase tracking-widest text-[11px]",
-                      "transition-all",
-                      "bg-muted/60",
-                      // ✅ force override outline variant bg
-                      "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
-                      // ✅ subtle glow like footer
-                      "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
-                    )}
-                  >
-                    <Link href="/login">Log In</Link>
-                  </Button>
+              <Button
+                asChild
+                size="sm"
+                className={cn(
+                  sharedTopbarButtonClass,
+                  "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Link href="/login" className="flex items-center justify-center">
+                  Log In
+                </Link>
+              </Button>
 
-                  <Button
-                    asChild
-                    size="sm"
-                    variant="outline"
-                    className={cn(
-                      "hidden md:inline-flex rounded-full",
-                      "h-9 px-4",
-                      "font-bold uppercase tracking-widest text-[11px]",
-                      "transition-all",
-                      "bg-muted/60",
-                      // ✅ force override outline variant bg
-                      "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
-                      // ✅ subtle glow like footer
-                      "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
-                    )}
-                  >
-                    <Link href="/signup">Sign Up</Link>
-                  </Button>
-                </>
-              )}
-
-              {/* Member/Admin: Logout */}
-              {isAuthed && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  className={cn(
-                    "hidden md:inline-flex rounded-full",
-                    "h-9 px-4",
-                    "font-black uppercase tracking-widest text-[11px]",
-                    "transition-all",
-                    "bg-muted/60",
-                    // ✅ force override outline variant bg
-                    "hover:!bg-[var(--accent)] hover:!text-white hover:!border-[var(--accent)]",
-                    // ✅ subtle glow like footer
-                    "hover:shadow-[0_12px_30px_rgba(177,18,38,0.20)]"
-                  )}
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              )}
+              <Button
+                asChild
+                size="sm"
+                className={cn(
+                  sharedTopbarButtonClass,
+                  "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+                )}
+              >
+                <Link href="/signup" className="flex items-center justify-center">
+                  Sign Up
+                </Link>
+              </Button>
             </>
           )}
 
+          {isAuthed && (
+            <Button
+              type="button"
+              size="sm"
+              className={cn(
+                sharedTopbarButtonClass,
+                "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+              )}
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          )}
+        </>
+      )}
+    </>
+  );
+
+  const compactActions = isAdminRoute ? (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="rounded-full"
+      onClick={() => {
+        window.dispatchEvent(new Event("admin-sidebar-toggle"));
+      }}
+    >
+      <Menu className="h-6 w-6" />
+    </Button>
+  ) : (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="rounded-full"
+      onClick={() => setMobileMenuOpen(true)}
+    >
+      <Menu className="h-6 w-6" />
+    </Button>
+  );
+
+  return (
+    <>
+      <TopbarFrame
+        compactBreakpointClassName="md"
+        desktopBreakpointClassName="xl"
+        leftMobile={brand}
+        rightMobile={
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden rounded-full"
+            className="rounded-full"
             onClick={() => {
               if (isAdminRoute) {
                 window.dispatchEvent(new Event("admin-sidebar-toggle"));
@@ -223,128 +212,98 @@ export function Navbar() {
           >
             <Menu className="h-6 w-6" />
           </Button>
-        </div>
-      </div>
+        }
+        leftCompact={brand}
+        rightCompact={compactActions}
+        leftDesktop={brand}
+        centerDesktop={desktopNav}
+        rightDesktop={desktopActions}
+      />
 
-      {/* Mobile Menu */}
       {!isAdminRoute && (
-        <Dialog.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <AnimatePresence>
-            {mobileMenuOpen && (
-              <Dialog.Portal forceMount>
-                <Dialog.Overlay asChild>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-60 bg-black/60 backdrop-blur-sm"
-                  />
-                </Dialog.Overlay>
-
-                <Dialog.Content asChild>
-                  <motion.div
-                    aria-describedby=""
-                    initial={{ x: "100%" }}
-                    animate={{ x: 0 }}
-                    exit={{ x: "100%" }}
-                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="fixed inset-y-0 right-0 z-70 w-full max-w-sm bg-background p-6 flex flex-col shadow-2xl border-l border-border/40"
-                  >
-                    <Dialog.Title className="sr-only">
-                      Mobile Navigation
-                    </Dialog.Title>
-
-                    <div className="flex items-center justify-between mb-12">
-                      <div className="font-heading font-black uppercase text-xl">
-                        Menu
-                      </div>
-                      <Dialog.Close asChild>
-                        <Button variant="ghost" size="icon">
-                          <X className="h-6 w-6" />
-                        </Button>
-                      </Dialog.Close>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      {navLinks.map((link, i) => {
-                        const Icon = link.icon;
-                        return (
-                          <motion.div
-                            key={link.name}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 * i }}
-                          >
-                            <Link
-                              href={link.href}
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="text-3xl font-black italic tracking-tighter uppercase flex items-center justify-between group"
-                            >
-                              <span className="flex items-center gap-2 text-foreground group-hover:text-accent transition-colors">
-                                <Icon className="h-6 w-6 text-accent" />
-                                {link.name}
-                              </span>
-                              <ArrowUpRight className="h-6 w-6 text-accent opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0" />
-                            </Link>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="flex-1" />
-
-                    {/* Bottom CTA */}
-                    {!loading && (
-                      <div className="pt-6 border-t border-border/40 space-y-2">
-                        {!isAuthed && (
-                          <div className="space-y-3">
-                            <Button
-                              asChild
-                              size="lg"
-                              className={cn(
-                                "w-full rounded-full font-black uppercase tracking-widest"
-                              )}
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <Link href="/login">Log In</Link>
-                            </Button>
-
-                            <Button
-                              asChild
-                              size="lg"
-                              className={cn(
-                                "w-full rounded-full font-black uppercase tracking-widest",
-                                "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
-                              )}
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <Link href="/signup">Sign Up</Link>
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* Member/Admin: Logout (primary) */}
-                        {isAuthed && (
-                          <Button
-                            type="button"
-                            size="lg"
-                            className={cn(
-                              "w-full rounded-full font-black uppercase tracking-widest"
-                            )}
-                            onClick={handleLogout}
-                          >
-                            Logout
-                          </Button>
-                        )}
-                      </div>
+        <DrawerMenu
+          open={mobileMenuOpen}
+          onOpenChange={setMobileMenuOpen}
+          title="MENU"
+          srTitle="Mobile Navigation"
+          items={mobileItems}
+          bottomContent={
+            !loading ? (
+              !isAuthed ? (
+                <>
+                  <Button
+                    asChild
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      "bg-primary text-primary-foreground hover:bg-primary/90",
+                      "justify-center text-center",
+                      "font-semibold tracking-tight"
                     )}
-                  </motion.div>
-                </Dialog.Content>
-              </Dialog.Portal>
-            )}
-          </AnimatePresence>
-        </Dialog.Root>
+                  >
+                    <Link
+                      href="/login"
+                      className="flex w-full items-center justify-center"
+                    >
+                      Log In
+                    </Link>
+                  </Button>
+
+                  <Button
+                    asChild
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90",
+                      "justify-center text-center",
+                      "font-semibold tracking-tight"
+                    )}
+                  >
+                    <Link
+                      href="/signup"
+                      className="flex w-full items-center justify-center"
+                    >
+                      Sign Up
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {isAdmin && (
+                    <Button
+                      asChild
+                      className={cn(
+                        "w-full rounded-2xl px-4 py-3",
+                        "bg-primary text-primary-foreground hover:bg-primary/90",
+                        "justify-center text-center",
+                        "font-semibold tracking-tight"
+                      )}
+                    >
+                      <Link
+                        href="/admin"
+                        className="flex w-full items-center justify-center"
+                      >
+                        Admin Dashboard
+                      </Link>
+                    </Button>
+                  )}
+
+                  <Button
+                    type="button"
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90",
+                      "justify-center text-center",
+                      "font-semibold tracking-tight"
+                    )}
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                </>
+              )
+            ) : null
+          }
+        />
       )}
-    </motion.header>
+    </>
   );
 }

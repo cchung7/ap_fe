@@ -1,82 +1,142 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { Shield } from "lucide-react";
 import * as React from "react";
-import { useRouter } from "next/navigation";
 
-import { useMe } from "@/hooks/useMe";
-import AdminHeader from "./_components/AdminHeader/AdminHeader";
-import { AdminShell } from "./_components/AdminShell/AdminShell";
+import { DashboardOverview } from "./_components/dashboard/DashboardOverview";
 
-export default function AdminDashboard() {
-  const router = useRouter();
-  const { loading, isAdmin } = useMe();
+type MePayload = {
+  name?: string;
+  [key: string]: unknown;
+};
+
+type DashboardPayload = {
+  members?: Array<{ status?: string | null }>;
+  events?: Array<{ date?: string | Date | null }>;
+  activities?: Array<{
+    id?: string | number;
+    activityType?: string;
+    description?: string;
+    createdAt?: string | Date;
+  }>;
+};
+
+function formatAdminDate(date: Date) {
+  const weekday = date.toLocaleDateString(undefined, { weekday: "long" });
+  const fullDate = date.toLocaleDateString(undefined, {
+    month: "long",
+    day: "2-digit",
+    year: "numeric",
+  });
+
+  return { weekday, fullDate };
+}
+
+export default function AdminDashboardPage() {
+  const [displayName, setDisplayName] = React.useState("Admin");
+  const [now, setNow] = React.useState(() => new Date());
+
+  const [members, setMembers] = React.useState<Array<{ status?: string | null }>>(
+    []
+  );
+  const [events, setEvents] = React.useState<Array<{ date?: string | Date | null }>>(
+    []
+  );
+  const [activities, setActivities] = React.useState<
+    Array<{
+      id?: string | number;
+      activityType?: string;
+      description?: string;
+      createdAt?: string | Date;
+    }>
+  >([]);
 
   React.useEffect(() => {
-    if (!loading && !isAdmin) {
-      router.replace("/");
-    }
-  }, [loading, isAdmin, router]);
+    let alive = true;
 
-  if (loading) return null;
-  if (!isAdmin) return null;
+    async function loadMe() {
+      try {
+        const res = await fetch("/api/auth/me", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const json = (await res.json().catch(() => ({}))) as {
+          data?: { me?: MePayload | null };
+          me?: MePayload | null;
+        };
+
+        const me = (json?.data?.me ?? json?.me ?? null) as MePayload | null;
+        const nextName =
+          typeof me?.name === "string" && me.name.trim()
+            ? me.name.trim()
+            : "Admin";
+
+        if (!alive) return;
+        setDisplayName(nextName);
+      } catch {
+        if (!alive) return;
+        setDisplayName("Admin");
+      }
+    }
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch("/api/admin/dashboard", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const json = (await res.json().catch(() => ({}))) as {
+          data?: DashboardPayload;
+        };
+
+        const data = json?.data ?? {};
+
+        if (!alive) return;
+        setMembers(Array.isArray(data.members) ? data.members : []);
+        setEvents(Array.isArray(data.events) ? data.events : []);
+        setActivities(Array.isArray(data.activities) ? data.activities : []);
+      } catch {
+        if (!alive) return;
+        setMembers([]);
+        setEvents([]);
+        setActivities([]);
+      }
+    }
+
+    void loadMe();
+    void loadDashboard();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  React.useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const { weekday, fullDate } = formatAdminDate(now);
 
   return (
-    <AdminShell>
-      <div className="space-y-8">
-        <AdminHeader />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-4">
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key="admin-placeholder-main"
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="h-full flex items-center justify-center p-16 border-2 border-dashed border-border/40 rounded-[2.5rem] bg-secondary/5 text-center"
-              >
-                <div className="space-y-3">
-                  <h2 className="text-2xl font-black tracking-tight">
-                    Admin Workspace
-                  </h2>
-                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                    This area will host administrative tables, forms, and
-                    management tools (events, members, roles, approvals).
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="lg:col-span-1">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="admin-placeholder-side"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="h-full flex flex-col items-center justify-center p-12 border-2 border-dashed border-border/40 rounded-[2.5rem] bg-secondary/5 text-center space-y-4"
-              >
-                <div className="h-20 w-20 rounded-3xl bg-background border border-border/40 flex items-center justify-center text-muted-foreground/40">
-                  <Shield size={40} />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-black uppercase italic tracking-tighter">
-                    Admin Context Panel
-                  </h3>
-                  <p className="text-xs text-muted-foreground font-medium">
-                    Select an administrative action to manage system data.
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+    <div className="space-y-6">
+      <div className="space-y-1.5">
+        <h1 className="text-lg font-semibold text-[#111827] sm:text-xl">
+          Welcome, {displayName}
+        </h1>
+        <p className="text-sm text-[#6B7280]">
+          {weekday}, {fullDate}
+        </p>
       </div>
-    </AdminShell>
+
+      <DashboardOverview
+        members={members}
+        events={events}
+        activities={activities}
+      />
+    </div>
   );
 }

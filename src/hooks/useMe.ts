@@ -26,9 +26,9 @@ type ApiResponse<T> = {
   message?: string;
   data?: T;
 };
-  
+
 const DEDUPE_MS = 800;
-const LOGGED_OUT_COOLDOWN_MS = 30_000; // 30s
+const LOGGED_OUT_COOLDOWN_MS = 30_000;
 
 let state: MeState = {
   data: null,
@@ -39,6 +39,8 @@ let state: MeState = {
 };
 
 const listeners = new Set<() => void>();
+let inflightPromise: Promise<Me | null> | null = null;
+let didInit = false;
 
 function setState(patch: Partial<MeState>) {
   state = { ...state, ...patch };
@@ -66,14 +68,12 @@ async function fetchMe(): Promise<Me | null> {
     throw new Error(text || `Failed to fetch /api/auth/me (${res.status})`);
   }
 
-  const json = (await res.json()) as any;
+  const json = (await res.json()) as unknown;
 
-  // Preferred (new normalized FE route shape):
   if (json && typeof json === "object" && "me" in json) {
-    return (json.me as Me | null) ?? null;
+    return ((json as { me?: Me | null }).me ?? null) as Me | null;
   }
 
-  // Backward compatible with older wrappers:
   const wrapped = json as ApiResponse<{ me: Me | null }>;
   return wrapped?.data?.me ?? null;
 }
@@ -82,6 +82,11 @@ async function refreshInternal(opts?: { force?: boolean }) {
   const now = Date.now();
   const force = Boolean(opts?.force);
 
+  if (inflightPromise) {
+    await inflightPromise.catch(() => undefined);
+    return;
+  }
+
   if (!force && state.lastResultWasNull) {
     const age = now - state.lastFetchedAt;
     if (age < LOGGED_OUT_COOLDOWN_MS) return;
@@ -89,27 +94,35 @@ async function refreshInternal(opts?: { force?: boolean }) {
 
   if (!force && now - state.lastFetchedAt < DEDUPE_MS) return;
 
-  setState({ loading: true, error: null, lastFetchedAt: now });
+  setState({
+    loading: true,
+    error: null,
+    lastFetchedAt: now,
+  });
+
+  inflightPromise = fetchMe();
 
   try {
-    const me = await fetchMe();
+    const me = await inflightPromise;
+
     setState({
       data: me,
       loading: false,
       error: null,
       lastResultWasNull: me === null,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     setState({
-      data: null,
       loading: false,
       error: err instanceof Error ? err : new Error("Auth fetch failed"),
-      lastResultWasNull: true,
+      // keep prior data if fetch fails, rather than forcing null immediately
+      data: state.data,
+      lastResultWasNull: state.data === null,
     });
+  } finally {
+    inflightPromise = null;
   }
 }
-
-let didInit = false;
 
 export function useMe() {
   const snap = React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
@@ -117,12 +130,15 @@ export function useMe() {
   React.useEffect(() => {
     if (!didInit) {
       didInit = true;
-      refreshInternal({ force: true });
+      void refreshInternal({ force: true });
     }
   }, []);
 
   React.useEffect(() => {
-    const onFocus = () => refreshInternal();
+    const onFocus = () => {
+      void refreshInternal();
+    };
+
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, []);

@@ -42,7 +42,6 @@ export default function ProfilePage() {
     [me]
   );
 
-  // ✅ Hooks must run unconditionally, so states are declared before any return
   const [form, setForm] = React.useState({ name: "" });
 
   const [imagePreview, setImagePreview] = React.useState<string>("");
@@ -115,7 +114,6 @@ export default function ProfilePage() {
 
   const removeDisabled = !selectedImage && imagePreview === "";
 
-  // ✅ Now it is safe to early-return (after hooks have run)
   if (loading || !me) return null;
 
   return (
