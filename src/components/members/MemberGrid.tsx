@@ -1,14 +1,16 @@
 // D:\ap_fe\src\components\members\MemberGrid.tsx
-// Page layout (e.g. Grouping + section rendering + empty/loading state) 
+// Page layout (e.g. Grouping + section rendering + empty/loading state)
 import type { User } from "@/types/user";
 import { MemberCard } from "./MemberCard";
 
 function Section({
   title,
   users,
+  isLeadership = false,
 }: {
   title: string;
   users: User[];
+  isLeadership?: boolean;
 }) {
   if (users.length === 0) return null;
 
@@ -33,7 +35,11 @@ function Section({
             "
           >
             {users.map((u) => (
-              <MemberCard key={u.id} user={u as any} />
+              <MemberCard
+                key={u.id}
+                user={u as any}
+                isLeadership={isLeadership}
+              />
             ))}
           </div>
         </div>
@@ -54,7 +60,7 @@ export function MemberGrid({ users }: { users: User[] }) {
 
   return (
     <div className="mt-2 space-y-16">
-      <Section title="Leadership" users={admins as any} />
+      <Section title="Leadership" users={admins as any} isLeadership />
       <Section title="Membership" users={members as any} />
     </div>
   );

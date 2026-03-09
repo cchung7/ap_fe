@@ -6,7 +6,13 @@ import * as React from "react";
 import type { UserWithPoints } from "@/types/userWithPoints";
 import { ProfileBadge } from "@/components/ui/ProfileBadge";
 
-export function MemberCard({ user }: { user: UserWithPoints }) {
+export function MemberCard({
+  user,
+  isLeadership = false,
+}: {
+  user: UserWithPoints;
+  isLeadership?: boolean;
+}) {
   const cardRef = React.useRef<HTMLDivElement | null>(null);
   const nameRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -16,20 +22,16 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
     const el = nameRef.current;
     if (!el) return;
 
-    // Reset to base size first, then shrink if needed.
     const BASE = 18;
     const MIN = 13;
 
-    // Apply base immediately for accurate measure.
     el.style.fontSize = `${BASE}px`;
 
-    // Measure line count using computed line-height.
     const computeLines = () => {
       const cs = window.getComputedStyle(el);
       const fontSize = parseFloat(cs.fontSize || `${BASE}`);
       const lhRaw = cs.lineHeight;
 
-      // lineHeight can be "normal" -> approximate
       const lineHeight =
         lhRaw && lhRaw !== "normal" ? parseFloat(lhRaw) : fontSize * 1.2;
 
@@ -37,14 +39,12 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
       return height / lineHeight;
     };
 
-    // If it already fits, keep base.
     let lines = computeLines();
     if (lines <= 2.05) {
       setNameFontPx(BASE);
       return;
     }
 
-    // Shrink in small steps until it fits (or hits MIN).
     let px = BASE;
     while (px > MIN) {
       px -= 1;
@@ -57,7 +57,6 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
   }, []);
 
   React.useLayoutEffect(() => {
-    // Initial fit after mount / content change
     fitNameToTwoLines();
   }, [fitNameToTwoLines, user?.name]);
 
@@ -66,14 +65,18 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
     if (!card) return;
 
     const ro = new ResizeObserver(() => {
-      // Re-fit on width changes (window resize, grid changes, etc.)
-      // Use rAF to avoid ResizeObserver loop warnings in some browsers.
       requestAnimationFrame(() => fitNameToTwoLines());
     });
 
     ro.observe(card);
     return () => ro.disconnect();
   }, [fitNameToTwoLines]);
+
+  const flagBg = isLeadership
+    ? "/backgrounds/flag2.png"
+    : "/backgrounds/flag.png";
+
+  const flagOpacity = isLeadership ? 0.3 : 0.15;
 
   return (
     <div
@@ -90,22 +93,16 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
         p-5
         overflow-hidden
 
-        /* Depth + smoothness */
         transform-gpu
         transition-all
         duration-300
         ease-out
 
-        /* Base shadow */
         shadow-master
-
-        /* Hover lift (keeps rounding stable) */
         hover:-translate-y-[4px]
-
-        /* Hover shadow */
         hover:shadow-hover
       "
-      style={{ borderRadius: "1rem" }} /* hard-lock rounding during GPU transform */
+      style={{ borderRadius: "1rem" }}
     >
       {/* Subtle glow layer */}
       <div
@@ -117,30 +114,30 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
           transition-opacity
           duration-300
           group-hover:opacity-100
-
           bg-[radial-gradient(ellipse_at_top,rgba(177,18,38,0.18),transparent_65%)]
         "
         aria-hidden
       />
 
-      {/* Very-transparent American flag background */}
+      {/* Flag background */}
       <div
         className="
           pointer-events-none
           absolute inset-0
           rounded-2xl
-          bg-[url('/backgrounds/flag.png')]
           bg-cover
           bg-center
           bg-no-repeat
-          opacity-[0.20]
         "
+        style={{
+          backgroundImage: `url('${flagBg}')`,
+          opacity: flagOpacity,
+        }}
         aria-hidden
       />
 
       {/* Content */}
       <div className="relative z-10 min-w-0 space-y-3 text-center">
-        {/* Name (auto-shrinks to fit within 2 lines) */}
         <div
           ref={nameRef}
           className="
@@ -154,7 +151,6 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
           {user.name}
         </div>
 
-        {/* Email (stronger + cleaner, still subdued) */}
         <div
           className="
             text-[13px]
@@ -170,7 +166,6 @@ export function MemberCard({ user }: { user: UserWithPoints }) {
           {user.email}
         </div>
 
-        {/* Badges row (below email) */}
         {(user.subRole || user.academicYear || user.major) && (
           <div className="flex justify-center gap-2 flex-wrap">
             {user.subRole && (

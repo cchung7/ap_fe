@@ -13,7 +13,7 @@ const resources = [
     icon: Globe,
   },
   {
-    name: "ADMIN GUIDE",
+    name: "RESOURCES",
     href: "/admin/guide",
     icon: BookOpen,
   },

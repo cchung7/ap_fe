@@ -69,6 +69,10 @@ export function Navbar() {
     }
   };
 
+  const handleMobileDrawerLinkClick = React.useCallback(() => {
+    setMobileMenuOpen(false);
+  }, []);
+
   const mobileItems = React.useMemo<DrawerMenuItem[]>(
     () =>
       navLinks
@@ -242,6 +246,7 @@ export function Navbar() {
                   >
                     <Link
                       href="/login"
+                      onClick={handleMobileDrawerLinkClick}
                       className="flex w-full items-center justify-center"
                     >
                       Log In
@@ -259,6 +264,7 @@ export function Navbar() {
                   >
                     <Link
                       href="/signup"
+                      onClick={handleMobileDrawerLinkClick}
                       className="flex w-full items-center justify-center"
                     >
                       Sign Up
@@ -279,6 +285,7 @@ export function Navbar() {
                     >
                       <Link
                         href="/admin"
+                        onClick={handleMobileDrawerLinkClick}
                         className="flex w-full items-center justify-center"
                       >
                         Admin Dashboard
@@ -306,4 +313,4 @@ export function Navbar() {
       )}
     </>
   );
-}
+} 

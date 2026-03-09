@@ -23,7 +23,7 @@ function EventsSummaryCardInner({
               bg-cover
               bg-center
               bg-no-repeat
-              opacity-[0.18]
+              opacity-[0.30]
             "
             aria-hidden
           />

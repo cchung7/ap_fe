@@ -118,7 +118,7 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
           bg-cover
           bg-center
           bg-no-repeat
-          opacity-[0.30]
+          opacity-[0.15]
         "
         style={{ backgroundImage: `url('${bg}')` }}
         aria-hidden

@@ -39,14 +39,15 @@ const navItems = [
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loading, isAuthed, isAdmin, refresh } = useMe();
+  const { loading, isAuthed, isAdmin } = useMe();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState(false);
   const [isRedirecting, setIsRedirecting] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
   React.useEffect(() => {
-    if (loading) {
+    if (loading || isLoggingOut) {
       setIsRedirecting(false);
       return;
     }
@@ -65,7 +66,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
 
     setIsRedirecting(false);
-  }, [loading, isAuthed, isAdmin, router, pathname]);
+  }, [loading, isAuthed, isAdmin, isLoggingOut, router, pathname]);
 
   React.useEffect(() => {
     setMobileOpen(false);
@@ -99,18 +100,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+    setMobileOpen(false);
+
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
+        cache: "no-store",
       });
     } catch (e) {
       console.error("Logout error:", e);
     } finally {
-      setMobileOpen(false);
-      await refresh();
-      router.replace("/");
-      router.refresh();
+      window.location.href = "/";
     }
   };
 
@@ -125,7 +129,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   );
 
   const DesktopSidebarContent = ({ compact }: { compact: boolean }) => (
-    <div className="flex h-full flex-col min-h-0">
+    <div className="flex h-full min-h-0 flex-col">
       {!compact && (
         <div className="flex items-center justify-between gap-3 pb-5">
           <div className="ui-title text-base text-foreground tracking-tight">
@@ -161,9 +165,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div
         className={cn(
           "relative rounded-[2rem] border border-white/40 bg-white/30 backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]",
-          compact ? "px-2 py-3" : "px-3 py-4"
+          compact ? "px-2 py-3" : "p-3"
         )}
       >
+        {!compact && (
+          <div className="px-1 pb-2">
+            <div className="ui-title text-[0.78rem] tracking-[0.18em] text-muted-foreground">
+              TOOLS
+            </div>
+          </div>
+        )}
+
         <div
           className={cn(
             "flex flex-col justify-start",
@@ -208,18 +220,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "group flex items-center justify-between gap-3 rounded-[1.35rem] border px-3 py-3 transition-all",
+                  "group flex items-center justify-between gap-3 rounded-[1.25rem] border px-3 py-3 transition-all",
                   active
-                    ? "border-accent/60 bg-accent/10 shadow-[0_10px_30px_-14px_rgba(0,0,0,0.35)]"
+                    ? "border-accent/45 bg-white/45"
                     : "border-transparent bg-transparent hover:border-white/40 hover:bg-white/35"
                 )}
               >
                 <span
                   className={cn(
-                    "flex min-w-0 items-center gap-3 transition-colors",
-                    active
-                      ? "text-foreground"
-                      : "text-foreground group-hover:text-accent"
+                    "flex min-w-0 items-center gap-3 text-foreground transition-colors",
+                    active ? "text-accent" : "group-hover:text-accent"
                   )}
                 >
                   <span
@@ -233,17 +243,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     <Icon className="h-5 w-5" />
                   </span>
 
-                  <span className="ui-title text-[0.95rem] leading-tight tracking-tight">
+                  <span className="ui-title text-[0.92rem] leading-tight tracking-tight">
                     {item.name}
                   </span>
                 </span>
 
                 <ArrowUpRight
                   className={cn(
-                    "h-4.5 w-4.5 shrink-0 text-accent transition-all",
+                    "h-4.5 w-4.5 shrink-0 transition-all",
                     active
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                      ? "translate-x-0 opacity-100 text-accent"
+                      : "-translate-x-3 opacity-0 text-accent group-hover:translate-x-0 group-hover:opacity-100"
                   )}
                 />
               </Link>
@@ -258,7 +268,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 
-  if (loading) {
+  if (loading && !isLoggingOut) {
     return (
       <div className="min-h-screen bg-background px-6 pt-32">
         <div className="container mx-auto max-w-7xl">
@@ -272,7 +282,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (isRedirecting || !isAuthed || !isAdmin) {
+  if ((isRedirecting || !isAuthed || !isAdmin) && !isLoggingOut) {
     return (
       <div className="min-h-screen bg-background px-6 pt-32">
         <div className="container mx-auto max-w-7xl">
@@ -332,8 +342,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 "font-semibold tracking-tight"
               )}
               onClick={handleLogout}
+              disabled={isLoggingOut}
             >
-              Logout
+              {isLoggingOut ? "Logging out..." : "Logout"}
             </Button>
           </>
         }

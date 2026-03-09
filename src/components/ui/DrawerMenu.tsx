@@ -78,6 +78,12 @@ export function DrawerMenu({
                 </div>
 
                 <div className="rounded-[2rem] border border-white/40 bg-white/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-md">
+                  <div className="px-1 pb-2">
+                    <div className="ui-title text-[0.78rem] tracking-[0.18em] text-muted-foreground">
+                      TOOLS
+                    </div>
+                  </div>
+
                   <div className="flex flex-col gap-2">
                     {items.map((item, i) => {
                       const Icon = item.icon;
@@ -150,11 +156,23 @@ export function DrawerMenu({
                 <div className="flex-1" />
 
                 {bottomContent && (
-                  <div className="pt-6">
-                    <div className="rounded-[2rem] border border-white/40 bg-white/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-md">
-                      <div className="flex flex-col gap-3">{bottomContent}</div>
+                  <>
+                    <div className="px-3 pb-1 pt-6">
+                      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/55 to-transparent" />
                     </div>
-                  </div>
+
+                    <div className="pt-3">
+                      <div className="rounded-[2rem] border border-white/40 bg-white/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-md">
+                        <div className="px-1 pb-2">
+                          <div className="ui-title text-[0.78rem] tracking-[0.18em] text-muted-foreground">
+                            ACTIONS
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3">{bottomContent}</div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </motion.div>
             </Dialog.Content>
