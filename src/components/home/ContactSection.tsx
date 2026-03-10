@@ -67,7 +67,6 @@ export const ContactSection = () => {
                 Connect
               </h2>
 
-              {/* Section title */}
               <h3
                 className="
                   ui-title
@@ -85,7 +84,6 @@ export const ContactSection = () => {
                 Lead with purpose
               </h3>
 
-              {/* Standardized body */}
               <p className="ui-body text-muted-foreground max-w-xl mx-auto font-medium">
                 The Student Veterans Association supports UT Dallas
                 military-connected students through advocacy, mentorship, and
@@ -151,7 +149,6 @@ export const ContactSection = () => {
             </div>
           </div>
 
-          {/* Form Side (now below the header/info) */}
           <div className="bg-secondary/30 p-8 md:p-20 rounded-[2.5rem] border border-border/40 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-all duration-1000">
               <Rocket className="h-16 w-16" />
@@ -199,19 +196,22 @@ export const ContactSection = () => {
               </div>
 
               <Button
+                type="submit"
+                size="lg"
                 disabled={isSubmitting}
-                className="w-full h-14 cursor-pointer rounded-full bg-primary text-primary-foreground font-black uppercase tracking-[0.25em] text-sm group shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
+                className="w-full h-14 cursor-pointer rounded-full text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
               >
                 {isSubmitting ? (
                   <>
-                    Sending <Loader2 className="ml-2 animate-spin" size={16} />
+                    Sending <Loader2 className="ml-2 h-4 w-4 animate-spin" />
                   </>
                 ) : (
                   <>
-                    Send Message
+                    <span className="truncate">
+                      Send Message
+                    </span>
                     <ArrowRight
-                      size={16}
-                      className="ml-2 transition-transform group-hover:translate-x-1"
+                      className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1"
                     />
                   </>
                 )}

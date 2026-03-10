@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { TopbarFrame } from "@/components/shared/TopbarFrame";
 import { BrandLockup } from "@/components/shared/BrandLockup";
@@ -25,11 +25,10 @@ const baseNavLinks = [
 ];
 
 export function Navbar() {
-  const router = useRouter();
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
 
-  const { loading, isAuthed, isAdmin, refresh } = useMe();
+  const { loading, isAuthed, isAdmin } = useMe();
 
   const navLinks = React.useMemo(() => {
     const links = [...baseNavLinks];
@@ -58,14 +57,13 @@ export function Navbar() {
       await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
+        cache: "no-store",
       });
     } catch (e) {
       console.error("Logout error:", e);
     } finally {
       setMobileMenuOpen(false);
-      await refresh();
-      router.replace("/");
-      router.refresh();
+      window.location.href = "/";
     }
   };
 
@@ -313,4 +311,4 @@ export function Navbar() {
       )}
     </>
   );
-} 
+}

@@ -4,7 +4,10 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import type { Event } from "@/types/events";
 import { EventsGrid } from "@/components/events/EventsGrid";
 import { EventsHeroSection } from "@/components/events/EventsHeroSection";
@@ -60,6 +63,20 @@ export default function EventsPage() {
 
         <div className="max-w-6xl mx-auto w-full">
           <EventsGrid events={events} loading={loadingEvents} />
+        </div>
+
+        {/* Back to Home */}
+        <div className="pt-4 text-center">
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full px-7 text-base font-semibold tracking-wide shadow-none transition-all hover:-translate-y-0.5 hover:bg-accent"
+          >
+            <Link href="/">
+              <ArrowLeft className="h-5 w-5" />
+              Back to Home
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

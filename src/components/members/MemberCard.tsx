@@ -72,11 +72,15 @@ export function MemberCard({
     return () => ro.disconnect();
   }, [fitNameToTwoLines]);
 
+  // flag.png = red/white/blue
+  // flag2.png = gold/white
+  // flag3.png = silver/white
   const flagBg = isLeadership
-    ? "/backgrounds/flag2.png"
-    : "/backgrounds/flag.png";
+    ? "/backgrounds/flag.png"
+    : "/backgrounds/flag3.png";
 
-  const flagOpacity = isLeadership ? 0.3 : 0.15;
+  // Background Opacity (... ? Leadership : Membership)
+  const flagOpacity = isLeadership ? 0.16 : 0.35;
 
   return (
     <div

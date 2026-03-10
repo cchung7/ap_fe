@@ -80,7 +80,7 @@ function isValidMajor(value: string) {
 
 export default function SignUpPage() {
   const router = useRouter();
-  const { loading, isAuthed, isAdmin, refresh } = useMe();
+  const { loading, isAuthed, isAdmin } = useMe();
 
   const PROFILE_PIC_DISABLED = true;
 
@@ -256,8 +256,6 @@ export default function SignUpPage() {
         description: "Thank you for registering",
       });
 
-      void refresh(true);
-
       didSubmitNavigateRef.current = true;
       startTransition(() => {
         router.replace("/");
@@ -289,7 +287,7 @@ export default function SignUpPage() {
         <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-accent/10 blur-[110px]" />
       </div>
 
-      <div className="relative z-10 min-h-screen px-6 pt-8 pb-24">
+      <div className="relative z-10 min-h-screen px-6 pt-2 pb-24 md:pt-24">
         <ImageCropDialog
           open={PROFILE_PIC_DISABLED ? false : cropOpen}
           onOpenChange={setCropOpen}
@@ -318,7 +316,7 @@ export default function SignUpPage() {
           }}
         />
 
-        <div className="flex flex-col items-center justify-start pt-6">
+        <div className="flex flex-col items-center justify-start pt-8 md:pt-12">
           <Card className="w-full max-w-2xl border-2 border-border/40 bg-card/90 backdrop-blur-xl shadow-2xl">
             <CardHeader className="space-y-4 text-center pb-8 pt-6">
               <div className="flex justify-center mb-2">
@@ -333,18 +331,23 @@ export default function SignUpPage() {
                 </div>
               </div>
 
-              <CardTitle className="text-3xl font-black uppercase italic tracking-tighter">
+              <CardTitle className="ui-title text-[2rem] md:text-[2.3rem] uppercase italic">
                 Create An Account
               </CardTitle>
 
-              <CardDescription className="text-muted-foreground font-medium uppercase tracking-widest text-xs">
-                Already have an account? <br />
-                <Link
-                  href="/login"
-                  className="underline underline-offset-4 hover:text-foreground transition-colors text-accent font-semibold"
-                >
-                  Sign in
-                </Link>
+              <CardDescription className="ui-body max-w-sm mx-auto text-sm md:text-base font-medium text-muted-foreground">
+                <>
+                  <span className="inline-block text-[11px] md:text-xs font-black uppercase tracking-widest text-muted-foreground/80">
+                    Already have an account?
+                  </span>
+                  <br />
+                  <Link
+                    href="/login"
+                    className="text-sm font-semibold text-accent underline underline-offset-4 hover:text-foreground transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                </>
               </CardDescription>
             </CardHeader>
 
@@ -353,14 +356,13 @@ export default function SignUpPage() {
                 {/* Profile picture (optional) */}
                 {/* ...kept as-is... */}
 
-                {/* Names (FORCE VERTICAL EVEN ON DESKTOP) */}
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="firstName"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      First Name:
+                      First Name
                     </Label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -371,7 +373,7 @@ export default function SignUpPage() {
                           clearError();
                           setFirstName(e.target.value);
                         }}
-                        className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                         placeholder="John"
                       />
                     </div>
@@ -380,9 +382,9 @@ export default function SignUpPage() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="lastName"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      Last Name:
+                      Last Name
                     </Label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -393,20 +395,19 @@ export default function SignUpPage() {
                           clearError();
                           setLastName(e.target.value);
                         }}
-                        className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                         placeholder="Doe"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* UTD Email */}
                 <div className="space-y-2">
                   <Label
                     htmlFor="email"
-                    className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                    className="ui-eyebrow pl-1 text-muted-foreground"
                   >
-                    UTD Email:
+                    UTD Email
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -418,20 +419,19 @@ export default function SignUpPage() {
                         clearError();
                         setEmail(e.target.value);
                       }}
-                      className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                      className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                       placeholder="netid@utdallas.edu"
                     />
                   </div>
                 </div>
 
-                {/* Academic year + Major (FORCE VERTICAL EVEN ON DESKTOP) */}
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="academicYear"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      Academic Year:
+                      Academic Year
                     </Label>
                     <select
                       id="academicYear"
@@ -440,13 +440,11 @@ export default function SignUpPage() {
                         clearError();
                         setAcademicYear(e.target.value as AcademicYear);
                       }}
-                      className={`w-full h-12 rounded-xl bg-secondary/20 border border-border/40 px-3 focus:outline-none focus:border-accent
-                        ${
-                          academicYear === ""
-                            ? "text-xs text-muted-foreground"
-                            : "text-xs text-primary"
-                        }
-                    `}
+                      className={`w-full h-12 rounded-xl bg-secondary/20 border border-border/40 px-3 focus:outline-none focus:border-accent ${
+                        academicYear === ""
+                          ? "text-xs text-muted-foreground"
+                          : "text-xs md:text-base text-primary"
+                      }`}
                     >
                       <option value="" disabled>
                         Select...
@@ -462,9 +460,9 @@ export default function SignUpPage() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="major"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      Current Major:
+                      Current Major
                     </Label>
 
                     <div className="relative">
@@ -482,7 +480,7 @@ export default function SignUpPage() {
                         onBlur={() => {
                           window.setTimeout(() => setMajorOpen(false), 120);
                         }}
-                        className="h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        className="h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                         placeholder="Start typing..."
                       />
 
@@ -493,7 +491,7 @@ export default function SignUpPage() {
                               <li key={m}>
                                 <button
                                   type="button"
-                                  className="w-full text-left px-3 py-2 text-xs text-primary hover:bg-secondary/40 transition-colors"
+                                  className="w-full text-left px-3 py-2 text-sm text-primary hover:bg-secondary/40 transition-colors"
                                   onMouseDown={(ev) => ev.preventDefault()}
                                   onClick={() => {
                                     clearError();
@@ -512,14 +510,13 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                {/* Password (FORCE VERTICAL EVEN ON DESKTOP) */}
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label
                       htmlFor="password"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      Password:
+                      Password
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -531,7 +528,7 @@ export default function SignUpPage() {
                           clearError();
                           setPassword(e.target.value);
                         }}
-                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                         placeholder="Create a password"
                       />
                       <button
@@ -550,9 +547,9 @@ export default function SignUpPage() {
                   <div className="space-y-2">
                     <Label
                       htmlFor="confirmPassword"
-                      className="text-[12px] font-black uppercase tracking-widest text-muted-foreground pl-1"
+                      className="ui-eyebrow pl-1 text-muted-foreground"
                     >
-                      Confirm Password:
+                      Confirm Password
                     </Label>
                     <div className="relative">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -564,7 +561,7 @@ export default function SignUpPage() {
                           clearError();
                           setConfirmPassword(e.target.value);
                         }}
-                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-xs text-primary"
+                        className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                         placeholder="Confirm password"
                       />
                       <button
@@ -595,7 +592,7 @@ export default function SignUpPage() {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/10 hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full h-11 md:h-12 rounded-full px-6 md:px-7 text-sm md:text-base font-semibold tracking-[0.02em] md:tracking-wide shadow-none transition-all hover:-translate-y-0.5 hover:bg-accent"
                   disabled={submitting || isPending}
                 >
                   {submitting ? "Creating..." : "Create Account"}
@@ -614,10 +611,10 @@ export default function SignUpPage() {
             </CardContent>
           </Card>
 
-          <p className="mt-4 text-center text-xs text-white/80 font-medium uppercase tracking-widest">
-            All Rights Reserved. &copy;{" "}
+          <p className="mt-4 text-center text-xs text-white/80 font-semibold uppercase tracking-widest">
+            All Rights Reserved. &copy;{""}
             <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
-            SVA | UTDallas Chapter
+            SVA | UT-Dallas
           </p>
         </div>
       </div>

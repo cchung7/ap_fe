@@ -47,7 +47,9 @@ export function Footer() {
           </div>
 
           <h4 className="font-heading font-black text-2xl tracking-tighter uppercase italic text-foreground">
-            <span className="text-muted-foreground/60">UT-Dallas</span>
+            <span className="text-muted-foreground/60">
+              SVA- UT-Dallas
+            </span>
           </h4>
         </div>
 
@@ -129,10 +131,10 @@ export function Footer() {
         {/* Copyright */}
         <div className="space-y-3">
           <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-widest whitespace-nowrap">
-            Student Veterans Association.
+            UTD Student Veterans Association.
           </p>
           <p className="text-[10px] font-semibold text-muted-foreground/40 uppercase tracking-widest">
-            © {currentYear} UT-Dallas chapter. All rights reserved.
+            All rights reserved. ©{currentYear} SVA | UTDallas.
           </p>
         </div>
       </div>

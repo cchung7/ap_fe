@@ -3,30 +3,24 @@
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/hooks/useMe";
 import { Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import { TopbarFrame } from "@/components/shared/TopbarFrame";
 import { BrandLockup } from "@/components/shared/BrandLockup";
 import { cn } from "@/lib/utils";
 
 export function AdminTopbar() {
-  const router = useRouter();
-  const { refresh } = useMe();
-
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
+        cache: "no-store",
       });
     } catch (e) {
       console.error("Logout error:", e);
     } finally {
-      await refresh();
-      router.replace("/");
-      router.refresh();
+      window.location.href = "/";
     }
   };
 

@@ -3,8 +3,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import * as React from "react";
 
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { AppChrome } from "@/components/layout/AppChrome";
 
 export const metadata: Metadata = {
   title: "Student Veterans Association",
@@ -19,11 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
-        <Navbar />
-
-        <main className="min-h-screen">{children}</main>
-
-        <Footer />
+        <AuthProvider>
+          <AppChrome>{children}</AppChrome>
+        </AuthProvider>
       </body>
     </html>
   );

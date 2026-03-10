@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { useMe } from "@/hooks/useMe";
 import { Button } from "@/components/ui/button";
 import { DrawerMenu, type DrawerMenuItem } from "@/components/ui/DrawerMenu";
 import { AdminSidebarResources } from "./AdminSidebarResources";
@@ -38,35 +37,10 @@ const navItems = [
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { loading, isAuthed, isAdmin } = useMe();
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState(false);
-  const [isRedirecting, setIsRedirecting] = React.useState(false);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
-
-  React.useEffect(() => {
-    if (loading || isLoggingOut) {
-      setIsRedirecting(false);
-      return;
-    }
-
-    if (!isAuthed) {
-      setIsRedirecting(true);
-      const next = pathname || "/admin";
-      router.replace(`/login?next=${encodeURIComponent(next)}`);
-      return;
-    }
-
-    if (!isAdmin) {
-      setIsRedirecting(true);
-      router.replace("/");
-      return;
-    }
-
-    setIsRedirecting(false);
-  }, [loading, isAuthed, isAdmin, isLoggingOut, router, pathname]);
 
   React.useEffect(() => {
     setMobileOpen(false);
@@ -267,34 +241,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <AdminSidebarResources compact={compact} />
     </div>
   );
-
-  if (loading && !isLoggingOut) {
-    return (
-      <div className="min-h-screen bg-background px-6 pt-32">
-        <div className="container mx-auto max-w-7xl">
-          <div className="rounded-[2.5rem] border border-border/40 bg-card/50 p-8 shadow-master backdrop-blur-xl">
-            <div className="text-sm font-semibold text-muted-foreground">
-              Checking access…
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if ((isRedirecting || !isAuthed || !isAdmin) && !isLoggingOut) {
-    return (
-      <div className="min-h-screen bg-background px-6 pt-32">
-        <div className="container mx-auto max-w-7xl">
-          <div className="rounded-[2.5rem] border border-border/40 bg-card/50 p-8 shadow-master backdrop-blur-xl">
-            <div className="text-sm font-semibold text-muted-foreground">
-              Loading Data…
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const sidebarW = collapsed ? "lg:pl-[112px]" : "lg:pl-[304px]";
 
