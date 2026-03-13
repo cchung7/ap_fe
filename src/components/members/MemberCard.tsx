@@ -77,10 +77,10 @@ export function MemberCard({
   // flag3.png = silver/white
   const flagBg = isLeadership
     ? "/backgrounds/flag.png"
-    : "/backgrounds/flag3.png";
+    : "/backgrounds/flag.png";
 
   // Background Opacity (... ? Leadership : Membership)
-  const flagOpacity = isLeadership ? 0.16 : 0.35;
+  const flagOpacity = isLeadership ? 0.16 : 0.16;
 
   return (
     <div

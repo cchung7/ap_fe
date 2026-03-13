@@ -18,6 +18,76 @@ type EventsApiItem = Event & {
   currentStatus?: "UPCOMING" | "TODAY" | "PAST";
 };
 
+function toIsoFromDateAndTime(dateValue: unknown, timeValue?: unknown) {
+  if (!dateValue) return "";
+
+  // dateValue can be ISO string, Date string, or Date-like
+  const base = new Date(dateValue as any);
+  if (!Number.isFinite(base.getTime())) return "";
+
+  if (!timeValue) return base.toISOString();
+
+  const t = String(timeValue);
+  const match = /^(\d{1,2}):(\d{2})$/.exec(t);
+  if (!match) return base.toISOString();
+
+  const hh = Number(match[1]);
+  const mm = Number(match[2]);
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return base.toISOString();
+
+  const local = new Date(base);
+  local.setHours(hh, mm, 0, 0);
+  return local.toISOString();
+}
+
+function normalizeEvent(raw: any): EventsApiItem | null {
+  if (!raw) return null;
+
+  const id = String(raw.id || raw._id || "");
+  const title = String(raw.title || "").trim();
+  const category = raw.category as EventsApiItem["category"];
+
+  if (!id || !title || !category) return null;
+
+  // Prefer backend-provided startsAt/endsAt if present; otherwise derive from date/startTime/endTime.
+  const startsAt =
+    typeof raw.startsAt === "string" && raw.startsAt
+      ? raw.startsAt
+      : toIsoFromDateAndTime(raw.date, raw.startTime);
+
+  const endsAt =
+    typeof raw.endsAt === "string" && raw.endsAt
+      ? raw.endsAt
+      : raw.endTime
+      ? toIsoFromDateAndTime(raw.date, raw.endTime)
+      : undefined;
+
+  if (!startsAt) return null;
+
+  return {
+    id,
+    title,
+    description: raw.description ?? undefined,
+    category,
+    startsAt,
+    endsAt,
+    location: raw.location ?? undefined,
+    capacity:
+      typeof raw.capacity === "number"
+        ? raw.capacity
+        : raw.capacity != null
+        ? Number(raw.capacity)
+        : undefined,
+
+    createdAt: raw.createdAt ?? undefined,
+    updatedAt: raw.updatedAt ?? undefined,
+
+    isRegistered: Boolean(raw.isRegistered),
+    viewerAuthenticated: Boolean(raw.viewerAuthenticated),
+    currentStatus: raw.currentStatus,
+  };
+}
+
 export default function EventsPage() {
   const [events, setEvents] = React.useState<EventsApiItem[]>([]);
   const [loadingEvents, setLoadingEvents] = React.useState(true);
@@ -39,7 +109,14 @@ export default function EventsPage() {
         const list = (json as { data?: unknown[] })?.data ?? [];
 
         if (!alive) return;
-        setEvents(Array.isArray(list) ? (list as EventsApiItem[]) : []);
+
+        const normalized = Array.isArray(list)
+          ? (list as any[])
+              .map(normalizeEvent)
+              .filter(Boolean) as EventsApiItem[]
+          : [];
+
+        setEvents(normalized);
       } catch {
         if (!alive) return;
         setEvents([]);

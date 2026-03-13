@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight, BookOpen, Globe, LifeBuoy } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -29,6 +30,12 @@ export function AdminSidebarResources({
 }: {
   compact: boolean;
 }) {
+  const pathname = usePathname();
+
+  if (pathname === "/admin/events/create") {
+    return null;
+  }
+
   if (compact) {
     return (
       <div className="pt-4">
@@ -67,7 +74,7 @@ export function AdminSidebarResources({
   return (
     <div className="pt-5">
       <div className="rounded-[2rem] border border-white/40 bg-white/30 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] backdrop-blur-md">
-        <div className="pb-2 px-1">
+        <div className="px-1 pb-2">
           <div className="ui-title text-[0.78rem] tracking-[0.18em] text-muted-foreground">
             RESOURCES
           </div>

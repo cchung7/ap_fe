@@ -3,12 +3,12 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 
 import type { Event, EventCategory } from "@/types/events";
+import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 
 const categoryLabel: Record<EventCategory, string> = {
   VOLUNTEERING: "Volunteering",
@@ -57,19 +57,21 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
   const bg = categoryBg[event.category];
   const isLoggedIn = !!event.viewerAuthenticated;
 
+  const { showInfo } = useGlobalStatusBanner();
+
   const handleRegistration = React.useCallback(() => {
     if (!isLoggedIn) {
       router.push("/signup?next=/events");
       return;
     }
 
-    toast.info("Event registration flow will be enabled in a later phase.");
-  }, [isLoggedIn, router]);
+    showInfo("Event registration flow will be enabled in a later phase.");
+  }, [isLoggedIn, router, showInfo]);
 
   const handleCheckIn = React.useCallback(() => {
     if (!isLoggedIn) return;
-    toast.info("Event check-in flow will be enabled in a later phase.");
-  }, [isLoggedIn]);
+    showInfo("Event check-in flow will be enabled in a later phase.");
+  }, [isLoggedIn, showInfo]);
 
   return (
     <div

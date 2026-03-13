@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { AppChrome } from "@/components/layout/AppChrome";
+import { GlobalStatusBannerProvider } from "@/components/ui/GlobalStatusBannerProvider";
 
 export const metadata: Metadata = {
   title: "Student Veterans Association",
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
-        <AuthProvider>
-          <AppChrome>{children}</AppChrome>
-        </AuthProvider>
+        <GlobalStatusBannerProvider>
+          <AuthProvider>
+            <AppChrome>{children}</AppChrome>
+          </AuthProvider>
+        </GlobalStatusBannerProvider>
       </body>
     </html>
   );

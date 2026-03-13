@@ -156,7 +156,8 @@ export const ContactSection = () => {
 
             <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
               <div className="space-y-6">
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                {/* FULL NAME */}
+                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Full Name
                   </label>
@@ -165,11 +166,12 @@ export const ContactSection = () => {
                     name="fullName"
                     type="text"
                     placeholder="Your name"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0"
                   />
                 </div>
 
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                {/* EMAIL */}
+                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Email Address
                   </label>
@@ -178,11 +180,12 @@ export const ContactSection = () => {
                     name="email"
                     type="email"
                     placeholder="you@utdallas.edu"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0"
                   />
                 </div>
 
-                <div className="space-y-2 border-b-2 border-border/60 focus-within:border-accent transition-colors pb-2">
+                {/* MESSAGE */}
+                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
                     Message
                   </label>
@@ -190,7 +193,7 @@ export const ContactSection = () => {
                     required
                     name="body"
                     placeholder="How can we help?"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:ring-0 min-h-32"
+                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0 min-h-32"
                   />
                 </div>
               </div>
@@ -207,12 +210,8 @@ export const ContactSection = () => {
                   </>
                 ) : (
                   <>
-                    <span className="truncate">
-                      Send Message
-                    </span>
-                    <ArrowRight
-                      className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1"
-                    />
+                    <span className="truncate">Send Message</span>
+                    <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
               </Button>

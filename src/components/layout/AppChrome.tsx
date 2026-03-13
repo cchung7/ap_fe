@@ -8,15 +8,12 @@ import { Footer } from "@/components/footer";
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
   const hideChrome = pathname === "/login" || pathname === "/signup";
 
   return (
     <>
       {!hideChrome && <Navbar />}
-
       <main className="min-h-screen">{children}</main>
-
       {!hideChrome && <Footer />}
     </>
   );

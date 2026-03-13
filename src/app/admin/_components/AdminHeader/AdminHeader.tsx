@@ -17,17 +17,17 @@ export default function AdminHeader({
   actionLabel = "Add",
 }: AdminHeaderProps) {
   return (
-    <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <header className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <LayoutDashboard size={24} />
           </div>
-          <h1 className="text-4xl font-heading font-black tracking-tighter uppercase italic">
+          <h1 className="font-heading text-4xl font-black uppercase italic tracking-tighter">
             {title}
           </h1>
         </div>
-        <p className="text-sm text-muted-foreground font-medium uppercase tracking-[0.2em]">
+        <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
           {subtitle}
         </p>
       </div>
@@ -35,8 +35,11 @@ export default function AdminHeader({
       {onAddClick && (
         <div className="flex gap-4">
           <Button
+            type="button"
+            variant="logout"
+            size="lg"
             onClick={onAddClick}
-            className="h-12 px-8 rounded-2xl bg-accent text-accent-foreground font-black uppercase tracking-widest text-[10px] gap-2 hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg shadow-accent/30 dark:shadow-accent/40 cursor-pointer"
+            className="h-12 rounded-2xl px-8 font-black uppercase tracking-widest text-[10px]"
           >
             <Plus size={16} />
             {actionLabel}

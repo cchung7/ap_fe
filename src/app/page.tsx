@@ -168,12 +168,12 @@ export default function Home() {
                     const rank = idx + 1;
                     const isPlaceholder = u.name === "-";
 
-                    const medalBg =
+                    const flagBg =
                       rank === 1
-                        ? "/backgrounds/medal_gold.png"
+                        ? "/backgrounds/flag_gold.png"
                         : rank === 2
-                        ? "/backgrounds/medal_silver.png"
-                        : "/backgrounds/medal_bronze.png";
+                        ? "/backgrounds/flag_silver.png"
+                        : "/backgrounds/flag_bronze.png";
 
                     return (
                       <div
@@ -185,7 +185,7 @@ export default function Home() {
                           overflow-hidden
                         "
                       >
-                        {/* Transparent medal background */}
+                        {/* Transparent flag background */}
                         <div
                           className="
                             pointer-events-none
@@ -194,9 +194,9 @@ export default function Home() {
                             bg-[length:140%_auto]
                             bg-center
                             bg-no-repeat
-                            opacity-[0.15]
+                            opacity-[0.25]
                           "
-                          style={{ backgroundImage: `url('${medalBg}')` }}
+                          style={{ backgroundImage: `url('${flagBg}')` }}
                           aria-hidden
                         />
 
