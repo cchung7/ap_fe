@@ -1,11 +1,11 @@
-// Page layout (e.g. Grouping + section rendering + empty/loading state) 
+// Page layout (e.g. Grouping + section rendering + empty/loading state)
 
 "use client";
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Event, EventCategory } from "@/types/events";
+import type { EventCategory } from "@/types/events";
 import { EventCard, type EventCardEvent } from "@/components/events/EventCard";
 
 const categoryLabel: Record<EventCategory, string> = {
@@ -31,9 +31,7 @@ function Section({
   return (
     <section className="space-y-6">
       <div className="text-center">
-        <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
-          {title}:
-        </h2>
+        <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">{title}:</h2>
         <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
       </div>
 
@@ -74,18 +72,10 @@ export function EventsGrid({ events, loading = false }: EventsGridProps) {
     [events]
   );
 
-  const upcoming = React.useMemo(() => {
-    const now = Date.now();
-
-    return normalizedEvents
-      .filter((event) => {
-        const startsAt = new Date(event.startsAt).getTime();
-        return Number.isFinite(startsAt) && startsAt >= now;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
-      );
+  const sorted = React.useMemo(() => {
+    return [...normalizedEvents].sort(
+      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    );
   }, [normalizedEvents]);
 
   const grouped = React.useMemo(() => {
@@ -95,14 +85,14 @@ export function EventsGrid({ events, loading = false }: EventsGridProps) {
       PROFESSIONAL_DEVELOPMENT: [],
     };
 
-    for (const event of upcoming) {
+    for (const event of sorted) {
       const category = event.category;
       if (!groups[category]) continue;
       groups[category].push(event);
     }
 
     return groups;
-  }, [upcoming]);
+  }, [sorted]);
 
   if (loading) {
     return (
@@ -112,7 +102,7 @@ export function EventsGrid({ events, loading = false }: EventsGridProps) {
     );
   }
 
-  if (upcoming.length === 0) {
+  if (sorted.length === 0) {
     return (
       <div className="rounded-[2.5rem] border-2 border-dashed border-border/40 bg-secondary/5 p-12 text-center">
         <p className="text-sm font-medium text-muted-foreground">
