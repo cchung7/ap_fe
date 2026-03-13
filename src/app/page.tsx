@@ -170,10 +170,10 @@ export default function Home() {
 
                     const flagBg =
                       rank === 1
-                        ? "/backgrounds/flag_gold.png"
+                        ? "/backgrounds/p_gold.png"
                         : rank === 2
-                        ? "/backgrounds/flag_silver.png"
-                        : "/backgrounds/flag_bronze.png";
+                        ? "/backgrounds/p_silver.png"
+                        : "/backgrounds/p_bronze.png";
 
                     return (
                       <div
@@ -194,7 +194,7 @@ export default function Home() {
                             bg-[length:140%_auto]
                             bg-center
                             bg-no-repeat
-                            opacity-[0.25]
+                            opacity-[0.5]
                           "
                           style={{ backgroundImage: `url('${flagBg}')` }}
                           aria-hidden
