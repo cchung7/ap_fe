@@ -4,10 +4,10 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 import AdminHeader from "../../_components/AdminHeader/AdminHeader";
 import { Button } from "@/components/ui/button";
+import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 
 type EventCategory =
   | "VOLUNTEERING"
@@ -43,6 +43,7 @@ const INPUT_CLASSNAME =
 
 export default function AdminCreateEventPage() {
   const router = useRouter();
+  const { showError, showSuccess, clear } = useGlobalStatusBanner();
 
   const [form, setForm] = React.useState<CreateEventPayload>(defaultForm);
   const [submitting, setSubmitting] = React.useState(false);
@@ -56,6 +57,7 @@ export default function AdminCreateEventPage() {
     ) => {
       const value = e.target.value;
 
+      clear();
       setForm((prev) => ({
         ...prev,
         [key]:
@@ -96,9 +98,11 @@ export default function AdminCreateEventPage() {
   const submitCreateEvent = async () => {
     if (submitting) return;
 
+    clear();
+
     const validationError = validateForm();
     if (validationError) {
-      toast.error(validationError);
+      showError(validationError);
       return;
     }
 
@@ -125,9 +129,7 @@ export default function AdminCreateEventPage() {
         throw new Error(json?.message || "Failed to create event");
       }
 
-      toast.success(json?.message || "Event created successfully", {
-        description: "Redirecting...",
-      });
+      showSuccess(json?.message || "Event created successfully. Redirecting...");
 
       window.setTimeout(() => {
         router.push("/admin/events");
@@ -136,7 +138,7 @@ export default function AdminCreateEventPage() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to create event";
-      toast.error(message);
+      showError(message);
     } finally {
       setSubmitting(false);
     }

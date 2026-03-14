@@ -39,19 +39,24 @@ async function fetchMe(): Promise<Me | null> {
     cache: "no-store",
   });
 
+  // Logged out is not an exceptional state.
+  if (res.status === 401 || res.status === 403) return null;
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(text || `Failed to fetch /api/auth/me (${res.status})`);
   }
 
-  const json = (await res.json()) as unknown;
+  const json = (await res.json()) as any;
 
-  if (json && typeof json === "object" && "me" in json) {
-    return ((json as { me?: Me | null }).me ?? null) as Me | null;
-  }
+  // Supports:
+  // - { me: ... }
+  // - { data: { me: ... } }  <-- your current response shape
+  // - { data: { user: ... } } or { user: ... } (tolerant)
+  const candidate = json?.me ?? json?.user ?? json?.data?.me ?? json?.data?.user ?? null;
 
-  const wrapped = json as ApiResponse<{ me: Me | null }>;
-  return wrapped?.data?.me ?? null;
+  if (!candidate || typeof candidate !== "object") return null;
+  return candidate as Me;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { ChevronLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +17,7 @@ import {
   normalizeSignUpValues,
   validateSignUpValues,
 } from "@/components/signup/signup.helpers";
+import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 // import { ProfileImageSection } from "@/components/signup/ProfileImageSection";
 
 const INPUT_CLASSNAME =
@@ -48,6 +48,7 @@ type SignUpFormProps = {
 
 export function SignUpForm({ isPending = false }: SignUpFormProps) {
   const router = useRouter();
+  const { showError, showSuccess, clear } = useGlobalStatusBanner();
 
   const [values, setValues] = React.useState<SignUpFormValues>(initialValues);
   const [showPassword, setShowPassword] = React.useState(false);
@@ -56,17 +57,19 @@ export function SignUpForm({ isPending = false }: SignUpFormProps) {
 
   const setField = React.useCallback(
     <K extends keyof SignUpFormValues>(field: K, value: SignUpFormValues[K]) => {
+      clear();
       setValues((prev) => ({ ...prev, [field]: value }));
     },
-    []
+    [clear]
   );
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    clear();
 
     const validationError = validateSignUpValues(values);
     if (validationError) {
-      toast.error(validationError);
+      showError(validationError);
       return;
     }
 
@@ -94,11 +97,11 @@ export function SignUpForm({ isPending = false }: SignUpFormProps) {
 
       if (!response.ok) {
         const msg = extractApiErrorMessage(data, "Signup failed");
-        toast.error(msg);
+        showError(msg);
         return;
       }
 
-      toast.success("Account created!", { description: "Redirecting..." });
+      showSuccess("Account created!");
 
       window.setTimeout(() => {
         router.replace("/");
@@ -106,7 +109,7 @@ export function SignUpForm({ isPending = false }: SignUpFormProps) {
     } catch (err: any) {
       console.error("Signup error:", err);
       const msg = err?.message || "An error occurred during signup";
-      toast.error(msg);
+      showError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -206,7 +209,7 @@ export function SignUpForm({ isPending = false }: SignUpFormProps) {
         <MajorAutocomplete
           value={values.major}
           onChange={(next) => setField("major", next)}
-          onClearError={() => {}}
+          onClearError={() => clear()}
         />
       </div>
 

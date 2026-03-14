@@ -3,10 +3,10 @@
 import * as React from "react";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/hooks/useMe";
+import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 
 import { Eye, EyeOff, ChevronLeft, Lock, Mail } from "lucide-react";
 import Image from "next/image";
@@ -106,6 +106,7 @@ export default function LoginClient() {
   const nextParam = useMemo(() => searchParams.get("next"), [searchParams]);
 
   const { loading: meLoading, isAuthed, isAdmin } = useMe();
+  const { showError, showSuccess, clear } = useGlobalStatusBanner();
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -122,18 +123,19 @@ export default function LoginClient() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    clear();
     setLoading(true);
 
     const normalizedEmail = email.trim().toLowerCase();
 
     if (!normalizedEmail) {
-      toast.error("Please enter a valid email address.");
+      showError("Please enter a valid email address.");
       setLoading(false);
       return;
     }
 
     if (!password) {
-      toast.error("Please enter a valid password.");
+      showError("Please enter a valid password.");
       setLoading(false);
       return;
     }
@@ -154,15 +156,13 @@ export default function LoginClient() {
         | LoginSuccessPayload;
 
       if (!response.ok) {
-        toast.error(
+        showError(
           normalizeLoginError(response.status, data as LoginErrorPayload)
         );
         return;
       }
 
-      toast.success("Signed in successfully!", {
-        description: "Redirecting...",
-      });
+      showSuccess("Signed in successfully!");
 
       const safeNext = isSafeInternalPath(nextParam) ? nextParam : null;
       const nextIsAdminRoute = Boolean(
@@ -184,7 +184,7 @@ export default function LoginClient() {
       }, 700);
     } catch (err: unknown) {
       console.error("Unexpected login failure:", err);
-      toast.error(
+      showError(
         "We could not reach the server. Please check your connection and try again."
       );
     } finally {
@@ -265,7 +265,10 @@ export default function LoginClient() {
                       type="email"
                       placeholder="user@example.com"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        clear();
+                        setEmail(e.target.value);
+                      }}
                       className="pl-10 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                       required
                     />
@@ -288,7 +291,10 @@ export default function LoginClient() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       placeholder="password"
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        clear();
+                        setPassword(e.target.value);
+                      }}
                       className="pl-10 pr-12 h-12 rounded-xl bg-secondary/20 border-border/40 focus:border-accent placeholder:text-xs text-sm md:text-base text-primary"
                       required
                     />
