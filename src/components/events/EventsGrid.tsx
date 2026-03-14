@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\events\EventsGrid.tsx
 // Page layout (e.g. Grouping + section rendering + empty/loading state)
 
 "use client";
@@ -28,6 +29,8 @@ function Section({
 }) {
   if (events.length === 0) return null;
 
+  const isSingleCard = events.length === 1;
+
   return (
     <section className="space-y-6">
       <div className="text-center">
@@ -38,27 +41,44 @@ function Section({
       <div className="flex justify-center">
         <div className="w-full max-w-6xl">
           <AnimatePresence mode="popLayout">
-            <div
-              className={
-                "grid grid-cols-1 gap-6 " +
-                "sm:grid-cols-2 " +
-                "lg:grid-cols-[repeat(auto-fit,minmax(320px,520px))] " +
-                "justify-center"
-              }
-            >
-              {events.map((event) => (
-                <motion.div
-                  key={event.id}
-                  layout
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  className="min-w-0 w-full"
-                >
-                  <EventCard event={event} />
-                </motion.div>
-              ))}
-            </div>
+            {isSingleCard ? (
+              <div className="flex justify-center">
+                {events.map((event) => (
+                  <motion.div
+                    key={event.id}
+                    layout
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    className="min-w-0 w-full max-w-[520px]"
+                  >
+                    <EventCard event={event} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div
+                className={
+                  "grid grid-cols-1 gap-6 justify-items-center " +
+                  "sm:grid-cols-2 " +
+                  "lg:grid-cols-[repeat(auto-fit,minmax(320px,520px))] " +
+                  "justify-center"
+                }
+              >
+                {events.map((event) => (
+                  <motion.div
+                    key={event.id}
+                    layout
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    className="min-w-0 w-full max-w-[520px]"
+                  >
+                    <EventCard event={event} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </AnimatePresence>
         </div>
       </div>

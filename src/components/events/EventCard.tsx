@@ -1,14 +1,15 @@
-// Per-card presentation + ineraction UX
+// D:\ap_fe\src\components\events\EventCard.tsx
+// Per-card presentation + interaction UX
 "use client";
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 
-import type { Event, EventCategory } from "@/types/events";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
+import type { Event, EventCategory } from "@/types/events";
 
 const categoryLabel: Record<EventCategory, string> = {
   VOLUNTEERING: "Volunteering",
@@ -42,13 +43,13 @@ function formatDateTime(iso: string) {
 function categoryBadgeClasses(category: EventCategory) {
   switch (category) {
     case "VOLUNTEERING":
-      return "bg-accent/10 text-accent border-accent/20";
+      return "border-accent/55 bg-accent/20 !text-accent shadow-[0_0_0_1px_rgba(177,18,38,0.08)]";
     case "SOCIAL":
-      return "bg-secondary text-secondary-foreground border-border/40";
+      return "border-border/60 bg-secondary/95 !text-secondary-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]";
     case "PROFESSIONAL_DEVELOPMENT":
-      return "bg-primary/10 text-primary border-primary/20";
+      return "border-primary/50 bg-primary/18 !text-primary shadow-[0_0_0_1px_rgba(29,78,216,0.08)]";
     default:
-      return "bg-secondary text-secondary-foreground border-border/40";
+      return "border-border/60 bg-secondary/95 !text-secondary-foreground shadow-[0_0_0_1px_rgba(255,255,255,0.06)]";
   }
 }
 
@@ -56,7 +57,6 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
   const router = useRouter();
   const bg = categoryBg[event.category];
   const isLoggedIn = !!event.viewerAuthenticated;
-
   const { showInfo } = useGlobalStatusBanner();
 
   const handleRegistration = React.useCallback(() => {
@@ -78,24 +78,19 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
       className="
         group
         relative
-        rounded-[2.5rem]
-        border border-border/40
-        bg-card/50
-        backdrop-blur-xl
-        p-7
-        shadow-master
         min-w-0
         overflow-hidden
-
-        [perspective:1200px]
-        transform-gpu
+        rounded-[2.5rem]
+        border border-border/40
+        bg-card/60
+        p-7
+        shadow-master
+        backdrop-blur-xl
         transition-all
         duration-300
         ease-out
-
-        hover:-translate-y-[4px]
-        hover:rotate-x-[1.5deg]
-        hover:rotate-y-[-1.5deg]
+        hover:-translate-y-1
+        hover:border-border/60
         hover:shadow-hover
       "
     >
@@ -108,7 +103,7 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
           transition-opacity
           duration-300
           group-hover:opacity-100
-          bg-[radial-gradient(ellipse_at_top,rgba(177,18,38,0.16),transparent_65%)]
+          bg-[radial-gradient(ellipse_at_top,rgba(177,18,38,0.12),transparent_65%)]
         "
         aria-hidden
       />
@@ -120,36 +115,61 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
           bg-cover
           bg-center
           bg-no-repeat
-          opacity-[0.15]
+          opacity-[0.72]
+          scale-[1.02]
         "
         style={{ backgroundImage: `url('${bg}')` }}
         aria-hidden
       />
 
-      <div className="relative z-10">
-        <div className="flex items-start justify-between gap-4 min-w-0">
-          <div className="space-y-2 min-w-0">
+      <div
+        className="
+          pointer-events-none
+          absolute inset-0
+          bg-gradient-to-b
+          from-background/15
+          via-card/68
+          to-card/90
+        "
+        aria-hidden
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute inset-x-6 top-0 h-px
+          bg-gradient-to-r from-transparent via-white/40 to-transparent
+          opacity-70
+        "
+        aria-hidden
+      />
+
+      <div className="relative z-10 flex min-h-[320px] flex-col">
+        <div className="flex min-w-0 items-start justify-between gap-4">
+          <div className="min-w-0 space-y-5">
             <Badge
               variant="outline"
-              className={`border ${categoryBadgeClasses(event.category)}`}
+              className={`ui-eyebrow h-6 rounded-full px-2.5 tracking-[0.14em] backdrop-blur-sm ${categoryBadgeClasses(
+                event.category
+              )}`}
             >
               {categoryLabel[event.category]}
             </Badge>
 
-            <h3 className="text-xl font-black tracking-tight text-foreground leading-tight break-words">
+            <h3 className="ui-title break-words text-[1.6rem] leading-[1.15]">
               {event.title}
             </h3>
           </div>
         </div>
 
-        <div className="mt-4 space-y-2 text-sm min-w-0">
-          <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
+        <div className="mt-5 min-w-0 space-y-2.5 text-sm">
+          <div className="flex min-w-0 items-start gap-2.5 font-medium text-foreground/72">
             <Calendar size={16} className="mt-0.5 shrink-0" />
             <span className="break-words">{formatDateTime(event.startsAt)}</span>
           </div>
 
           {event.endsAt && (
-            <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
+            <div className="flex min-w-0 items-start gap-2.5 font-medium text-foreground/72">
               <Clock size={16} className="mt-0.5 shrink-0" />
               <span className="break-words">
                 Ends: {formatDateTime(event.endsAt)}
@@ -158,13 +178,13 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
           )}
 
           {event.location && (
-            <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
+            <div className="flex min-w-0 items-start gap-2.5 font-medium text-foreground/72">
               <MapPin size={16} className="mt-0.5 shrink-0" />
               <span className="min-w-0 break-words">{event.location}</span>
             </div>
           )}
 
-          <div className="flex items-start gap-2 text-foreground/80 font-semibold min-w-0">
+          <div className="flex min-w-0 items-start gap-2.5 font-medium text-foreground/72">
             <Users size={16} className="mt-0.5 shrink-0" />
             <span className="break-words">
               {typeof event.capacity === "number"
@@ -175,37 +195,38 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
         </div>
 
         {event.description && (
-          <p className="mt-4 text-sm text-foreground/80 break-words">
+          <p className="mt-5 break-words text-sm leading-6 text-foreground/78 line-clamp-3">
             {event.description}
           </p>
         )}
 
-        <div className="mt-6 flex flex-col sm:flex-row sm:flex-wrap sm:justify-start gap-3 min-w-0">
-          <Button
-            variant="outline"
-            className="rounded-2xl border-border/40 w-full sm:w-auto max-w-full"
-            onClick={handleRegistration}
-            title={
-              isLoggedIn
-                ? "Registration flow will be enabled in a later phase."
-                : "Create an account to register for events."
-            }
-          >
-            Registration
-          </Button>
+        <div className="mt-auto pt-7">
+          <div className="flex min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <Button
+              className="h-11 w-full max-w-full rounded-2xl bg-accent px-5 text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 sm:w-auto"
+              onClick={handleRegistration}
+              title={
+                isLoggedIn
+                  ? "Event registration flow will be enabled in a later phase."
+                  : "Create an account to register for events."
+              }
+            >
+              Register
+            </Button>
 
-          <Button
-            className="rounded-2xl bg-primary text-primary-foreground w-full sm:w-auto max-w-full"
-            onClick={handleCheckIn}
-            disabled={!isLoggedIn}
-            title={
-              isLoggedIn
-                ? "Check-in flow will be enabled in a later phase."
-                : "You must be logged in to check in."
-            }
-          >
-            Check-in
-          </Button>
+            <Button
+              className="h-11 w-full max-w-full rounded-2xl bg-primary px-5 text-primary-foreground sm:w-auto"
+              onClick={handleCheckIn}
+              disabled={!isLoggedIn}
+              title={
+                isLoggedIn
+                  ? "Event check-in flow will be enabled in a later phase."
+                  : "You must be logged in to check in."
+              }
+            >
+              Check-in
+            </Button>
+          </div>
         </div>
       </div>
     </div>
