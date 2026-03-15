@@ -95,7 +95,7 @@ export const HeroSection = () => {
               fill
               priority={idx === 0}
               unoptimized
-              className={cn(  
+              className={cn(
                 "absolute inset-0 object-cover",
                 "transition-opacity duration-1000 will-change-opacity",
                 idx === current ? "opacity-100 z-[1]" : "opacity-0 z-0"
@@ -142,7 +142,7 @@ export const HeroSection = () => {
                 onClick={goToPrevious}
                 size="icon-lg"
                 variant="ghost"
-                className="absolute top-1/2 -t  ranslate-y-1/2 z-30 left-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
+                className="absolute top-1/2 -translate-y-1/2 z-30 left-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
               >
                 <ChevronLeft className="h-6 w-6 stroke-[2.5]" />
               </Button>
@@ -165,13 +165,29 @@ export const HeroSection = () => {
       <div className="relative z-10">
         <div className="container max-w-5xl mx-auto px-6">
           <div className="relative mt-6 sm:mt-6 md:mt-8 text-center">
-            {/* Mission — standardized */}
-            <div className="mt-16 space-y-2">
-              <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
-                Our Mission:
-              </h2>
+            <div className="mt-6 space-y-0">
+              <div className="flex justify-center">
+                <div className="relative flex flex-col items-center pt-[7rem] sm:pt-[8rem] md:pt-[9.25rem] lg:pt-[10.5rem]">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2">
+                    <div className="relative h-36 w-36 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-52 lg:w-52 opacity-90">
+                      <Image
+                        src="/icons/flag_icon.png"
+                        alt="Mission icon"
+                        fill
+                        className="object-contain saturate-[0.82] contrast-[0.94] brightness-[0.98]"
+                        sizes="(max-width: 640px) 144px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"
+                        priority={false}
+                      />
+                    </div>
+                  </div>
 
-              <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
+                  <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl leading-none">
+                    Our Mission:
+                  </h2>
+                </div>
+              </div>
+
+              <div className="mt-3 mx-auto h-px w-full max-w-xl bg-border/70" />
 
               <p className="ui-body mt-4 text-muted-foreground leading-relaxed max-w-xl mx-auto font-medium">
                 We work to empower UT Dallas military-connected students and

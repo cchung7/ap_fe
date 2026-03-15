@@ -33,10 +33,6 @@ export const CarouselSection = () => {
     return () => ro.disconnect();
   }, []);
 
-  // Card width + gap:
-  // base: w-24 (96) + gap-2 (8)  => 104
-  // sm:   w-28 (112) + gap-2 (8) => 120
-  // md+:  w-32 (128) + gap-2 (8) => 136
   const gapPx = 8;
   const stepPx = viewportPx >= 768 ? 136 : viewportPx >= 640 ? 120 : 104;
 
@@ -44,7 +40,6 @@ export const CarouselSection = () => {
   const maxIdx = Math.max(0, sponsorCount - visibleCards);
 
   const maxOffsetPx = maxIdx * stepPx;
-
   const shouldCenterSponsors = maxIdx === 0;
 
   const allowDrag = sponsorCount > 1;
@@ -53,7 +48,6 @@ export const CarouselSection = () => {
   const clampOffset = React.useCallback(
     (v: number) => {
       if (maxOffsetPx > 0) return Math.min(maxOffsetPx, Math.max(0, v));
-
       return Math.max(-ELASTIC_PX, Math.min(ELASTIC_PX, v));
     },
     [maxOffsetPx]
@@ -144,14 +138,31 @@ export const CarouselSection = () => {
   }, [offsetPx, stepPx, maxIdx, clampOffset, stopRaf, maxOffsetPx]);
 
   return (
-    <section className="px-6 bg-background relative overflow-hidden">
+    <section className="px-6 py-2 md:py-4 bg-background relative overflow-hidden">
       <div className="container max-w-6xl mx-auto">
-        <div className="mt-12 text-center">
-          <p className="ui-title text-3xl md:text-4xl lg:text-5xl">
-            Our Sponsors:
-          </p>
+        <div className="mt-6 text-center">
+          <div className="flex justify-center">
+            <div className="relative flex flex-col items-center pt-[7rem] sm:pt-[8rem] md:pt-[9.25rem] lg:pt-[10.5rem]">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2">
+                <div className="relative h-36 w-36 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-52 lg:w-52 opacity-90">
+                  <Image
+                    src="/icons/handshake_icon.png"
+                    alt="Sponsors icon"
+                    fill
+                    className="object-contain saturate-[0.82] contrast-[0.94] brightness-[0.98]"
+                    sizes="(max-width: 640px) 144px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"
+                    priority={false}
+                  />
+                </div>
+              </div>
 
-          <div className="mt-2 mx-auto h-px w-full max-w-xl bg-border/70" />
+              <p className="ui-title text-3xl md:text-4xl lg:text-5xl leading-none">
+                Our Sponsors:
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3 mx-auto h-px w-full max-w-xl bg-border/70" />
 
           <div className="mt-6 flex items-center justify-center gap-2">
             {sponsorCount > 1 && (

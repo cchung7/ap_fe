@@ -57,10 +57,10 @@ export const ContactSection = () => {
   return (
     <section
       id="contact"
-      className="py-8 md:py-12 pb-28 md:pb-36 px-6 bg-background"
+      className="pt-20 md:pt-28 pb-28 md:pb-36 px-6 bg-background"
     >
       <div className="container max-w-6xl mx-auto">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8 md:gap-10">
           <div className="space-y-3 flex flex-col items-center text-center">
             <div className="space-y-5 flex flex-col items-center text-center">
               <h2 className="text-sm font-black uppercase tracking-[0.45em] text-accent">
@@ -92,7 +92,7 @@ export const ContactSection = () => {
               </p>
             </div>
 
-            <div className="pt-6 w-full max-w-3xl">
+            <div className="pt-6 w-full max-w-[42rem] mx-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   {
@@ -129,17 +129,17 @@ export const ContactSection = () => {
                     href={item.href}
                     target={item.newTab ? "_blank" : undefined}
                     rel={item.newTab ? "noopener noreferrer" : undefined}
-                    className="group flex items-center gap-4 rounded-3xl border border-border/70 bg-secondary/30 px-5 py-4 text-left transition-all duration-300 hover:border-accent/70 hover:shadow-lg hover:shadow-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="ui-surface-brand group relative flex items-center gap-4 rounded-3xl px-5 py-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/35 hover:shadow-[0_22px_50px_-24px_rgba(11,18,32,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    <div className="h-12 w-12 shrink-0 rounded-2xl bg-secondary flex items-center justify-center text-primary transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+                    <div className="relative z-10 h-12 w-12 shrink-0 rounded-2xl border border-primary/10 bg-primary/[0.08] flex items-center justify-center text-primary transition-all duration-300 group-hover:border-accent/30 group-hover:bg-accent/12 group-hover:text-accent">
                       <item.icon className="h-5 w-5" />
                     </div>
 
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/60">
+                    <div className="relative z-10 min-w-0">
+                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/75">
                         {item.label}
                       </p>
-                      <p className="text-base sm:text-lg font-bold tracking-tight truncate">
+                      <p className="text-base sm:text-lg font-bold tracking-tight text-foreground/85 truncate">
                         {item.value}
                       </p>
                     </div>
@@ -149,73 +149,87 @@ export const ContactSection = () => {
             </div>
           </div>
 
-          <div className="bg-secondary/30 p-8 md:p-20 rounded-[2.5rem] border border-border/40 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-3 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-all duration-1000">
-              <Rocket className="h-16 w-16" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
-              <div className="space-y-6">
-                {/* FULL NAME */}
-                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Full Name
-                  </label>
-                  <input
-                    required
-                    name="fullName"
-                    type="text"
-                    placeholder="Your name"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0"
-                  />
-                </div>
-
-                {/* EMAIL */}
-                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Email Address
-                  </label>
-                  <input
-                    required
-                    name="email"
-                    type="email"
-                    placeholder="you@utdallas.edu"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0"
-                  />
-                </div>
-
-                {/* MESSAGE */}
-                <div className="space-y-2 rounded-2xl p-2 transition-colors focus-within:ring-2 focus-within:ring-accent/60">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">
-                    Message
-                  </label>
-                  <textarea
-                    required
-                    name="body"
-                    placeholder="How can we help?"
-                    className="w-full bg-transparent border-none p-2 text-xl font-bold placeholder:text-muted-foreground/20 focus:outline-none focus:ring-0 min-h-32"
-                  />
-                </div>
+          <div className="w-full max-w-[30rem] mx-auto">
+            <div className="ui-surface-brand-strong relative rounded-[2.5rem]">
+              <div className="absolute top-0 right-0 p-5 opacity-[0.07] scale-[1.35] rotate-12 pointer-events-none">
+                <Rocket className="h-20 w-20 text-primary" />
               </div>
 
-              <Button
-                type="submit"
-                size="lg"
-                disabled={isSubmitting}
-                className="w-full h-14 cursor-pointer rounded-full text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
-              >
-                {isSubmitting ? (
-                  <>
-                    Sending <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                  </>
-                ) : (
-                  <>
-                    <span className="truncate">Send Message</span>
-                    <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
-                  </>
-                )}
-              </Button>
-            </form>
+              <div className="relative z-10 p-6 sm:p-7 md:p-8">
+                <div className="mb-6 space-y-2 text-left">
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
+                    Contact Form
+                  </p>
+                  <h4 className="text-2xl font-black tracking-tight text-foreground">
+                    Send a Message
+                  </h4>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Share a question, idea, or request and our team will follow
+                    up as soon as possible.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-4">
+                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                        Full Name
+                      </label>
+                      <input
+                        required
+                        name="fullName"
+                        type="text"
+                        placeholder="Your name"
+                        className="mt-2 w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
+                      />
+                    </div>
+
+                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                        Email Address
+                      </label>
+                      <input
+                        required
+                        name="email"
+                        type="email"
+                        placeholder="you@utdallas.edu"
+                        className="mt-2 w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
+                      />
+                    </div>
+
+                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                        Message
+                      </label>
+                      <textarea
+                        required
+                        name="body"
+                        placeholder="How can we help?"
+                        className="mt-2 w-full min-h-36 resize-none bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
+                      />
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={isSubmitting}
+                    className="w-full h-14 cursor-pointer rounded-full text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        Sending <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="truncate">Send Message</span>
+                        <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </div>
