@@ -194,10 +194,10 @@ export default function Home() {
 
                     const rowTone =
                       rank === 1
-                        ? "border-yellow-500/20 bg-yellow-500/[0.08]"
+                        ? "ui-surface-gold"
                         : rank === 2
-                        ? "border-slate-400/20 bg-slate-400/[0.10]"
-                        : "border-amber-700/20 bg-amber-700/[0.08]";
+                        ? "ui-surface-silver"
+                        : "ui-surface-bronze";
 
                     const rankTone =
                       rank === 1
@@ -332,7 +332,7 @@ export default function Home() {
                     Loading events…
                   </div>
                 ) : eventRows.length === 0 ? (
-                  <div className="ui-surface-accent rounded-2xl px-5 py-6 text-center">
+                  <div className="ui-surface-silver rounded-2xl px-5 py-6 text-center">
                     <p className="relative z-10 text-sm font-semibold text-foreground">
                       No upcoming events available.
                     </p>
@@ -349,7 +349,7 @@ export default function Home() {
                     return (
                       <div
                         key={e.id}
-                        className="ui-surface-accent rounded-2xl px-5 py-4 transition-all duration-300 hover:border-accent/35 hover:-translate-y-0.5"
+                        className="ui-surface-silver rounded-2xl px-5 py-4 transition-all duration-300 hover:border-accent/35 hover:-translate-y-0.5"
                       >
                         <div
                           className="relative z-10 truncate text-base sm:text-lg font-black tracking-tight text-foreground"

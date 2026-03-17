@@ -131,8 +131,17 @@ export const ContactSection = () => {
                     rel={item.newTab ? "noopener noreferrer" : undefined}
                     className="ui-surface-brand group relative flex items-center gap-4 rounded-3xl px-5 py-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/35 hover:shadow-[0_22px_50px_-24px_rgba(11,18,32,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    <div className="relative z-10 h-12 w-12 shrink-0 rounded-2xl border border-primary/10 bg-primary/[0.08] flex items-center justify-center text-primary transition-all duration-300 group-hover:border-accent/30 group-hover:bg-accent/12 group-hover:text-accent">
-                      <item.icon className="h-5 w-5" />
+                    <div
+                      className="
+                        ui-surface-silver
+                        relative z-10 h-12 w-12 shrink-0 rounded-2xl
+                        flex items-center justify-center
+                        text-primary
+                        transition-all duration-300
+                        group-hover:text-accent
+                      "
+                    >
+                      <item.icon className="relative z-10 h-5 w-5" />
                     </div>
 
                     <div className="relative z-10 min-w-0">
@@ -150,7 +159,7 @@ export const ContactSection = () => {
           </div>
 
           <div className="w-full max-w-[30rem] mx-auto">
-            <div className="ui-surface-brand-strong relative rounded-[2.5rem]">
+            <div className="ui-surface-brand relative rounded-[2.5rem]">
               <div className="absolute top-0 right-0 p-5 opacity-[0.07] scale-[1.35] rotate-12 pointer-events-none">
                 <Rocket className="h-20 w-20 text-primary" />
               </div>
@@ -171,42 +180,48 @@ export const ContactSection = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-4">
-                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
                         Full Name
                       </label>
-                      <input
-                        required
-                        name="fullName"
-                        type="text"
-                        placeholder="Your name"
-                        className="mt-2 w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
-                      />
+                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                        <input
+                          required
+                          name="fullName"
+                          type="text"
+                          placeholder="Your name"
+                          className="w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                        />
+                      </div>
                     </div>
 
-                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
                         Email Address
                       </label>
-                      <input
-                        required
-                        name="email"
-                        type="email"
-                        placeholder="you@utdallas.edu"
-                        className="mt-2 w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
-                      />
+                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                        <input
+                          required
+                          name="email"
+                          type="email"
+                          placeholder="you@utdallas.edu"
+                          className="w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                        />
+                      </div>
                     </div>
 
-                    <div className="rounded-3xl border border-primary/10 bg-background/92 p-4 sm:p-5 shadow-[0_8px_24px_rgba(11,18,32,0.04)] transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
                         Message
                       </label>
-                      <textarea
-                        required
-                        name="body"
-                        placeholder="How can we help?"
-                        className="mt-2 w-full min-h-36 resize-none bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:ring-0"
-                      />
+                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                        <textarea
+                          required
+                          name="body"
+                          placeholder="How can we help?"
+                          className="w-full min-h-36 resize-none bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                        />
+                      </div>
                     </div>
                   </div>
 

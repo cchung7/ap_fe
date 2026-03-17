@@ -64,7 +64,7 @@ export const AboutSection = () => {
                 ].map((stat) => (
                   <div
                     key={stat.label}
-                    className="ui-surface-accent p-5 sm:p-8 rounded-3xl hover:border-accent/35 transition-all duration-500 group min-w-0 text-center"
+                    className="ui-surface-silver p-5 sm:p-8 rounded-3xl hover:border-accent/35 transition-all duration-500 group min-w-0 text-center"
                   >
                     <div className="relative z-10 mx-auto w-fit flex items-start gap-[2px] text-4xl font-heading font-black tracking-tight text-foreground/90 mb-2 group-hover:text-accent transition-colors">
                       <AnimatedCounter value={stat.value} />
