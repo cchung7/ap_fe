@@ -39,16 +39,8 @@ export function Navbar() {
       links.push({ name: "My Profile", href: "/profile", icon: User });
     }
 
-    if (isAdmin) {
-      links.push({
-        name: "Admin Dashboard",
-        href: "/admin",
-        icon: LayoutDashboard,
-      });
-    }
-
     return links;
-  }, [loading, isAuthed, isAdmin]);
+  }, [loading, isAuthed]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
@@ -154,17 +146,34 @@ export function Navbar() {
           )}
 
           {isAuthed && (
-            <Button
-              type="button"
-              size="sm"
-              className={cn(
-                sharedTopbarButtonClass,
-                "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+            <>
+              {isAdmin && (
+                <Button
+                  asChild
+                  size="sm"
+                  className={cn(
+                    sharedTopbarButtonClass,
+                    "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  <Link href="/admin" className="flex items-center justify-center">
+                    Admin Dashboard
+                  </Link>
+                </Button>
               )}
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
+
+              <Button
+                type="button"
+                size="sm"
+                className={cn(
+                  sharedTopbarButtonClass,
+                  "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
+                )}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </>
           )}
         </>
       )}

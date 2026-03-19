@@ -31,8 +31,8 @@ export function Footer() {
 
   return (
     <footer className="w-full border-t border-border/40 bg-secondary/30 px-6 py-6">
-      <div className="container mx-auto flex max-w-6xl flex-col items-center gap-3 text-center">
-        <div className="group flex flex-col items-center gap-1">
+      <div className="container mx-auto flex max-w-6xl flex-col items-center gap-2 text-center">
+        <div className="group flex flex-col items-center gap-4">
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-accent/20 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
@@ -48,27 +48,27 @@ export function Footer() {
             </div>
           </div>
 
-          <h4 className="font-heading text-2xl font-black uppercase italic tracking-tighter text-foreground">
+          <h4 className="ui-title font-heading text-2xl uppercase italic tracking-tighter">
             <span className="text-muted-foreground/60">SVA- UT-Dallas</span>
           </h4>
         </div>
 
-        <nav className="flex flex-wrap justify-center gap-4 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">
+        <nav className="mt-2 flex flex-wrap justify-center gap-4 ui-eyebrow !text-[15px] tracking-[0.2em] text-foreground/75">
           <Link
             href="/"
-            className="transform transition-colors hover:scale-105 hover:text-accent"
+            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
           >
             Home
           </Link>
           <Link
             href="/members"
-            className="transform transition-colors hover:scale-105 hover:text-accent"
+            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
           >
             Members
           </Link>
           <Link
             href="/events"
-            className="transform transition-colors hover:scale-105 hover:text-accent"
+            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
           >
             Events
           </Link>
@@ -76,7 +76,7 @@ export function Footer() {
           {isAuthed && (
             <Link
               href="/profile"
-              className="transform transition-colors hover:scale-105 hover:text-accent"
+              className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
             >
               My Profile
             </Link>
@@ -108,14 +108,12 @@ export function Footer() {
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 transition={{ type: "spring", stiffness: 340, damping: 26 }}
-                className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.12)]"
+                className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.06)]"
               >
-                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-secondary/70 backdrop-blur">
+                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ui-surface-silver backdrop-blur transition-colors duration-300 group-hover:bg-accent">
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-transparent opacity-70" />
 
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary transition-colors duration-300 group-hover:bg-accent">
-                    <Icon className="h-6 w-6 text-muted-foreground transition-all group-hover:scale-105 group-hover:text-white" />
-                  </div>
+                  <Icon className="relative z-10 h-6 w-6 text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-white" />
                 </div>
               </motion.div>
             </Link>
@@ -123,11 +121,11 @@ export function Footer() {
         </div>
 
         <div className="space-y-3">
-          <p className="whitespace-nowrap text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
-            UTD Student Veterans Association.
+          <p className="ui-eyebrow whitespace-nowrap text-muted-foreground/60">
+            Student Veterans Association | UTD Chapter
           </p>
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
-            All rights reserved. ©{currentYear} SVA | UTDallas.
+          <p className="ui-eyebrow text-[10px] font-semibold text-muted-foreground/40">
+            All rights reserved. ©{currentYear} SVA-UT-Dallas.
           </p>
         </div>
       </div>

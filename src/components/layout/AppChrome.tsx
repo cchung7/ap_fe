@@ -8,7 +8,10 @@ import { Footer } from "@/components/footer";
 
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideChrome = pathname === "/login" || pathname === "/signup";
+  const hideChrome =
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname.startsWith("/admin");
 
   return (
     <>

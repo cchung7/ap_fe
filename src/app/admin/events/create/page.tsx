@@ -172,8 +172,8 @@ export default function AdminCreateEventPage() {
                   Event Details
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Dates are submitted as plain calendar dates in YYYY-MM-DD
-                  format.
+                  Dates are submitted in YYYY-MM-DD format. A unique check-in
+                  code will be generated automatically when the event is created.
                 </p>
               </div>
             </div>

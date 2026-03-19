@@ -1,10 +1,16 @@
 import * as React from "react";
 import { AdminShell } from "./_components/AdminShell/AdminShell";
+import { AdminTopbar } from "@/components/AdminTopbar";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <>
+      <AdminTopbar />
+      <AdminShell>{children}</AdminShell>
+    </>
+  );
 }

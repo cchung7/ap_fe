@@ -1,6 +1,6 @@
+// D:\ap_fe\src\components\AdminTopbar.tsx
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
@@ -77,25 +77,32 @@ export function AdminTopbar() {
     </>
   );
 
+  // Hamburger triggers AdminShell drawer (mobileOpen) via the window event listeners in AdminShell.tsx
+  const drawerHamburger = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="rounded-full"
+      onClick={() => {
+        window.dispatchEvent(new Event("admin-sidebar-toggle"));
+      }}
+      aria-label="Open admin menu"
+      title="Menu"
+    >
+      <Menu className="h-6 w-6" />
+    </Button>
+  );
+
   return (
     <TopbarFrame
+      disableHideOnScroll
       compactBreakpointClassName="md"
       desktopBreakpointClassName="xl"
       leftMobile={brand}
-      rightMobile={
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full"
-          onClick={() => {
-            window.dispatchEvent(new Event("admin-sidebar-toggle"));
-          }}
-        >
-          <Menu className="h-6 w-6" />
-        </Button>
-      }
+      rightMobile={drawerHamburger}
       leftCompact={brand}
-      rightCompact={desktopActions}
+      rightCompact={drawerHamburger}
       leftDesktop={brand}
       rightDesktop={desktopActions}
     />

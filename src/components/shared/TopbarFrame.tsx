@@ -17,6 +17,9 @@ type TopbarFrameProps = {
 
   compactBreakpointClassName?: "md";
   desktopBreakpointClassName?: "xl";
+
+  /** When true, the topbar never slides away on scroll (recommended for admin). */
+  disableHideOnScroll?: boolean;
 };
 
 export function TopbarFrame({
@@ -29,6 +32,7 @@ export function TopbarFrame({
   rightDesktop,
   compactBreakpointClassName = "md",
   desktopBreakpointClassName = "xl",
+  disableHideOnScroll = false,
 }: TopbarFrameProps) {
   const [hidden, setHidden] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -36,6 +40,13 @@ export function TopbarFrame({
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
+    // Always keep visible if disabled.
+    if (disableHideOnScroll) {
+      if (hidden) setHidden(false);
+      setScrolled(latest > 50);
+      return;
+    }
+
     const previous = scrollY.getPrevious() ?? 0;
 
     if (latest > previous && latest > 150) setHidden(true);
@@ -67,7 +78,6 @@ export function TopbarFrame({
       )}
     >
       <div className="w-full px-0">
-        {/* Mobile */}
         <div
           className={cn(
             mobileHiddenClass,
@@ -80,7 +90,6 @@ export function TopbarFrame({
           </div>
         </div>
 
-        {/* Compact tablet / mid desktop */}
         <div
           className={cn(
             compactVisibleClass,
@@ -93,30 +102,23 @@ export function TopbarFrame({
           </div>
         </div>
 
-        {/* Full desktop */}
         <div
           className={cn(
             desktopVisibleClass,
-            "h-14 items-center gap-6 px-5 2xl:px-6",
-            centerDesktop
-              ? "grid-cols-[auto_minmax(0,1fr)_auto]"
-              : "grid-cols-[minmax(0,1fr)_auto]"
+            "relative h-14 items-center px-5 2xl:px-6"
           )}
         >
-          {/* Left */}
-          <div className="min-w-0 flex items-center justify-start">
+          <div className="absolute inset-y-0 left-5 2xl:left-6 flex items-center justify-start min-w-0">
             {leftDesktop}
           </div>
 
-          {/* Center */}
           {centerDesktop ? (
-            <div className="min-w-0 flex items-center justify-center">
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center justify-center min-w-0">
               {centerDesktop}
             </div>
           ) : null}
 
-          {/* Right */}
-          <div className="min-w-0 flex items-center justify-end gap-2">
+          <div className="absolute inset-y-0 right-5 2xl:right-6 flex items-center justify-end gap-2 min-w-0">
             {rightDesktop}
           </div>
         </div>

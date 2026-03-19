@@ -1,13 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { LayoutDashboard, Plus, type LucideIcon } from "lucide-react";
 
 interface AdminHeaderProps {
   onAddClick?: () => void;
   title?: string;
   subtitle?: string;
   actionLabel?: string;
+  icon?: LucideIcon;
 }
 
 export default function AdminHeader({
@@ -15,13 +16,14 @@ export default function AdminHeader({
   title = "Admin Dashboard",
   subtitle = "Administrative Control Panel",
   actionLabel = "Add",
+  icon: Icon = LayoutDashboard,
 }: AdminHeaderProps) {
   return (
     <header className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-            <LayoutDashboard size={24} />
+            <Icon size={24} />
           </div>
           <h1 className="font-heading text-4xl font-black uppercase italic tracking-tighter">
             {title}

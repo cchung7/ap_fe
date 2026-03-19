@@ -190,7 +190,7 @@ export const ContactSection = () => {
                           name="fullName"
                           type="text"
                           placeholder="Your name"
-                          className="w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          className="w-full bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
                         />
                       </div>
                     </div>
@@ -204,8 +204,8 @@ export const ContactSection = () => {
                           required
                           name="email"
                           type="email"
-                          placeholder="you@utdallas.edu"
-                          className="w-full bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          placeholder="netid@utdallas.edu"
+                          className="w-full bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
                         />
                       </div>
                     </div>
@@ -219,7 +219,7 @@ export const ContactSection = () => {
                           required
                           name="body"
                           placeholder="How can we help?"
-                          className="w-full min-h-36 resize-none bg-transparent border-none p-0 text-lg sm:text-xl font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          className="w-full min-h-36 resize-none bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
                         />
                       </div>
                     </div>
@@ -237,7 +237,9 @@ export const ContactSection = () => {
                       </>
                     ) : (
                       <>
-                        <span className="truncate">Send Message</span>
+                        <span className="truncate">
+                          Send Message
+                        </span>
                         <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
                       </>
                     )}

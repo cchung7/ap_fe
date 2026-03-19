@@ -122,7 +122,7 @@ export default function AdminDashboardPage() {
   const { weekday, fullDate } = formatAdminDate(now);
 
   return (
-    <div className="space-y-6">
+    <div className="pt-7 space-y-6">
       <div className="space-y-1.5">
         <h1 className="text-lg font-semibold text-[#111827] sm:text-xl">
           Welcome, {displayName}
