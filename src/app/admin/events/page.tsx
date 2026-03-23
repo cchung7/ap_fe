@@ -2,13 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   CalendarDays,
-  Eye,
-  Loader2,
-  Pencil,
-  Trash2,
   MapPin,
   Clock3,
   Users,
@@ -18,17 +13,37 @@ import {
 
 import AdminHeader from "../_components/AdminHeader/AdminHeader";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DragScrollX } from "@/components/ui/DragScrollX";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  DetailSection,
+  DetailLabel,
+  DetailStatCard,
+} from "@/components/ui/sheet";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  AdminDataTableCard,
+  AdminTableViewport,
+  AdminTableState,
+} from "@/components/ui/table";
+import {
+  DeleteButton,
+  EditButton,
+  EventStatusBadge,
+  formatShortDate,
+  StackedInfoCell,
+  ViewButton,
+  ConfirmDeleteDialog,
+} from "@/components/admin/AdminEntityUI";
 
 type EventCategory =
   | "VOLUNTEERING"
@@ -72,30 +87,14 @@ function getChicagoDateKey(input: string | Date) {
   }).format(new Date(input));
 }
 
-function getEventStatus(dateIso: string) {
+function isCompletedEvent(dateIso: string) {
   const eventDay = getChicagoDateKey(dateIso);
   const todayDay = getChicagoDateKey(new Date());
-
-  if (eventDay < todayDay) return "COMPLETED";
-  return "UPCOMING";
-}
-
-function getEventStatusLabel(dateIso: string) {
-  return getEventStatus(dateIso) === "COMPLETED" ? "Completed" : "Upcoming";
-}
-
-function getEventStatusBadgeVariant(
-  dateIso: string
-): "default" | "secondary" | "outline" {
-  return getEventStatus(dateIso) === "COMPLETED" ? "outline" : "default";
+  return eventDay < todayDay;
 }
 
 function formatEventDate(dateIso: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date(dateIso));
+  return formatShortDate(dateIso);
 }
 
 function formatEventTimeRange(startTime: string, endTime: string) {
@@ -143,6 +142,7 @@ export default function AdminEventsPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [deletingEventId, setDeletingEventId] = React.useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = React.useState<AdminEvent | null>(null);
+  const [confirmDeleteEvent, setConfirmDeleteEvent] = React.useState<AdminEvent | null>(null);
 
   const loadEvents = React.useCallback(async () => {
     setLoading(true);
@@ -177,12 +177,6 @@ export default function AdminEventsPage() {
   const handleDeleteEvent = async (eventId: string, eventTitle: string) => {
     if (deletingEventId) return;
 
-    const confirmed = window.confirm(
-      `Delete "${eventTitle}"?\n\nThis action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
     clear();
     setDeletingEventId(eventId);
 
@@ -199,7 +193,8 @@ export default function AdminEventsPage() {
       }
 
       setEvents((prev) => prev.filter((event) => event.id !== eventId));
-      showSuccess(json?.message || "Event deleted successfully.");
+      setConfirmDeleteEvent(null);
+      showSuccess(json?.message || `Deleted "${eventTitle}" successfully.`);
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to delete event");
     } finally {
@@ -219,384 +214,236 @@ export default function AdminEventsPage() {
         }}
       />
 
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          key="admin-events-table"
-          layout
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          className="overflow-hidden rounded-[2.5rem] border border-border/70 bg-background/70 shadow-[0_16px_40px_-24px_rgba(15,23,42,0.25)]"
-        >
-          <div className="border-b border-border/60 bg-secondary/15 px-6 py-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/75">
-              Events Table
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Standardized admin view with event details, right-side actions, and
-              extended modal support.
-            </p>
-          </div>
+      <AdminDataTableCard
+        tableLabel="Events Table"
+        description="Standardized admin view with event details, right-side actions, and extended detail sheet support."
+      >
+        <AdminTableViewport>
+          <AdminTableState
+            loading={loading}
+            error={error}
+            isEmpty={!loading && !error && events.length === 0}
+            loadingMessage="Loading events..."
+            emptyMessage="No events have been created yet."
+          >
+            <Table className="min-w-[1320px] border-separate border-spacing-0 text-[13px]">
+              <TableHeader className="bg-secondary/20 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/85">
+                <TableRow>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Event</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Category</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Date</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Time</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Location</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-right font-black">Capacity</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-right font-black">Points</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Status</TableHead>
+                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Check-In Code</TableHead>
+                  <TableHead className="border-b border-border/60 px-4 py-3 text-right font-black">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
 
-          <DragScrollX>
-            {loading ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">
-                Loading events...
-              </div>
-            ) : error ? (
-              <div className="py-12 text-center text-sm text-destructive">
-                {error}
-              </div>
-            ) : events.length === 0 ? (
-              <div className="py-12 text-center text-sm text-muted-foreground">
-                No events have been created yet.
-              </div>
-            ) : (
-              <table className="w-full min-w-[1320px] border-separate border-spacing-0 text-[13px]">
-                <thead className="bg-secondary/20 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/85">
-                  <tr>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Event
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Category
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Date
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Time
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Location
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-right font-black">
-                      Capacity
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-right font-black">
-                      Points
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Status
-                    </th>
-                    <th className="border-b border-r border-border/60 px-4 py-3 text-left font-black">
-                      Check-In Code
-                    </th>
-                    <th className="border-b border-border/60 px-4 py-3 text-right font-black">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
+              <TableBody>
+                {events.map((event) => {
+                  const isDeleting = deletingEventId === event.id;
 
-                <tbody>
-                  {events.map((event) => {
-                    const isDeleting = deletingEventId === event.id;
+                  return (
+                    <TableRow key={event.id} className="bg-white/55 transition-colors hover:bg-white/82">
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                        <StackedInfoCell
+                          primary={<span className="font-bold text-foreground">{event.title}</span>}
+                          secondary={event.description?.trim() || "No description provided."}
+                        />
+                      </TableCell>
 
-                    return (
-                      <tr
-                        key={event.id}
-                        className="bg-white/55 transition-colors hover:bg-white/82"
-                      >
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle">
-                          <div className="space-y-1">
-                            <p className="font-bold text-foreground">{event.title}</p>
-                            <p className="text-[12px] text-muted-foreground">
-                              {event.description?.trim() || "No description provided."}
-                            </p>
-                          </div>
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                        <span className="font-medium text-foreground">{formatCategory(event.category)}</span>
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle">
-                          <p className="font-medium text-foreground">
-                            {formatCategory(event.category)}
-                          </p>
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
+                        {formatEventDate(event.date)}
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
-                          {formatEventDate(event.date)}
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
+                        {formatEventTimeRange(event.startTime, event.endTime)}
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
-                          {formatEventTimeRange(event.startTime, event.endTime)}
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
+                        {event.location}
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
-                          {event.location}
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
+                        {getCapacityLabel(event)}
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
-                          {getCapacityLabel(event)}
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
+                        {event.pointsValue}
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
-                          {event.pointsValue}
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                        <EventStatusBadge isCompleted={isCompletedEvent(event.date)} />
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle">
-                          <Badge variant={getEventStatusBadgeVariant(event.date)}>
-                            {getEventStatusLabel(event.date)}
-                          </Badge>
-                        </td>
+                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                        <span className="inline-flex rounded-xl border border-border/60 bg-secondary/30 px-2.5 py-1 font-mono text-[11px] font-black tracking-[0.12em] text-foreground">
+                          {getCheckInCode(event)}
+                        </span>
+                      </TableCell>
 
-                        <td className="border-b border-r border-border/50 px-4 py-4 align-middle">
-                          <span className="inline-flex rounded-xl border border-border/60 bg-secondary/30 px-2.5 py-1 font-mono text-[11px] font-black tracking-[0.12em] text-foreground">
-                            {getCheckInCode(event)}
-                          </span>
-                        </td>
+                      <TableCell className="border-b border-border/50 px-4 py-4 align-middle">
+                        <div className="flex items-center justify-end gap-2">
+                          <ViewButton onClick={() => setViewingEvent(event)} />
+                          <EditButton onClick={() => router.push(`/admin/events/${event.id}/edit`)} />
+                          <DeleteButton
+                            loading={isDeleting}
+                            onClick={() => setConfirmDeleteEvent(event)}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </AdminTableState>
+        </AdminTableViewport>
+      </AdminDataTableCard>
 
-                        <td className="border-b border-border/50 px-4 py-4 align-middle">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="h-8 rounded-lg border-border/70 px-2.5 text-[9px] font-black uppercase tracking-[0.15em]"
-                              onClick={() => setViewingEvent(event)}
-                            >
-                              <Eye className="h-3 w-3" />
-                              View
-                            </Button>
-
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="h-8 rounded-lg border-border/70 px-2.5 text-[9px] font-black uppercase tracking-[0.15em]"
-                              onClick={() => {
-                                router.push(`/admin/events/${event.id}/edit`);
-                              }}
-                            >
-                              <Pencil className="h-3 w-3" />
-                              Edit
-                            </Button>
-
-                            <Button
-                              type="button"
-                              variant="logout"
-                              size="sm"
-                              className="h-8 rounded-lg px-2.5 text-[9px] font-black uppercase tracking-[0.15em]"
-                              onClick={() => void handleDeleteEvent(event.id, event.title)}
-                              disabled={isDeleting}
-                            >
-                              {isDeleting ? (
-                                <>
-                                  <Loader2 className="h-3 w-3 animate-spin" />
-                                  Deleting...
-                                </>
-                              ) : (
-                                <>
-                                  <Trash2 className="h-3 w-3" />
-                                  Delete
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </DragScrollX>
-        </motion.div>
-      </AnimatePresence>
-
-      <Dialog open={!!viewingEvent} onOpenChange={(open) => !open && setViewingEvent(null)}>
-        <DialogContent className="max-w-4xl">
+      <Sheet open={!!viewingEvent} onOpenChange={(open) => !open && setViewingEvent(null)}>
+        <SheetContent side="right">
           {viewingEvent && (
             <>
-              <DialogHeader>
-                <DialogTitle>Event Overview</DialogTitle>
-                <DialogDescription>
+              <SheetHeader>
+                <SheetTitle>Event Overview</SheetTitle>
+                <SheetDescription>
                   Review event scheduling, registration, points, and check-in details.
-                </DialogDescription>
-              </DialogHeader>
+                </SheetDescription>
+              </SheetHeader>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4">
-                  <div className="mb-4">
-                    <p className="text-xl font-black tracking-tight text-foreground">
-                      {viewingEvent.title}
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {viewingEvent.description?.trim() || "No description provided."}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-4 text-sm">
-                    <div className="flex items-start gap-3">
-                      <CalendarDays className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Date
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatEventDate(viewingEvent.date)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <Clock3 className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Time
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatEventTimeRange(
-                            viewingEvent.startTime,
-                            viewingEvent.endTime
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Location
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {viewingEvent.location}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4">
-                    <div className="mb-3 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-primary" />
-                      <p className="text-sm font-black uppercase tracking-[0.16em] text-foreground">
-                        Event Status
+              <div className="mt-4 grid gap-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <DetailSection title="Event Profile" icon={<CalendarDays className="h-4 w-4 text-primary" />}>
+                    <div className="mb-4">
+                      <p className="text-xl font-black tracking-tight text-foreground">
+                        {viewingEvent.title}
+                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {viewingEvent.description?.trim() || "No description provided."}
                       </p>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Category
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatCategory(viewingEvent.category)}
-                        </p>
+                    <div className="grid gap-4 text-sm">
+                      <div className="flex items-start gap-3">
+                        <CalendarDays className="mt-0.5 h-4 w-4 text-primary" />
+                        <div>
+                          <DetailLabel>Date</DetailLabel>
+                          <p className="mt-1 font-medium text-foreground">
+                            {formatEventDate(viewingEvent.date)}
+                          </p>
+                        </div>
                       </div>
 
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Status
-                        </p>
-                        <div className="mt-1">
-                          <Badge variant={getEventStatusBadgeVariant(viewingEvent.date)}>
-                            {getEventStatusLabel(viewingEvent.date)}
-                          </Badge>
+                      <div className="flex items-start gap-3">
+                        <Clock3 className="mt-0.5 h-4 w-4 text-primary" />
+                        <div>
+                          <DetailLabel>Time</DetailLabel>
+                          <p className="mt-1 font-medium text-foreground">
+                            {formatEventTimeRange(viewingEvent.startTime, viewingEvent.endTime)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                        <div>
+                          <DetailLabel>Location</DetailLabel>
+                          <p className="mt-1 font-medium text-foreground">{viewingEvent.location}</p>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </DetailSection>
 
-                  <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4">
-                    <div className="mb-3 flex items-center gap-2">
-                      <Users className="h-4 w-4 text-primary" />
-                      <p className="text-sm font-black uppercase tracking-[0.16em] text-foreground">
-                        Registration Summary
-                      </p>
-                    </div>
+                  <div className="space-y-4">
+                    <DetailSection title="Event Status" icon={<ShieldCheck className="h-4 w-4 text-primary" />}>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div>
+                          <DetailLabel>Category</DetailLabel>
+                          <p className="mt-1 font-medium text-foreground">
+                            {formatCategory(viewingEvent.category)}
+                          </p>
+                        </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-2xl border border-border/50 bg-background/70 p-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Capacity
-                        </p>
-                        <p className="mt-2 text-2xl font-black text-foreground">
-                          {viewingEvent.capacity}
-                        </p>
+                        <div>
+                          <DetailLabel>Status</DetailLabel>
+                          <div className="mt-1">
+                            <EventStatusBadge isCompleted={isCompletedEvent(viewingEvent.date)} />
+                          </div>
+                        </div>
                       </div>
+                    </DetailSection>
 
-                      <div className="rounded-2xl border border-border/50 bg-background/70 p-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Registered
-                        </p>
-                        <p className="mt-2 text-2xl font-black text-foreground">
-                          {viewingEvent.totalRegistered}
-                        </p>
+                    <DetailSection title="Registration Summary" icon={<Users className="h-4 w-4 text-primary" />}>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <DetailStatCard label="Capacity" value={viewingEvent.capacity} />
+                        <DetailStatCard label="Registered" value={viewingEvent.totalRegistered} />
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4">
-                    <div className="mb-3 flex items-center gap-2">
-                      <Award className="h-4 w-4 text-primary" />
-                      <p className="text-sm font-black uppercase tracking-[0.16em] text-foreground">
-                        Check-In & Points
-                      </p>
-                    </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Points Value
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {viewingEvent.pointsValue}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Check-In Code
-                        </p>
-                        <p className="mt-1 font-mono text-sm font-black text-foreground">
-                          {getCheckInCode(viewingEvent)}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Created
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatEventDate(viewingEvent.createdAt)}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                          Updated
-                        </p>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatEventDate(viewingEvent.updatedAt)}
-                        </p>
-                      </div>
-                    </div>
+                    </DetailSection>
                   </div>
                 </div>
-              </div>
 
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setViewingEvent(null)}
-                >
-                  Close
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    router.push(`/admin/events/${viewingEvent.id}/edit`);
-                  }}
-                >
-                  Edit Event
-                </Button>
-              </DialogFooter>
+                <DetailSection title="Check-In & Points" icon={<Award className="h-4 w-4 text-primary" />}>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <DetailLabel>Points Value</DetailLabel>
+                      <p className="mt-1 font-medium text-foreground">{viewingEvent.pointsValue}</p>
+                    </div>
+
+                    <div>
+                      <DetailLabel>Check-In Code</DetailLabel>
+                      <p className="mt-1 font-mono text-sm font-black text-foreground">
+                        {getCheckInCode(viewingEvent)}
+                      </p>
+                    </div>
+
+                    <div>
+                      <DetailLabel>Created</DetailLabel>
+                      <p className="mt-1 font-medium text-foreground">
+                        {formatEventDate(viewingEvent.createdAt)}
+                      </p>
+                    </div>
+
+                    <div>
+                      <DetailLabel>Updated</DetailLabel>
+                      <p className="mt-1 font-medium text-foreground">
+                        {formatEventDate(viewingEvent.updatedAt)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex justify-end">
+                    <Button type="button" onClick={() => router.push(`/admin/events/${viewingEvent.id}/edit`)}>
+                      Edit Event
+                    </Button>
+                  </div>
+                </DetailSection>
+              </div>
             </>
           )}
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
+
+      <ConfirmDeleteDialog
+        open={!!confirmDeleteEvent}
+        onOpenChange={(open) => !open && setConfirmDeleteEvent(null)}
+        title="Delete Event"
+        description="This will permanently delete the event. This action cannot be undone."
+        primaryText={confirmDeleteEvent?.title || ""}
+        secondaryText={confirmDeleteEvent?.location || ""}
+        loading={deletingEventId === confirmDeleteEvent?.id}
+        onConfirm={() => {
+          if (!confirmDeleteEvent) return;
+          void handleDeleteEvent(confirmDeleteEvent.id, confirmDeleteEvent.title);
+        }}
+      />
     </div>
   );
 }
