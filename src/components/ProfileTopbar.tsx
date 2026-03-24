@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\AdminTopbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -9,7 +8,7 @@ import { TopbarFrame } from "@/components/shared/TopbarFrame";
 import { BrandLockup } from "@/components/shared/BrandLockup";
 import { cn } from "@/lib/utils";
 
-export function AdminTopbar() {
+export function ProfileTopbar() {
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", {
@@ -27,8 +26,8 @@ export function AdminTopbar() {
   const brand = (
     <BrandLockup
       title={
-        <div className="ui-title text-lg text-foreground tracking-tight truncate">
-          ADMINISTRATIVE DASHBOARD
+        <div className="ui-title truncate text-lg tracking-tight text-foreground">
+          MEMBER DASHBOARD
         </div>
       }
     />
@@ -40,7 +39,7 @@ export function AdminTopbar() {
     "font-semibold tracking-tight text-sm"
   );
 
-  const backToHomeButton = (
+  const homeButton = (
     <Button
       asChild
       type="button"
@@ -51,7 +50,7 @@ export function AdminTopbar() {
       )}
     >
       <Link href="/" className="flex items-center justify-center">
-        Back to Home
+        Home
       </Link>
     </Button>
   );
@@ -72,12 +71,11 @@ export function AdminTopbar() {
 
   const desktopActions = (
     <>
-      {backToHomeButton}
+      {homeButton}
       {logoutButton}
     </>
   );
 
-  // Hamburger triggers AdminShell drawer (mobileOpen) via the window event listeners in AdminShell.tsx
   const drawerHamburger = (
     <Button
       type="button"
@@ -85,9 +83,9 @@ export function AdminTopbar() {
       size="icon"
       className="rounded-full"
       onClick={() => {
-        window.dispatchEvent(new Event("admin-sidebar-toggle"));
+        window.dispatchEvent(new Event("profile-sidebar-toggle"));
       }}
-      aria-label="Open admin menu"
+      aria-label="Open profile menu"
       title="Menu"
     >
       <Menu className="h-6 w-6" />

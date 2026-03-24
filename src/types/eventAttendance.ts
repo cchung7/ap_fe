@@ -2,9 +2,8 @@
 
 export type AttendanceStatus =
   | "REGISTERED"
-  | "ATTENDED"
-  | "CANCELED"
-  | "NO_SHOW";
+  | "CHECKED_IN"
+  | "CANCELED";
 
 export type EventAttendance = {
   id: string;
@@ -14,11 +13,9 @@ export type EventAttendance = {
 
   status: AttendanceStatus;
 
-  // Points logic (ties into PointsTransaction)
-  pointsTransactionId?: string;
-
   registeredAt?: string;
-  attendedAt?: string;
+  checkedInAt?: string;
+  pointsAwarded?: number;
 
   createdAt?: string;
   updatedAt?: string;

@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\admin\members\page.tsx
 "use client";
 
 import * as React from "react";
@@ -6,24 +7,7 @@ import { Users } from "lucide-react";
 import AdminHeader from "../_components/AdminHeader/AdminHeader";
 import type { AdminMemberRow } from "@/data/mockAdminMembers";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-} from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import {
   Table,
   TableHeader,
@@ -36,20 +20,10 @@ import {
   AdminTableState,
 } from "@/components/ui/table";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   ConfirmDeleteDialog,
   EditButton,
-  formatMemberRole,
-  formatMemberStatusLabel,
   formatShortDate,
   LabeledBadgeStack,
-  MemberOverviewSections,
   MemberQuickStatusButton,
   MemberRoleBadge,
   MemberStatusBadge,
@@ -57,6 +31,8 @@ import {
   StackedInfoCell,
   ViewButton,
 } from "@/components/admin/AdminEntityUI";
+import { MemberDetailSheet } from "@/components/admin/MemberDetailSheet";
+import { MemberEditDialog } from "@/components/admin/MemberEditDialog";
 
 type MembersApiResponse = {
   success?: boolean;
@@ -244,7 +220,7 @@ export default function AdminMembersPage() {
   };
 
   return (
-    <div className="pt-9 space-y-6 overflow-x-hidden">
+    <div className="space-y-5 overflow-x-hidden pt-6 sm:pt-7">
       <AdminHeader
         title="All Members"
         subtitle="Approve members, manage access, and review points and attendance"
@@ -265,17 +241,17 @@ export default function AdminMembersPage() {
             loadingMessage="Loading members..."
             emptyMessage="No members found."
           >
-            <Table className="min-w-[1320px] border-separate border-spacing-0 text-[13px]">
-              <TableHeader className="bg-secondary/20 text-[9px] uppercase tracking-[0.18em] text-muted-foreground/85">
+            <Table className="admin-table">
+              <TableHeader className="admin-table-head">
                 <TableRow>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Member</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Major / Year</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Role / Sub-Role</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Status</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-right font-black">Points</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-right font-black">Events Attended</TableHead>
-                  <TableHead className="border-b border-r border-border/60 px-4 py-3 text-left font-black">Joined</TableHead>
-                  <TableHead className="border-b border-border/60 px-4 py-3 text-right font-black">Actions</TableHead>
+                  <TableHead className="admin-table-head-cell">Member</TableHead>
+                  <TableHead className="admin-table-head-cell">Major / Year</TableHead>
+                  <TableHead className="admin-table-head-cell">Role / Sub-Role</TableHead>
+                  <TableHead className="admin-table-head-cell">Status</TableHead>
+                  <TableHead className="admin-table-head-cell-right">Points</TableHead>
+                  <TableHead className="admin-table-head-cell-right">Events Attended</TableHead>
+                  <TableHead className="admin-table-head-cell">Joined</TableHead>
+                  <TableHead className="admin-table-head-cell-last">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -284,39 +260,42 @@ export default function AdminMembersPage() {
                   const isActing = actionMemberId === member.id;
 
                   return (
-                    <TableRow key={member.id} className="bg-white/55 transition-colors hover:bg-white/82">
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                    <TableRow key={member.id} className="admin-table-row">
+                      <TableCell className="admin-table-cell">
                         <PersonIdentityCell name={member.name} email={member.email} />
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
-                        <StackedInfoCell primary={member.major || "—"} secondary={member.academicYear || "—"} />
+                      <TableCell className="admin-table-cell">
+                        <StackedInfoCell
+                          primary={member.major || "—"}
+                          secondary={member.academicYear || "—"}
+                        />
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                      <TableCell className="admin-table-cell">
                         <LabeledBadgeStack
                           badge={<MemberRoleBadge role={member.role} />}
                           secondary={member.subRole?.trim() || "—"}
                         />
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle">
+                      <TableCell className="admin-table-cell">
                         <MemberStatusBadge status={member.status} />
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
+                      <TableCell className="admin-table-cell-right">
                         {member.pointsTotal}
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 text-right align-middle font-black text-foreground">
+                      <TableCell className="admin-table-cell-right">
                         {member.eventsAttendedCount}
                       </TableCell>
 
-                      <TableCell className="border-b border-r border-border/50 px-4 py-4 align-middle text-[12px] text-muted-foreground">
+                      <TableCell className="admin-table-cell-muted">
                         {formatShortDate(member.createdAt)}
                       </TableCell>
 
-                      <TableCell className="border-b border-border/50 px-4 py-4 align-middle">
+                      <TableCell className="admin-table-cell-last">
                         <div className="flex items-center justify-end gap-2">
                           <MemberQuickStatusButton
                             status={member.status}
@@ -347,126 +326,25 @@ export default function AdminMembersPage() {
         </AdminTableViewport>
       </AdminDataTableCard>
 
-      <Sheet open={!!viewingMember} onOpenChange={(open) => !open && setViewingMember(null)}>
-        <SheetContent side="right">
-          {viewingMember && (
-            <>
-              <SheetHeader>
-                <SheetTitle>Member Overview</SheetTitle>
-                <SheetDescription>
-                  Review member profile, access level, points, and attendance summary.
-                </SheetDescription>
-              </SheetHeader>
+      <MemberDetailSheet
+        member={viewingMember}
+        open={!!viewingMember}
+        onOpenChange={(open) => !open && setViewingMember(null)}
+      />
 
-              <MemberOverviewSections member={viewingMember} />
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-
-      <Dialog open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)}>
-        <DialogContent className="max-w-2xl">
-          {editingMember && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Edit Member Access</DialogTitle>
-                <DialogDescription>
-                  Modify admin-controlled member fields only.
-                </DialogDescription>
-              </DialogHeader>
-
-              <DialogBody>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">Name</label>
-                    <Input value={editingMember.name} readOnly />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">Email</label>
-                    <Input value={editingMember.email} readOnly />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">Role</label>
-                    <Select value={editRole} onValueChange={(value) => setEditRole(value as AdminMemberRow["role"])}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="MEMBER">Member</SelectItem>
-                        <SelectItem value="ADMIN">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">Status</label>
-                    <Select value={editStatus} onValueChange={(value) => setEditStatus(value as AdminMemberRow["status"])}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PENDING">Pending</SelectItem>
-                        <SelectItem value="ACTIVE">Active</SelectItem>
-                        <SelectItem value="SUSPENDED">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">Sub-Role</label>
-                    <Input
-                      value={editSubRole}
-                      onChange={(e) => setEditSubRole(e.target.value)}
-                      placeholder="e.g. Treasurer"
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-border/60 bg-secondary/10 p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75">
-                    Read-Only Profile Summary
-                  </p>
-
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <p className="text-[11px] font-semibold text-foreground">Major</p>
-                      <p className="text-sm text-muted-foreground">{editingMember.major || "—"}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-foreground">Academic Year</p>
-                      <p className="text-sm text-muted-foreground">{editingMember.academicYear || "—"}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-foreground">Total Points</p>
-                      <p className="text-sm text-muted-foreground">{editingMember.pointsTotal}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-[11px] font-semibold text-foreground">Events Attended</p>
-                      <p className="text-sm text-muted-foreground">{editingMember.eventsAttendedCount}</p>
-                    </div>
-                  </div>
-                </div>
-              </DialogBody>
-
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setEditingMember(null)} disabled={savingEdit}>
-                  Cancel
-                </Button>
-                <Button type="button" onClick={() => void handleSaveEdit()} disabled={savingEdit}>
-                  {savingEdit ? "Saving..." : "Save Changes"}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <MemberEditDialog
+        member={editingMember}
+        open={!!editingMember}
+        onOpenChange={(open) => !open && setEditingMember(null)}
+        editRole={editRole}
+        setEditRole={setEditRole}
+        editStatus={editStatus}
+        setEditStatus={setEditStatus}
+        editSubRole={editSubRole}
+        setEditSubRole={setEditSubRole}
+        saving={savingEdit}
+        onSave={() => void handleSaveEdit()}
+      />
 
       <ConfirmDeleteDialog
         open={!!deletingMember}

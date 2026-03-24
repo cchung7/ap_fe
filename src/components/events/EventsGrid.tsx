@@ -6,8 +6,14 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { EventCategory } from "@/types/events";
-import { EventCard, type EventCardEvent } from "@/components/events/EventCard";
+import type { Event, EventCategory } from "@/types/events";
+import { EventCard } from "@/components/events/EventCard";
+
+type EventsGridProps = {
+  events: Event[];
+  loading?: boolean;
+  onRegistered?: (eventId: string) => void;
+};
 
 const categoryLabel: Record<EventCategory, string> = {
   VOLUNTEERING: "Volunteering",
@@ -15,17 +21,14 @@ const categoryLabel: Record<EventCategory, string> = {
   PROFESSIONAL_DEVELOPMENT: "Professional Development",
 };
 
-type EventsGridProps = {
-  events: EventCardEvent[];
-  loading?: boolean;
-};
-
 function Section({
   title,
   events,
+  onRegistered,
 }: {
   title: string;
-  events: EventCardEvent[];
+  events: Event[];
+  onRegistered?: (eventId: string) => void;
 }) {
   if (events.length === 0) return null;
 
@@ -52,7 +55,7 @@ function Section({
                     exit={{ opacity: 0, scale: 0.96 }}
                     className="min-w-0 w-full max-w-[520px]"
                   >
-                    <EventCard event={event} />
+                    <EventCard event={event} onRegistered={onRegistered} />
                   </motion.div>
                 ))}
               </div>
@@ -74,7 +77,7 @@ function Section({
                     exit={{ opacity: 0, scale: 0.96 }}
                     className="min-w-0 w-full max-w-[520px]"
                   >
-                    <EventCard event={event} />
+                    <EventCard event={event} onRegistered={onRegistered} />
                   </motion.div>
                 ))}
               </div>
@@ -86,7 +89,11 @@ function Section({
   );
 }
 
-export function EventsGrid({ events, loading = false }: EventsGridProps) {
+export function EventsGrid({
+  events,
+  loading = false,
+  onRegistered,
+}: EventsGridProps) {
   const normalizedEvents = React.useMemo(
     () => (Array.isArray(events) ? events : []),
     [events]
@@ -99,7 +106,7 @@ export function EventsGrid({ events, loading = false }: EventsGridProps) {
   }, [normalizedEvents]);
 
   const grouped = React.useMemo(() => {
-    const groups: Record<EventCategory, EventCardEvent[]> = {
+    const groups: Record<EventCategory, Event[]> = {
       VOLUNTEERING: [],
       SOCIAL: [],
       PROFESSIONAL_DEVELOPMENT: [],
@@ -134,11 +141,20 @@ export function EventsGrid({ events, loading = false }: EventsGridProps) {
 
   return (
     <div className="mt-2 space-y-16">
-      <Section title={categoryLabel.VOLUNTEERING} events={grouped.VOLUNTEERING} />
-      <Section title={categoryLabel.SOCIAL} events={grouped.SOCIAL} />
+      <Section
+        title={categoryLabel.VOLUNTEERING}
+        events={grouped.VOLUNTEERING}
+        onRegistered={onRegistered}
+      />
+      <Section
+        title={categoryLabel.SOCIAL}
+        events={grouped.SOCIAL}
+        onRegistered={onRegistered}
+      />
       <Section
         title={categoryLabel.PROFESSIONAL_DEVELOPMENT}
         events={grouped.PROFESSIONAL_DEVELOPMENT}
+        onRegistered={onRegistered}
       />
     </div>
   );

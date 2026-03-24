@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\admin\_components\dashboard\DashboardOverview.tsx
 "use client";
 
 import * as React from "react";
@@ -66,33 +67,33 @@ export function DashboardOverview({
   }, [members, events]);
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
         <DashboardMetricCard
           title="Upcoming Events"
           value={stats.upcomingEvents}
-          icon={<CalendarDays className="text-blue-600" />}
+          icon={<CalendarDays />}
           bgClassName="bg-blue-100"
         />
 
         <DashboardMetricCard
           title="Total Members"
           value={stats.totalMembers}
-          icon={<Users className="text-slate-700" />}
+          icon={<Users />}
           bgClassName="bg-slate-200"
         />
 
         <DashboardMetricCard
           title="Active Members"
           value={stats.activeMembers}
-          icon={<ClipboardList className="text-green-600" />}
+          icon={<ClipboardList />}
           bgClassName="bg-green-100"
         />
 
         <DashboardMetricCard
           title="Pending Members"
           value={stats.pendingMembers}
-          icon={<UserPlus className="text-orange-600" />}
+          icon={<UserPlus />}
           bgClassName="bg-orange-100"
         />
       </div>

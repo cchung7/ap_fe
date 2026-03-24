@@ -1,22 +1,21 @@
-// D:\ap_fe\src\app\admin\_components\dashboard\DashboardMetricCard.tsx
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-type DashboardMetricCardProps = {
+type ProfileMetricCardProps = {
   title: string;
   value: number;
   icon: React.ReactNode;
   bgClassName: string;
 };
 
-export function DashboardMetricCard({
+export function ProfileMetricCard({
   title,
   value,
   icon,
   bgClassName,
-}: DashboardMetricCardProps) {
+}: ProfileMetricCardProps) {
   return (
     <div className="min-w-0 overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
       <div className="flex items-center justify-between px-4 py-4 sm:px-5 sm:py-5">

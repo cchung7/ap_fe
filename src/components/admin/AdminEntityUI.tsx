@@ -30,12 +30,15 @@ import {
   DetailStatCard,
 } from "@/components/ui/sheet";
 
-export function formatShortDate(dateString: string) {
-  return new Intl.DateTimeFormat("en-US", {
+export function formatShortDate(value?: string | Date | null) {
+  const date = new Date(value || "");
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString(undefined, {
     month: "short",
     day: "2-digit",
     year: "numeric",
-  }).format(new Date(dateString));
+  });
 }
 
 export function getInitials(name: string) {

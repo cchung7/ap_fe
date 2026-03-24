@@ -1,4 +1,3 @@
-// D:\ap_fe\src\app\admin\_components\dashboard\DashboardRecentActivity.tsx
 "use client";
 
 import * as React from "react";
@@ -8,7 +7,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  PopoverAnchor,
 } from "@/components/ui/popover";
 import { ScrollText, X } from "lucide-react";
 
@@ -19,16 +17,16 @@ type Activity = {
   createdAt?: string | Date;
 };
 
-type DashboardRecentActivityProps = {
+type ProfileRecentActivityProps = {
   activities: Activity[];
 };
 
 function getDotColor(activityType: string) {
   const type = activityType.toUpperCase();
 
-  if (type.includes("EVENT")) return "bg-green-500";
-  if (type.includes("USER")) return "bg-blue-500";
   if (type.includes("CHECKIN")) return "bg-orange-500";
+  if (type.includes("REGISTERED")) return "bg-blue-500";
+  if (type.includes("EVENT")) return "bg-green-500";
 
   return "bg-gray-400";
 }
@@ -44,9 +42,9 @@ function formatActivityDate(value?: string | Date) {
   return date.toLocaleString();
 }
 
-export function DashboardRecentActivity({
+export function ProfileRecentActivity({
   activities,
-}: DashboardRecentActivityProps) {
+}: ProfileRecentActivityProps) {
   const [open, setOpen] = React.useState(false);
 
   const sortedActivities = React.useMemo(() => {

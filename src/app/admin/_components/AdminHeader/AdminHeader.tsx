@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\admin\_components\AdminHeader\AdminHeader.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -19,31 +20,33 @@ export default function AdminHeader({
   icon: Icon = LayoutDashboard,
 }: AdminHeaderProps) {
   return (
-    <header className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-            <Icon size={24} />
+    <header className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <Icon size={20} />
           </div>
-          <h1 className="font-heading text-4xl font-black uppercase italic tracking-tighter">
+
+          <h1 className="font-heading text-[1.75rem] sm:text-[1.95rem] font-black uppercase italic tracking-[-0.04em] text-foreground">
             {title}
           </h1>
         </div>
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">
+
+        <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">
           {subtitle}
         </p>
       </div>
 
       {onAddClick && (
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <Button
             type="button"
             variant="logout"
             size="lg"
             onClick={onAddClick}
-            className="h-12 rounded-2xl px-8 font-black uppercase tracking-widest text-[10px]"
+            className="h-10 rounded-xl px-6 font-black uppercase tracking-[0.16em] text-[9px] sm:text-[10px]"
           >
-            <Plus size={16} />
+            <Plus size={14} />
             {actionLabel}
           </Button>
         </div>

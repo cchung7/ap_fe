@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\admin\page.tsx
 "use client";
 
 import * as React from "react";
@@ -122,12 +123,12 @@ export default function AdminDashboardPage() {
   const { weekday, fullDate } = formatAdminDate(now);
 
   return (
-    <div className="pt-7 space-y-6">
-      <div className="space-y-1.5">
-        <h1 className="text-lg font-semibold text-[#111827] sm:text-xl">
+    <div className="space-y-5 pt-5 sm:pt-6">
+      <div className="space-y-1">
+        <h1 className="text-[1.7rem] sm:text-[1.95rem] font-black tracking-tight text-[#111827]">
           Welcome, {displayName}
         </h1>
-        <p className="text-sm text-[#6B7280]">
+        <p className="text-[13px] sm:text-sm text-[#6B7280]">
           {weekday}, {fullDate}
         </p>
       </div>

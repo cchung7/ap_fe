@@ -12,16 +12,9 @@ import type { Event } from "@/types/events";
 import { EventsGrid } from "@/components/events/EventsGrid";
 import { EventsHeroSection } from "@/components/events/EventsHeroSection";
 
-type EventsApiItem = Event & {
-  isRegistered?: boolean;
-  viewerAuthenticated?: boolean;
-  currentStatus?: "UPCOMING" | "TODAY" | "PAST";
-};
-
 function toIsoFromDateAndTime(dateValue: unknown, timeValue?: unknown) {
   if (!dateValue) return "";
 
-  // dateValue can be ISO string, Date string, or Date-like
   const base = new Date(dateValue as any);
   if (!Number.isFinite(base.getTime())) return "";
 
@@ -40,16 +33,15 @@ function toIsoFromDateAndTime(dateValue: unknown, timeValue?: unknown) {
   return local.toISOString();
 }
 
-function normalizeEvent(raw: any): EventsApiItem | null {
+function normalizeEvent(raw: any): Event | null {
   if (!raw) return null;
 
   const id = String(raw.id || raw._id || "");
   const title = String(raw.title || "").trim();
-  const category = raw.category as EventsApiItem["category"];
+  const category = raw.category as Event["category"];
 
   if (!id || !title || !category) return null;
 
-  // Prefer backend-provided startsAt/endsAt if present; otherwise derive from date/startTime/endTime.
   const startsAt =
     typeof raw.startsAt === "string" && raw.startsAt
       ? raw.startsAt
@@ -59,8 +51,8 @@ function normalizeEvent(raw: any): EventsApiItem | null {
     typeof raw.endsAt === "string" && raw.endsAt
       ? raw.endsAt
       : raw.endTime
-      ? toIsoFromDateAndTime(raw.date, raw.endTime)
-      : undefined;
+        ? toIsoFromDateAndTime(raw.date, raw.endTime)
+        : undefined;
 
   if (!startsAt) return null;
 
@@ -76,12 +68,22 @@ function normalizeEvent(raw: any): EventsApiItem | null {
       typeof raw.capacity === "number"
         ? raw.capacity
         : raw.capacity != null
-        ? Number(raw.capacity)
-        : undefined,
-
+          ? Number(raw.capacity)
+          : undefined,
+    totalRegistered:
+      typeof raw.totalRegistered === "number"
+        ? raw.totalRegistered
+        : raw.totalRegistered != null
+          ? Number(raw.totalRegistered)
+          : undefined,
+    pointsValue:
+      typeof raw.pointsValue === "number"
+        ? raw.pointsValue
+        : raw.pointsValue != null
+          ? Number(raw.pointsValue)
+          : undefined,
     createdAt: raw.createdAt ?? undefined,
     updatedAt: raw.updatedAt ?? undefined,
-
     isRegistered: Boolean(raw.isRegistered),
     viewerAuthenticated: Boolean(raw.viewerAuthenticated),
     currentStatus: raw.currentStatus,
@@ -89,7 +91,7 @@ function normalizeEvent(raw: any): EventsApiItem | null {
 }
 
 export default function EventsPage() {
-  const [events, setEvents] = React.useState<EventsApiItem[]>([]);
+  const [events, setEvents] = React.useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = React.useState(true);
 
   React.useEffect(() => {
@@ -111,9 +113,7 @@ export default function EventsPage() {
         if (!alive) return;
 
         const normalized = Array.isArray(list)
-          ? (list as any[])
-              .map(normalizeEvent)
-              .filter(Boolean) as EventsApiItem[]
+          ? (list as any[]).map(normalizeEvent).filter(Boolean) as Event[]
           : [];
 
         setEvents(normalized);
@@ -133,16 +133,36 @@ export default function EventsPage() {
     };
   }, []);
 
+  const handleRegistered = React.useCallback((eventId: string) => {
+    setEvents((prev) =>
+      prev.map((event) => {
+        if (event.id !== eventId) return event;
+
+        return {
+          ...event,
+          isRegistered: true,
+          totalRegistered:
+            typeof event.totalRegistered === "number"
+              ? event.totalRegistered + 1
+              : event.totalRegistered,
+        };
+      })
+    );
+  }, []);
+
   return (
     <div className="w-full overflow-x-hidden">
       <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
         <EventsHeroSection totalEvents={loadingEvents ? 0 : events.length} />
 
         <div className="max-w-6xl mx-auto w-full">
-          <EventsGrid events={events} loading={loadingEvents} />
+          <EventsGrid
+            events={events}
+            loading={loadingEvents}
+            onRegistered={handleRegistered}
+          />
         </div>
 
-        {/* Back to Home */}
         <div className="pt-4 text-center">
           <Button
             asChild

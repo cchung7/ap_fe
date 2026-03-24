@@ -1,7 +1,7 @@
 // src/types/user.ts
 
 export type UserRole = "ADMIN" | "MEMBER";
-export type UserStatus = "ACTIVE" | "PENDING";
+export type UserStatus = "ACTIVE" | "PENDING" | "SUSPENDED";
 
 export type User = {
   id: string;

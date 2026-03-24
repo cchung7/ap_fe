@@ -1,5 +1,4 @@
 // D:\ap_fe\src\components\events\EventCard.tsx
-// Per-card presentation + interaction UX
 "use client";
 
 import * as React from "react";
@@ -23,9 +22,12 @@ const categoryBg: Record<EventCategory, string> = {
   PROFESSIONAL_DEVELOPMENT: "/backgrounds/pd.jpg",
 };
 
-export type EventCardEvent = Event & {
-  isRegistered?: boolean;
-  viewerAuthenticated?: boolean;
+export type EventCardEvent = Event;
+
+type ApiResponse<T = unknown> = {
+  success?: boolean;
+  message?: string;
+  data?: T;
 };
 
 function formatDateTime(iso: string) {
@@ -53,25 +55,91 @@ function categoryBadgeClasses(category: EventCategory) {
   }
 }
 
-function EventCardInner({ event }: { event: EventCardEvent }) {
+function getCapacityText(event: EventCardEvent) {
+  if (typeof event.capacity !== "number") return "Capacity: TBD";
+  if (typeof event.totalRegistered === "number") {
+    return `Capacity: ${event.totalRegistered}/${event.capacity}`;
+  }
+  return `Capacity: ${event.capacity}`;
+}
+
+function EventCardInner({
+  event,
+  onRegistered,
+}: {
+  event: EventCardEvent;
+  onRegistered?: (eventId: string) => void;
+}) {
   const router = useRouter();
   const bg = categoryBg[event.category];
-  const isLoggedIn = !!event.viewerAuthenticated;
-  const { showInfo } = useGlobalStatusBanner();
 
-  const handleRegistration = React.useCallback(() => {
+  const isLoggedIn = !!event.viewerAuthenticated;
+
+  const [isRegistered, setIsRegistered] = React.useState(Boolean(event.isRegistered));
+  const [isRegistering, setIsRegistering] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsRegistered(Boolean(event.isRegistered));
+  }, [event.isRegistered]);
+
+  const { showInfo, showError, showSuccess } = useGlobalStatusBanner();
+
+  const handleRegistration = React.useCallback(async () => {
     if (!isLoggedIn) {
       router.push("/signup?next=/events");
       return;
     }
 
-    showInfo("Event registration flow will be enabled in a later phase.");
-  }, [isLoggedIn, router, showInfo]);
+    if (isRegistered || isRegistering) return;
+
+    try {
+      setIsRegistering(true);
+
+      const res = await fetch(`/api/events/${event.id}/register`, {
+        method: "POST",
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      const json = (await res.json().catch(() => null)) as ApiResponse | null;
+
+      if (!res.ok || !json?.success) {
+        throw new Error(json?.message || "Failed to register for event");
+      }
+
+      setIsRegistered(true);
+      onRegistered?.(event.id);
+      showSuccess(json?.message || "Event registration successful");
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to register for event");
+    } finally {
+      setIsRegistering(false);
+    }
+  }, [
+    event.id,
+    isLoggedIn,
+    isRegistered,
+    isRegistering,
+    onRegistered,
+    router,
+    showError,
+    showSuccess,
+  ]);
 
   const handleCheckIn = React.useCallback(() => {
-    if (!isLoggedIn) return;
-    showInfo("Event check-in flow will be enabled in a later phase.");
-  }, [isLoggedIn, showInfo]);
+    if (!isLoggedIn) {
+      router.push("/signup?next=/events");
+      return;
+    }
+
+    showInfo("Event check-in UI will be enabled in the next phase.");
+  }, [isLoggedIn, router, showInfo]);
+
+  const registerLabel = isRegistered
+    ? "Registered"
+    : isRegistering
+      ? "Registering..."
+      : "Register";
 
   return (
     <div
@@ -186,12 +254,14 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
 
           <div className="flex min-w-0 items-start gap-2.5 font-medium text-foreground/72">
             <Users size={16} className="mt-0.5 shrink-0" />
-            <span className="break-words">
-              {typeof event.capacity === "number"
-                ? `Capacity: ${event.capacity}`
-                : "Capacity: TBD"}
-            </span>
+            <span className="break-words">{getCapacityText(event)}</span>
           </div>
+
+          {typeof event.pointsValue === "number" && (
+            <div className="text-sm font-semibold text-foreground/78">
+              Points: {event.pointsValue}
+            </div>
+          )}
         </div>
 
         {event.description && (
@@ -203,15 +273,18 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
         <div className="mt-auto pt-7">
           <div className="flex min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
             <Button
-              className="h-11 w-full max-w-full rounded-2xl bg-accent px-5 text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 sm:w-auto"
-              onClick={handleRegistration}
+              className="h-11 w-full max-w-full rounded-2xl bg-accent px-5 text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 disabled:opacity-100 sm:w-auto"
+              onClick={() => void handleRegistration()}
+              disabled={isRegistered || isRegistering}
               title={
-                isLoggedIn
-                  ? "Event registration flow will be enabled in a later phase."
-                  : "Create an account to register for events."
+                !isLoggedIn
+                  ? "Create an account to register for events."
+                  : isRegistered
+                    ? "You are already registered for this event."
+                    : "Register for this event."
               }
             >
-              Register
+              {registerLabel}
             </Button>
 
             <Button
@@ -220,7 +293,7 @@ function EventCardInner({ event }: { event: EventCardEvent }) {
               disabled={!isLoggedIn}
               title={
                 isLoggedIn
-                  ? "Event check-in flow will be enabled in a later phase."
+                  ? "Event check-in UI will be enabled in the next phase."
                   : "You must be logged in to check in."
               }
             >

@@ -24,7 +24,7 @@ export const mockPointsTransactions: PointsTransaction[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: "tx_3",
+    id: "tx_3", 
     userId: "2",
     delta: 20,
     state: "PENDING",
