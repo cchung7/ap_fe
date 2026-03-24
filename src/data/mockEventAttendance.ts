@@ -14,9 +14,10 @@ export const mockEventAttendance: EventAttendance[] = [
     id: "att_2",
     eventId: "event_1",
     userId: "3",
-    status: "ATTENDED",
+    status: "CHECKED_IN",
     registeredAt: new Date().toISOString(),
-    attendedAt: new Date().toISOString(),
+    checkedInAt: new Date().toISOString(),
+    pointsAwarded: 20,
     createdAt: new Date().toISOString(),
   },
 ];
