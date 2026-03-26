@@ -82,7 +82,7 @@ export const HeroSection = () => {
             <div className="relative z-10 flex min-h-[500px] sm:min-h-[580px] lg:min-h-[680px]">
               <div className="flex w-full flex-col justify-between px-4 py-6 sm:px-10 sm:py-12 md:px-12 lg:px-16 lg:py-16">
                 <div className="mx-auto max-w-[18.5rem] rounded-[1.35rem] bg-black/20 p-4 text-center backdrop-blur-[2px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
-                  <p className="ui-eyebrow text-accent">
+                  <p className="ui-eyebrow text-white/50">
                     UT Dallas Student Veterans Association
                   </p>
 
