@@ -1,9 +1,5 @@
-// D:\ap_fe\src\components\home\CarouselSection.tsx
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import * as React from "react";
 
@@ -13,256 +9,47 @@ const sponsors = [
 ];
 
 export const CarouselSection = () => {
-  const sponsorCount = sponsors.length;
-
-  const [sponsorIdx, setSponsorIdx] = React.useState(0);
-  const [offsetPx, setOffsetPx] = React.useState(0);
-
-  const viewportRef = React.useRef<HTMLDivElement | null>(null);
-  const [viewportPx, setViewportPx] = React.useState(720);
-
-  React.useEffect(() => {
-    const el = viewportRef.current;
-    if (!el) return;
-
-    const update = () => setViewportPx(el.clientWidth);
-    update();
-
-    const ro = new ResizeObserver(() => update());
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  const gapPx = 8;
-  const stepPx = viewportPx >= 768 ? 136 : viewportPx >= 640 ? 120 : 104;
-
-  const visibleCards = Math.max(1, Math.floor((viewportPx + gapPx) / stepPx));
-  const maxIdx = Math.max(0, sponsorCount - visibleCards);
-
-  const maxOffsetPx = maxIdx * stepPx;
-  const shouldCenterSponsors = maxIdx === 0;
-
-  const allowDrag = sponsorCount > 1;
-  const ELASTIC_PX = 22;
-
-  const clampOffset = React.useCallback(
-    (v: number) => {
-      if (maxOffsetPx > 0) return Math.min(maxOffsetPx, Math.max(0, v));
-      return Math.max(-ELASTIC_PX, Math.min(ELASTIC_PX, v));
-    },
-    [maxOffsetPx]
-  );
-
-  React.useEffect(() => {
-    setSponsorIdx((i) => Math.min(Math.max(i, 0), maxIdx));
-  }, [maxIdx]);
-
-  React.useEffect(() => {
-    if (maxOffsetPx === 0) {
-      setOffsetPx(0);
-      return;
-    }
-
-    setOffsetPx(() => clampOffset(sponsorIdx * stepPx));
-  }, [sponsorIdx, stepPx, clampOffset, maxOffsetPx]);
-
-  const sponsorPrev = React.useCallback(() => {
-    setSponsorIdx((p) => Math.max(0, p - 1));
-  }, []);
-
-  const sponsorNext = React.useCallback(() => {
-    setSponsorIdx((p) => Math.min(maxIdx, p + 1));
-  }, [maxIdx]);
-
-  const isDraggingRef = React.useRef(false);
-  const startXRef = React.useRef(0);
-  const startOffsetRef = React.useRef(0);
-  const rafRef = React.useRef<number | null>(null);
-
-  const stopRaf = React.useCallback(() => {
-    if (rafRef.current != null) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = null;
-    }
-  }, []);
-
-  React.useEffect(() => {
-    return () => stopRaf();
-  }, [stopRaf]);
-
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!allowDrag) return;
-
-    isDraggingRef.current = true;
-    startXRef.current = e.clientX;
-    startOffsetRef.current = offsetPx;
-
-    try {
-      (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-    } catch {}
-
-    stopRaf();
-  };
-
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
-
-    const dx = e.clientX - startXRef.current;
-    const nextOffset = clampOffset(startOffsetRef.current - dx);
-
-    stopRaf();
-    rafRef.current = requestAnimationFrame(() => {
-      setOffsetPx(nextOffset);
-      rafRef.current = null;
-    });
-  };
-
-  const endDrag = React.useCallback(() => {
-    if (!isDraggingRef.current) return;
-
-    isDraggingRef.current = false;
-    stopRaf();
-
-    if (maxOffsetPx === 0) {
-      setOffsetPx(0);
-      setSponsorIdx(0);
-      return;
-    }
-
-    const snapped = clampOffset(offsetPx);
-    const idx = Math.round(snapped / stepPx);
-    const finalIdx = Math.min(maxIdx, Math.max(0, idx));
-
-    setSponsorIdx(finalIdx);
-    setOffsetPx(clampOffset(finalIdx * stepPx));
-  }, [offsetPx, stepPx, maxIdx, clampOffset, stopRaf, maxOffsetPx]);
-
   return (
-    <section className="px-6 py-2 md:py-4 bg-background relative overflow-hidden">
-      <div className="container max-w-6xl mx-auto">
-        <div className="mt-6 text-center">
-          <div className="flex justify-center">
-            <div className="relative flex flex-col items-center pt-[7rem] sm:pt-[8rem] md:pt-[9.25rem] lg:pt-[10.5rem]">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                <div className="relative h-36 w-36 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-52 lg:w-52 opacity-90">
-                  <Image
-                    src="/icons/handshake_icon.png"
-                    alt="Sponsors icon"
-                    fill
-                    className="object-contain saturate-[0.82] contrast-[0.94] brightness-[0.98]"
-                    sizes="(max-width: 640px) 144px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"
-                    priority={false}
-                  />
-                </div>
-              </div>
+    <section className="ui-section-shell">
+      <div className="ui-page-shell">
+        <div className="ui-section-grid">
+          <div className="lg:col-span-5">
+            <div className="ui-section-copy">
+              <p className="ui-eyebrow text-muted-foreground">Our Sponsors</p>
 
-              <p className="ui-title text-3xl md:text-4xl lg:text-5xl leading-none">
-                Our Sponsors:
+              <h2 className="ui-title">Organizations and Partners</h2>
+
+              <div className="ui-section-divider" />
+
+              <p className="ui-section-body">
+                Recognizing partners who help empower student veterans through
+                opportunity, support, and community engagement.
               </p>
             </div>
           </div>
 
-          <div className="mt-3 mx-auto h-px w-full max-w-xl bg-border/70" />
-
-          <div className="mt-6 flex items-center justify-center gap-2">
-            {sponsorCount > 1 && (
-              <Button
-                type="button"
-                aria-label="Previous sponsor"
-                onClick={sponsorPrev}
-                size="icon"
-                variant="ghost"
-                disabled={sponsorIdx === 0 || shouldCenterSponsors}
-                className="rounded-full border bg-background/50 backdrop-blur hover:bg-background/70 disabled:opacity-40"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-            )}
-
-            <div
-              ref={viewportRef}
-              className="w-full max-w-[720px] overflow-hidden"
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={endDrag}
-              onPointerCancel={endDrag}
-              onPointerLeave={endDrag}
-              style={{ touchAction: "pan-y" }}
-            >
-              <div
-                className={cn(
-                  "flex items-center ease-out",
-                  isDraggingRef.current ? "" : "transition-transform duration-700",
-                  "gap-2",
-                  shouldCenterSponsors ? "justify-center" : "justify-start",
-                  allowDrag ? "cursor-grab active:cursor-grabbing select-none" : ""
-                )}
-                style={{
-                  transform: shouldCenterSponsors
-                    ? `translateX(${-offsetPx}px)`
-                    : `translateX(-${offsetPx}px)`,
-                }}
-              >
-                {sponsors.map((p) => (
-                  <div key={p.src} className="shrink-0">
-                    <div
-                      className={cn(
-                        "relative overflow-hidden",
-                        "aspect-square",
-                        "w-24 sm:w-28 md:w-32",
-                        "rounded-xl border bg-background/60 backdrop-blur",
-                        "shadow-[0_10px_30px_rgba(0,0,0,0.10)]",
-                        allowDrag ? "cursor-grab active:cursor-grabbing" : ""
-                      )}
-                      draggable={false}
-                    >
+          <div className="lg:col-span-7">
+            <div className="ui-right-module">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
+                {sponsors.map((sponsor) => (
+                  <div
+                    key={sponsor.src}
+                    className="flex items-center justify-center rounded-[1.75rem] border border-border/50 bg-card/88 p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_18px_42px_-24px_rgba(11,18,32,0.14)] lg:p-7"
+                  >
+                    <div className="relative h-20 w-full max-w-[190px] sm:h-24 sm:max-w-[230px] lg:h-24 lg:max-w-[240px]">
                       <Image
-                        src={p.src}
-                        alt={p.alt}
+                        src={sponsor.src}
+                        alt={sponsor.alt}
                         fill
-                        className="object-contain p-3"
-                        sizes="(max-width: 768px) 112px, 128px"
-                        draggable={false}
+                        className="object-contain"
+                        sizes="(max-width: 640px) 190px, (max-width: 1024px) 230px, 240px"
                       />
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-
-            {sponsorCount > 1 && (
-              <Button
-                type="button"
-                aria-label="Next sponsor"
-                onClick={sponsorNext}
-                size="icon"
-                variant="ghost"
-                disabled={sponsorIdx >= maxIdx || shouldCenterSponsors}
-                className="rounded-full border bg-background/50 backdrop-blur hover:bg-background/70 disabled:opacity-40"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            )}
           </div>
-
-          {sponsorCount > 1 && (
-            <div className="mt-4 flex justify-center gap-2">
-              {sponsors.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={`Go to sponsor ${i + 1}`}
-                  onClick={() => setSponsorIdx(i)}
-                  className={cn(
-                    "h-2 w-2 rounded-full transition-all",
-                    i === sponsorIdx ? "bg-primary" : "bg-border"
-                  )}
-                />
-              ))}
-            </div>
-          )}
-
-          <div className="mt-10 mx-auto h-px w-full max-w-xl bg-border/70" />
         </div>
       </div>
     </section>

@@ -7,6 +7,8 @@ export type EventCategory =
 
 export type EventCurrentStatus = "UPCOMING" | "TODAY" | "PAST";
 
+export type AttendanceStatus = "REGISTERED" | "CHECKED_IN" | "CANCELED";
+
 export type Event = {
   id: string;
 
@@ -30,4 +32,8 @@ export type Event = {
   isRegistered?: boolean;
   viewerAuthenticated?: boolean;
   currentStatus?: EventCurrentStatus;
+
+  attendanceStatus?: AttendanceStatus;
+  checkedInAt?: string;
+  pointsAwarded?: number;
 };

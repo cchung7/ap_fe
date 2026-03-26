@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\home\ContactSection.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -55,45 +54,29 @@ export const ContactSection = () => {
   };
 
   return (
-    <section
-      id="contact"
-      className="pt-20 md:pt-28 pb-28 md:pb-36 px-6 bg-background"
-    >
-      <div className="container max-w-6xl mx-auto">
-        <div className="flex flex-col gap-8 md:gap-10">
-          <div className="space-y-3 flex flex-col items-center text-center">
-            <div className="space-y-5 flex flex-col items-center text-center">
-              <h2 className="text-sm font-black uppercase tracking-[0.45em] text-accent">
-                Connect
+    <section id="contact" className="ui-section-shell pb-28 md:pb-36">
+      <div className="ui-page-shell">
+        <div className="ui-section-grid">
+          <div className="lg:col-span-6">
+            <div className="mx-auto max-w-2xl space-y-6 text-center lg:mx-0 lg:text-left">
+              <p className="ui-eyebrow text-accent">
+                Our Community
+              </p>
+
+              <h2 className="ui-title text-primary/85">
+                Contact Us
               </h2>
 
-              <h3
-                className="
-                  ui-title
-                  leading-[1.05]
-                  tracking-tight
-                  text-primary/80
-                  italic
-                  [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
-                  text-[2.35rem]
-                  sm:text-5xl
-                  md:text-[3.2rem]
-                  lg:text-6xl
-                "
-              >
-                Lead with purpose
-              </h3>
+              <div className="mx-auto h-px w-full max-w-xl bg-border/70 lg:mx-0" />
 
-              <p className="ui-body text-muted-foreground max-w-xl mx-auto font-medium">
-                The Student Veterans Association supports UT Dallas
-                military-connected students through advocacy, mentorship, and
-                campus community. Reach out with questions, ideas, or ways you’d
-                like to get involved.
+              <p className="ui-section-body max-w-2xl">
+                Connecting military-connected students and supporters with advocacy, resources, 
+                and opportunities to get involved.
               </p>
             </div>
 
-            <div className="pt-6 w-full max-w-[42rem] mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-8 w-full">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-5">
                 {[
                   {
                     icon: Mail,
@@ -129,26 +112,17 @@ export const ContactSection = () => {
                     href={item.href}
                     target={item.newTab ? "_blank" : undefined}
                     rel={item.newTab ? "noopener noreferrer" : undefined}
-                    className="ui-surface-brand group relative flex items-center gap-4 rounded-3xl px-5 py-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/35 hover:shadow-[0_22px_50px_-24px_rgba(11,18,32,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="ui-surface-brand group relative flex items-center gap-4 rounded-[1.5rem] px-5 py-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/35 hover:shadow-[0_22px_50px_-24px_rgba(11,18,32,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
-                    <div
-                      className="
-                        ui-surface-silver
-                        relative z-10 h-12 w-12 shrink-0 rounded-2xl
-                        flex items-center justify-center
-                        text-primary
-                        transition-all duration-300
-                        group-hover:text-accent
-                      "
-                    >
+                    <div className="ui-surface-silver relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-primary transition-all duration-300 group-hover:text-accent">
                       <item.icon className="relative z-10 h-5 w-5" />
                     </div>
 
                     <div className="relative z-10 min-w-0">
-                      <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/75">
+                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground/75">
                         {item.label}
                       </p>
-                      <p className="text-base sm:text-lg font-bold tracking-tight text-foreground/85 truncate">
+                      <p className="truncate text-base font-bold tracking-tight text-foreground/85 lg:text-[1.05rem]">
                         {item.value}
                       </p>
                     </div>
@@ -158,93 +132,90 @@ export const ContactSection = () => {
             </div>
           </div>
 
-          <div className="w-full max-w-[30rem] mx-auto">
-            <div className="ui-surface-brand relative rounded-[2.5rem]">
-              <div className="absolute top-0 right-0 p-5 opacity-[0.07] scale-[1.35] rotate-12 pointer-events-none">
-                <Rocket className="h-20 w-20 text-primary" />
-              </div>
-
-              <div className="relative z-10 p-6 sm:p-7 md:p-8">
-                <div className="mb-6 space-y-2 text-left">
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground">
-                    Contact Form
-                  </p>
-                  <h4 className="text-2xl font-black tracking-tight text-foreground">
-                    Send a Message
-                  </h4>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Share a question, idea, or request and our team will follow
-                    up as soon as possible.
-                  </p>
+          <div className="lg:col-span-6">
+            <div className="ui-right-module">
+              <div className="ui-surface-brand relative rounded-[2.5rem]">
+                <div className="pointer-events-none absolute right-0 top-0 scale-[1.35] rotate-12 p-5 opacity-[0.07]">
+                  <Rocket className="h-20 w-20 text-primary" />
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="space-y-4">
-                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
-                        Full Name
-                      </label>
-                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
-                        <input
-                          required
-                          name="fullName"
-                          type="text"
-                          placeholder="Your name"
-                          className="w-full bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
-                        Email Address
-                      </label>
-                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
-                        <input
-                          required
-                          name="email"
-                          type="email"
-                          placeholder="netid@utdallas.edu"
-                          className="w-full bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
-                      <label className="relative z-10 ml-1 block text-[10px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
-                        Message
-                      </label>
-                      <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
-                        <textarea
-                          required
-                          name="body"
-                          placeholder="How can we help?"
-                          className="w-full min-h-36 resize-none bg-transparent border-none p-0 text-sm sm:text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
-                        />
-                      </div>
-                    </div>
+                <div className="relative z-10 p-6 sm:p-7 md:p-8 lg:p-9">
+                  <div className="mb-7 space-y-3 text-left">
+                    <p className="ui-eyebrow text-muted-foreground">
+                      Contact Form
+                    </p>
+                    <h3 className="ui-title text-3xl">Send a Message</h3>
+                    <p className="text-base font-medium text-muted-foreground">
+                      Contact us, and our team will follow up shortly.
+                    </p>
                   </div>
 
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={isSubmitting}
-                    className="w-full h-14 cursor-pointer rounded-full text-[11px] sm:text-xs font-black uppercase tracking-[0.18em] sm:tracking-[0.22em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        Sending <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                      </>
-                    ) : (
-                      <>
-                        <span className="truncate">
-                          Send Message
-                        </span>
-                        <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
-                      </>
-                    )}
-                  </Button>
-                </form>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-4">
+                      <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                        <label className="relative z-10 ml-1 block text-[11px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                          Full Name
+                        </label>
+                        <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                          <input
+                            required
+                            name="fullName"
+                            type="text"
+                            placeholder="Your name"
+                            className="w-full border-none bg-transparent p-0 text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                        <label className="relative z-10 ml-1 block text-[11px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                          Email Address
+                        </label>
+                        <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                          <input
+                            required
+                            name="email"
+                            type="email"
+                            placeholder="netid@utdallas.edu"
+                            className="w-full border-none bg-transparent p-0 text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
+                        <label className="relative z-10 ml-1 block text-[11px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
+                          Message
+                        </label>
+                        <div className="relative z-10 mt-3 rounded-2xl border border-slate-400/30 bg-white/35 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+                          <textarea
+                            required
+                            name="body"
+                            placeholder="How can we help?"
+                            className="min-h-36 w-full resize-none border-none bg-transparent p-0 text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={isSubmitting}
+                      className="h-14 w-full cursor-pointer rounded-full text-[12px] font-black uppercase tracking-[0.18em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white sm:text-[13px] sm:tracking-[0.22em]"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          Sending <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                        </>
+                      ) : (
+                        <>
+                          <span className="truncate">Send Message</span>
+                          <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

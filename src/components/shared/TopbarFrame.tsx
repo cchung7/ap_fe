@@ -1,7 +1,7 @@
+// D:\ap_fe\src\components\shared\TopbarFrame.tsx
 "use client";
 
 import * as React from "react";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type TopbarFrameProps = {
@@ -18,7 +18,6 @@ type TopbarFrameProps = {
   compactBreakpointClassName?: "md";
   desktopBreakpointClassName?: "xl";
 
-  /** When true, the topbar never slides away on scroll (recommended for admin). */
   disableHideOnScroll?: boolean;
 };
 
@@ -32,28 +31,19 @@ export function TopbarFrame({
   rightDesktop,
   compactBreakpointClassName = "md",
   desktopBreakpointClassName = "xl",
-  disableHideOnScroll = false,
 }: TopbarFrameProps) {
-  const [hidden, setHidden] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
 
-  const { scrollY } = useScroll();
+  React.useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12);
+    };
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    // Always keep visible if disabled.
-    if (disableHideOnScroll) {
-      if (hidden) setHidden(false);
-      setScrolled(latest > 50);
-      return;
-    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
-    const previous = scrollY.getPrevious() ?? 0;
-
-    if (latest > previous && latest > 150) setHidden(true);
-    else setHidden(false);
-
-    setScrolled(latest > 50);
-  });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const mobileHiddenClass =
     compactBreakpointClassName === "md" ? "md:hidden" : "hidden";
@@ -64,65 +54,61 @@ export function TopbarFrame({
       : "hidden";
 
   const desktopVisibleClass =
-    desktopBreakpointClassName === "xl" ? "hidden xl:grid" : "hidden";
+    desktopBreakpointClassName === "xl" ? "hidden xl:flex" : "hidden";
 
   return (
-    <motion.header
-      variants={{ visible: { y: 0 }, hidden: { y: "-100%" } }}
-      animate={hidden ? "hidden" : "visible"}
-      transition={{ duration: 0.35, ease: "easeInOut" }}
+    <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        "bg-background/90 backdrop-blur-md border-b border-border/40 py-2",
-        scrolled && "bg-background"
+        "fixed inset-x-0 top-0 z-50 border-b transition-all duration-200",
+        scrolled
+          ? "border-border/60 bg-background/96 shadow-[0_10px_30px_-18px_rgba(11,18,32,0.18)] backdrop-blur-xl"
+          : "border-border/40 bg-background/88 backdrop-blur-md"
       )}
     >
-      <div className="w-full px-0">
+      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div
           className={cn(
             mobileHiddenClass,
-            "h-14 flex items-center justify-between gap-4 px-3 sm:px-4"
+            "flex h-16 items-center justify-between gap-4"
           )}
         >
-          <div className="min-w-0">{leftMobile}</div>
-          <div className="shrink-0 flex items-center justify-end">
-            {rightMobile}
-          </div>
+          <div className="min-w-0 flex-1">{leftMobile}</div>
+          <div className="shrink-0">{rightMobile}</div>
         </div>
 
         <div
           className={cn(
             compactVisibleClass,
-            "h-14 items-center justify-between gap-4 px-4 lg:px-5"
+            "h-16 items-center justify-between gap-4"
           )}
         >
-          <div className="min-w-0">{leftCompact ?? leftDesktop}</div>
-          <div className="shrink-0 flex items-center justify-end gap-2">
-            {rightCompact ?? rightDesktop}
-          </div>
+          <div className="min-w-0 flex-1">{leftCompact ?? leftDesktop}</div>
+          <div className="shrink-0">{rightCompact ?? rightDesktop}</div>
         </div>
 
         <div
           className={cn(
             desktopVisibleClass,
-            "relative h-14 items-center px-5 2xl:px-6"
+            "h-16 items-center gap-6"
           )}
         >
-          <div className="absolute inset-y-0 left-5 2xl:left-6 flex items-center justify-start min-w-0">
-            {leftDesktop}
+          <div className="min-w-0 shrink-0">{leftDesktop}</div>
+
+          <div className="min-w-0 flex-1">
+            {centerDesktop ? (
+              <div className="flex items-center justify-center">
+                {centerDesktop}
+              </div>
+            ) : null}
           </div>
 
-          {centerDesktop ? (
-            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 flex items-center justify-center min-w-0">
-              {centerDesktop}
+          <div className="shrink-0">
+            <div className="flex items-center justify-end gap-2">
+              {rightDesktop}
             </div>
-          ) : null}
-
-          <div className="absolute inset-y-0 right-5 2xl:right-6 flex items-center justify-end gap-2 min-w-0">
-            {rightDesktop}
           </div>
         </div>
       </div>
-    </motion.header>
+    </header>
   );
 }

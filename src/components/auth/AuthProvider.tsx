@@ -1,5 +1,4 @@
-// Auth Provider layer owns shared current-user UI state
-// Same auth state for navbar/footer/profile/login
+// D:\ap_fe\src\components\auth\AuthProvider.tsx
 "use client";
 
 import * as React from "react";
@@ -13,20 +12,13 @@ type Me = {
   [key: string]: unknown;
 };
 
-type ApiResponse<T> = {
-  statusCode?: number;
-  success?: boolean;
-  message?: string;
-  data?: T;
-};
-
 type AuthContextValue = {
   me: Me | null;
   loading: boolean;
   error: Error | null;
   isAuthed: boolean;
   isAdmin: boolean;
-  refresh: () => Promise<Me | null>;
+  refresh: (options?: { silent?: boolean }) => Promise<Me | null>;
   clearAuth: () => void;
 };
 
@@ -39,7 +31,6 @@ async function fetchMe(): Promise<Me | null> {
     cache: "no-store",
   });
 
-  // Logged out is not an exceptional state.
   if (res.status === 401 || res.status === 403) return null;
 
   if (!res.ok) {
@@ -49,11 +40,12 @@ async function fetchMe(): Promise<Me | null> {
 
   const json = (await res.json()) as any;
 
-  // Supports:
-  // - { me: ... }
-  // - { data: { me: ... } }  <-- your current response shape
-  // - { data: { user: ... } } or { user: ... } (tolerant)
-  const candidate = json?.me ?? json?.user ?? json?.data?.me ?? json?.data?.user ?? null;
+  const candidate =
+    json?.me ??
+    json?.user ??
+    json?.data?.me ??
+    json?.data?.user ??
+    null;
 
   if (!candidate || typeof candidate !== "object") return null;
   return candidate as Me;
@@ -66,30 +58,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | null>(null);
 
-  const refresh = React.useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const refresh = React.useCallback(
+    async (options?: { silent?: boolean }) => {
+      const silent = options?.silent ?? false;
 
-    try {
-      const nextMe = await fetchMe();
+      if (!silent) {
+        setLoading(true);
+      }
 
-      if (!mountedRef.current) return null;
-
-      setMe(nextMe);
-      setLoading(false);
       setError(null);
 
-      return nextMe;
-    } catch (err: unknown) {
-      if (!mountedRef.current) return null;
+      try {
+        const nextMe = await fetchMe();
 
-      setMe(null);
-      setLoading(false);
-      setError(err instanceof Error ? err : new Error("Auth fetch failed"));
+        if (!mountedRef.current) return null;
 
-      return null;
-    }
-  }, []);
+        setMe(nextMe);
+        setError(null);
+        setLoading(false);
+
+        return nextMe;
+      } catch (err: unknown) {
+        if (!mountedRef.current) return null;
+
+        setMe(null);
+        setError(err instanceof Error ? err : new Error("Auth fetch failed"));
+        setLoading(false);
+
+        return null;
+      }
+    },
+    []
+  );
 
   const clearAuth = React.useCallback(() => {
     setMe(null);
@@ -99,18 +99,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     mountedRef.current = true;
-
     void refresh();
-
-    const onFocus = () => {
-      void refresh();
-    };
-
-    window.addEventListener("focus", onFocus);
 
     return () => {
       mountedRef.current = false;
-      window.removeEventListener("focus", onFocus);
     };
   }, [refresh]);
 

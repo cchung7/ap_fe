@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import type { Event } from "@/types/events";
+import type { Event, AttendanceStatus } from "@/types/events";
 import { EventsGrid } from "@/components/events/EventsGrid";
 import { EventsHeroSection } from "@/components/events/EventsHeroSection";
 
@@ -56,6 +56,10 @@ function normalizeEvent(raw: any): Event | null {
 
   if (!startsAt) return null;
 
+  const attendanceStatus =
+    raw.attendanceStatus ??
+    (raw.isRegistered ? "REGISTERED" : undefined);
+
   return {
     id,
     title,
@@ -87,6 +91,14 @@ function normalizeEvent(raw: any): Event | null {
     isRegistered: Boolean(raw.isRegistered),
     viewerAuthenticated: Boolean(raw.viewerAuthenticated),
     currentStatus: raw.currentStatus,
+    attendanceStatus,
+    checkedInAt: raw.checkedInAt ?? undefined,
+    pointsAwarded:
+      typeof raw.pointsAwarded === "number"
+        ? raw.pointsAwarded
+        : raw.pointsAwarded != null
+          ? Number(raw.pointsAwarded)
+          : undefined,
   };
 }
 
@@ -141,6 +153,10 @@ export default function EventsPage() {
         return {
           ...event,
           isRegistered: true,
+          attendanceStatus:
+            event.attendanceStatus === "CHECKED_IN"
+              ? "CHECKED_IN"
+              : "REGISTERED",
           totalRegistered:
             typeof event.totalRegistered === "number"
               ? event.totalRegistered + 1
@@ -149,6 +165,35 @@ export default function EventsPage() {
       })
     );
   }, []);
+
+  const handleCheckedIn = React.useCallback(
+    (
+      eventId: string,
+      payload?: {
+        status?: AttendanceStatus;
+        checkedInAt?: string;
+        pointsAwarded?: number;
+      }
+    ) => {
+      setEvents((prev) =>
+        prev.map((event) => {
+          if (event.id !== eventId) return event;
+
+          return {
+            ...event,
+            isRegistered: true,
+            attendanceStatus: payload?.status ?? "CHECKED_IN",
+            checkedInAt: payload?.checkedInAt ?? event.checkedInAt,
+            pointsAwarded:
+              typeof payload?.pointsAwarded === "number"
+                ? payload.pointsAwarded
+                : event.pointsAwarded,
+          };
+        })
+      );
+    },
+    []
+  );
 
   return (
     <div className="w-full overflow-x-hidden">
@@ -160,6 +205,7 @@ export default function EventsPage() {
             events={events}
             loading={loadingEvents}
             onRegistered={handleRegistered}
+            onCheckedIn={handleCheckedIn}
           />
         </div>
 

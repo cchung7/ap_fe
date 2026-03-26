@@ -9,7 +9,7 @@ import { GlobalStatusBannerProvider } from "@/components/ui/GlobalStatusBannerPr
 
 export const metadata: Metadata = {
   title: "Student Veterans Association",
-  description: "UT Dallas Student Veterans Association",
+  description: "UT Dallas Student Veterans of America - Association",
 };
 
 export default function RootLayout({

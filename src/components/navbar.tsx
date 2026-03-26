@@ -1,50 +1,35 @@
 "use client";
 
+import * as React from "react";
+import Link from "next/link";
+
+import { useMe } from "@/hooks/useMe";
 import { Button } from "@/components/ui/button";
 import { DrawerMenu, type DrawerMenuItem } from "@/components/ui/DrawerMenu";
+import { TopbarFrame } from "@/components/shared/TopbarFrame";
+import { BrandLockup } from "@/components/shared/BrandLockup";
 import { cn } from "@/lib/utils";
-import { useMe } from "@/hooks/useMe";
+
 import {
   CalendarDays,
   LayoutDashboard,
+  LogIn,
   Menu,
   User,
   Users,
 } from "lucide-react";
-import Link from "next/link";
-import * as React from "react";
-import { usePathname } from "next/navigation";
 
-import { TopbarFrame } from "@/components/shared/TopbarFrame";
-import { BrandLockup } from "@/components/shared/BrandLockup";
-
-const baseNavLinks = [
+const publicNavLinks = [
   { name: "Home", href: "/", icon: User },
   { name: "Members", href: "/members", icon: Users },
   { name: "Events", href: "/events", icon: CalendarDays },
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
-  const isAdminRoute = pathname?.startsWith("/admin");
-
   const { loading, isAuthed, isAdmin } = useMe();
-
-  const navLinks = React.useMemo(() => {
-    const links = [...baseNavLinks];
-
-    if (loading) return links;
-
-    if (isAuthed) {
-      links.push({ name: "My Profile", href: "/profile", icon: User });
-    }
-
-    return links;
-  }, [loading, isAuthed]);
-
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = React.useCallback(async () => {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
@@ -57,7 +42,7 @@ export function Navbar() {
       setMobileMenuOpen(false);
       window.location.href = "/";
     }
-  };
+  }, []);
 
   const handleMobileDrawerLinkClick = React.useCallback(() => {
     setMobileMenuOpen(false);
@@ -65,140 +50,129 @@ export function Navbar() {
 
   const mobileItems = React.useMemo<DrawerMenuItem[]>(
     () =>
-      navLinks
-        .filter((link) => link.href !== "/admin")
-        .map((link) => ({
-          ...link,
-          name: link.name.toUpperCase(),
-        })),
-    [navLinks]
+      publicNavLinks.map((link) => ({
+        ...link,
+        name: link.name.toUpperCase(),
+      })),
+    []
   );
 
   const brand = (
     <BrandLockup
       href="/"
       title={
-        <span className="font-heading font-black text-base lg:text-lg tracking-tighter uppercase whitespace-nowrap">
+        <span className="font-heading text-sm font-black uppercase tracking-[0.02em] text-foreground sm:text-base lg:text-lg">
           SVA -
-          <span className="text-[#e87500] italic">UT-Dallas</span>
+          <span className="ml-1 italic text-[#e87500]">UT-Dallas</span>
         </span>
       }
     />
   );
 
   const desktopNav = (
-    <nav className="flex items-center bg-secondary/50 backdrop-blur-sm px-2 py-1.5 gap-5 rounded-full border border-border/40 font-bold">
-      {navLinks.map((link) => {
+    <nav className="flex items-center gap-1 rounded-full border border-border/50 bg-card/70 p-1 shadow-sm backdrop-blur-sm">
+      {publicNavLinks.map((link) => {
         const Icon = link.icon;
+
         return (
           <Link
-            key={link.name}
+            key={link.href}
             href={link.href}
-            className="px-1 py-2 rounded-full text-[11px] uppercase tracking-widest text-muted-foreground hover:text-accent transition-all duration-300 relative group flex items-center gap-2 whitespace-nowrap"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[12px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground"
           >
-            <Icon className="h-5 w-5 mb-0.5 group-hover:text-accent transition-colors" />
+            <Icon className="h-4 w-4" />
             {link.name}
-            <div className="absolute -bottom-1 left-1 right-1 h-0.5 bg-accent scale-x-0 group-hover:scale-x-100 transition-transform origin-center" />
           </Link>
         );
       })}
     </nav>
   );
 
-  const sharedTopbarButtonClass = cn(
-    "h-9 rounded-full px-4",
-    "justify-center text-center",
-    "font-semibold tracking-tight text-sm"
+  const sharedButtonClass = cn(
+    "h-10 rounded-full px-5 text-sm font-semibold tracking-tight"
   );
 
   const desktopActions = (
     <>
-      {!loading && (
+      {!loading && !isAuthed && (
         <>
-          {!isAuthed && (
-            <>
-              <Button
-                asChild
-                size="sm"
-                className={cn(
-                  sharedTopbarButtonClass,
-                  "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-              >
-                <Link href="/login" className="flex items-center justify-center">
-                  Log In
-                </Link>
-              </Button>
+          <Button
+            asChild
+            size="sm"
+            className={cn(
+              sharedButtonClass,
+              "bg-primary text-primary-foreground hover:bg-primary/90"
+            )}
+          >
+            <Link href="/login">Log In</Link>
+          </Button>
 
-              <Button
-                asChild
-                size="sm"
-                className={cn(
-                  sharedTopbarButtonClass,
-                  "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
-                )}
-              >
-                <Link href="/signup" className="flex items-center justify-center">
-                  Sign Up
-                </Link>
-              </Button>
-            </>
-          )}
+          <Button
+            asChild
+            size="sm"
+            className={cn(
+              sharedButtonClass,
+              "bg-accent text-accent-foreground hover:bg-accent/90"
+            )}
+          >
+            <Link href="/signup">Sign Up</Link>
+          </Button>
+        </>
+      )}
 
-          {isAuthed && (
-            <>
-              {isAdmin && (
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(
-                    sharedTopbarButtonClass,
-                    "bg-primary text-primary-foreground hover:bg-primary/90"
-                  )}
-                >
-                  <Link href="/admin" className="flex items-center justify-center">
-                    Admin Dashboard
-                  </Link>
-                </Button>
+      {!loading && isAuthed && (
+        <>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className={cn(
+              sharedButtonClass,
+              "border-border/60 bg-card/70 hover:bg-secondary/60"
+            )}
+          >
+            <Link href="/profile">My Profile</Link>
+          </Button>
+
+          {isAdmin && (
+            <Button
+              asChild
+              size="sm"
+              className={cn(
+                sharedButtonClass,
+                "bg-primary text-primary-foreground hover:bg-primary/90"
               )}
-
-              <Button
-                type="button"
-                size="sm"
-                className={cn(
-                  sharedTopbarButtonClass,
-                  "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90"
-                )}
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </>
+            >
+              <Link href="/admin">Admin</Link>
+            </Button>
           )}
+
+          <Button
+            type="button"
+            size="sm"
+            className={cn(
+              sharedButtonClass,
+              "bg-accent text-accent-foreground hover:bg-accent/90"
+            )}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
         </>
       )}
     </>
   );
 
-  const compactActions = isAdminRoute ? (
+  const mobileTrigger = (
     <Button
       variant="ghost"
       size="icon"
-      className="rounded-full"
-      onClick={() => {
-        window.dispatchEvent(new Event("admin-sidebar-toggle"));
-      }}
-    >
-      <Menu className="h-6 w-6" />
-    </Button>
-  ) : (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="rounded-full"
+      className="h-10 w-10 rounded-full border border-border/50 bg-card/70 backdrop-blur-sm hover:bg-secondary/70"
       onClick={() => setMobileMenuOpen(true)}
+      aria-label="Open menu"
+      title="Menu"
     >
-      <Menu className="h-6 w-6" />
+      <Menu className="h-5 w-5" />
     </Button>
   );
 
@@ -208,116 +182,109 @@ export function Navbar() {
         compactBreakpointClassName="md"
         desktopBreakpointClassName="xl"
         leftMobile={brand}
-        rightMobile={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full"
-            onClick={() => {
-              if (isAdminRoute) {
-                window.dispatchEvent(new Event("admin-sidebar-toggle"));
-                return;
-              }
-              setMobileMenuOpen(true);
-            }}
-          >
-            <Menu className="h-6 w-6" />
-          </Button>
-        }
+        rightMobile={mobileTrigger}
         leftCompact={brand}
-        rightCompact={compactActions}
+        rightCompact={mobileTrigger}
         leftDesktop={brand}
         centerDesktop={desktopNav}
         rightDesktop={desktopActions}
       />
 
-      {!isAdminRoute && (
-        <DrawerMenu
-          open={mobileMenuOpen}
-          onOpenChange={setMobileMenuOpen}
-          title="MENU"
-          srTitle="Mobile Navigation"
-          items={mobileItems}
-          bottomContent={
-            !loading ? (
-              !isAuthed ? (
-                <>
-                  <Button
-                    asChild
-                    className={cn(
-                      "w-full rounded-2xl px-4 py-3",
-                      "bg-primary text-primary-foreground hover:bg-primary/90",
-                      "justify-center text-center",
-                      "font-semibold tracking-tight"
-                    )}
-                  >
-                    <Link
-                      href="/login"
-                      onClick={handleMobileDrawerLinkClick}
-                      className="flex w-full items-center justify-center"
-                    >
-                      Log In
-                    </Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    className={cn(
-                      "w-full rounded-2xl px-4 py-3",
-                      "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90",
-                      "justify-center text-center",
-                      "font-semibold tracking-tight"
-                    )}
-                  >
-                    <Link
-                      href="/signup"
-                      onClick={handleMobileDrawerLinkClick}
-                      className="flex w-full items-center justify-center"
-                    >
-                      Sign Up
-                    </Link>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  {isAdmin && (
-                    <Button
-                      asChild
-                      className={cn(
-                        "w-full rounded-2xl px-4 py-3",
-                        "bg-primary text-primary-foreground hover:bg-primary/90",
-                        "justify-center text-center",
-                        "font-semibold tracking-tight"
-                      )}
-                    >
-                      <Link
-                        href="/admin"
-                        onClick={handleMobileDrawerLinkClick}
-                        className="flex w-full items-center justify-center"
-                      >
-                        Admin Dashboard
-                      </Link>
-                    </Button>
+      <DrawerMenu
+        open={mobileMenuOpen}
+        onOpenChange={setMobileMenuOpen}
+        title="MENU"
+        srTitle="Mobile Navigation"
+        items={mobileItems}
+        bottomContent={
+          !loading ? (
+            !isAuthed ? (
+              <>
+                <Button
+                  asChild
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "bg-primary text-primary-foreground hover:bg-primary/90"
                   )}
-
-                  <Button
-                    type="button"
-                    className={cn(
-                      "w-full rounded-2xl px-4 py-3",
-                      "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90",
-                      "justify-center text-center",
-                      "font-semibold tracking-tight"
-                    )}
-                    onClick={handleLogout}
+                >
+                  <Link
+                    href="/login"
+                    onClick={handleMobileDrawerLinkClick}
+                    className="flex w-full items-center justify-center gap-2"
                   >
-                    Logout
+                    <LogIn className="h-4 w-4" />
+                    Log In
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "bg-accent text-accent-foreground hover:bg-accent/90"
+                  )}
+                >
+                  <Link
+                    href="/signup"
+                    onClick={handleMobileDrawerLinkClick}
+                    className="flex w-full items-center justify-center"
+                  >
+                    Sign Up
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "border-border/60 bg-card/70 hover:bg-secondary/60"
+                  )}
+                >
+                  <Link
+                    href="/profile"
+                    onClick={handleMobileDrawerLinkClick}
+                    className="flex w-full items-center justify-center"
+                  >
+                    My Profile
+                  </Link>
+                </Button>
+
+                {isAdmin && (
+                  <Button
+                    asChild
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                      "bg-primary text-primary-foreground hover:bg-primary/90"
+                    )}
+                  >
+                    <Link
+                      href="/admin"
+                      onClick={handleMobileDrawerLinkClick}
+                      className="flex w-full items-center justify-center"
+                    >
+                      Admin Dashboard
+                    </Link>
                   </Button>
-                </>
-              )
-            ) : null
-          }
-        />
-      )}
+                )}
+
+                <Button
+                  type="button"
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "bg-accent text-accent-foreground hover:bg-accent/90"
+                  )}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </>
+            )
+          ) : null
+        }
+      />
     </>
   );
 }

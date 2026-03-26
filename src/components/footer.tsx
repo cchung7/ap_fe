@@ -30,103 +30,104 @@ export function Footer() {
   }
 
   return (
-    <footer className="w-full border-t border-border/40 bg-secondary/30 px-6 py-6">
-      <div className="container mx-auto flex max-w-6xl flex-col items-center gap-2 text-center">
-        <div className="group flex flex-col items-center gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-accent/20 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+    <footer className="w-full border-t border-border/40 bg-secondary/30 py-6 sm:py-7">
+      <div className="ui-page-shell">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-3 text-center">
+          <div className="group flex flex-col items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-accent/20 blur-xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-            <div className="relative flex h-14 w-14 items-center justify-center transition-transform duration-300 group-hover:scale-110">
-              <Image
-                src="/logo/logo.png"
-                alt="SVA UT-Dallas Logo"
-                width={56}
-                height={56}
-                className="object-contain"
-                priority
-              />
+              <div className="relative flex h-14 w-14 items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                <Image
+                  src="/logo/logo.png"
+                  alt="SVA UT-Dallas Logo"
+                  width={56}
+                  height={56}
+                  className="object-contain"
+                  priority
+                />
+              </div>
             </div>
+
+            <h4 className="ui-title font-heading text-xl uppercase italic tracking-tighter sm:text-2xl">
+              <span className="text-muted-foreground/60">SVA- UT-Dallas</span>
+            </h4>
           </div>
 
-          <h4 className="ui-title font-heading text-2xl uppercase italic tracking-tighter">
-            <span className="text-muted-foreground/60">SVA- UT-Dallas</span>
-          </h4>
-        </div>
-
-        <nav className="mt-2 flex flex-wrap justify-center gap-4 ui-eyebrow !text-[15px] tracking-[0.2em] text-foreground/75">
-          <Link
-            href="/"
-            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
-          >
-            Home
-          </Link>
-          <Link
-            href="/members"
-            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
-          >
-            Members
-          </Link>
-          <Link
-            href="/events"
-            className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
-          >
-            Events
-          </Link>
-
-          {isAuthed && (
+          <nav className="mt-1 flex max-w-full flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[11px] font-black uppercase tracking-[0.16em] text-foreground/75 sm:text-[13px] sm:tracking-[0.2em]">
             <Link
-              href="/profile"
-              className="transform border-b border-transparent pb-0.5 transition-all duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent"
+              href="/"
+              className="border-b border-transparent pb-0.5 transition-all duration-200 hover:border-accent/50 hover:text-accent"
             >
-              My Profile
+              Home
             </Link>
-          )}
-        </nav>
-
-        <div className="flex gap-3 py-4">
-          {[
-            {
-              Icon: XLogoIcon,
-              href: "https://x.com/sva_utd",
-              label: "X",
-            },
-            {
-              Icon: Instagram,
-              href: "https://www.instagram.com/sva.utd/",
-              label: "Instagram",
-            },
-          ].map(({ Icon, href, label }) => (
             <Link
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={label}
-              className="group"
+              href="/members"
+              className="border-b border-transparent pb-0.5 transition-all duration-200 hover:border-accent/50 hover:text-accent"
             >
-              <motion.div
-                whileHover={{ y: -2, scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                transition={{ type: "spring", stiffness: 340, damping: 26 }}
-                className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.06)]"
+              Members
+            </Link>
+            <Link
+              href="/events"
+              className="border-b border-transparent pb-0.5 transition-all duration-200 hover:border-accent/50 hover:text-accent"
+            >
+              Events
+            </Link>
+
+            {isAuthed && (
+              <Link
+                href="/profile"
+                className="border-b border-transparent pb-0.5 transition-all duration-200 hover:border-accent/50 hover:text-accent"
               >
-                <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ui-surface-silver backdrop-blur transition-colors duration-300 group-hover:bg-accent">
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-transparent opacity-70" />
+                My Profile
+              </Link>
+            )}
+          </nav>
 
-                  <Icon className="relative z-10 h-6 w-6 text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-white" />
-                </div>
-              </motion.div>
-            </Link>
-          ))}
-        </div>
+          <div className="flex gap-3 py-3">
+            {[
+              {
+                Icon: XLogoIcon,
+                href: "https://x.com/sva_utd",
+                label: "X",
+              },
+              {
+                Icon: Instagram,
+                href: "https://www.instagram.com/sva.utd/",
+                label: "Instagram",
+              },
+            ].map(({ Icon, href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={label}
+                className="group"
+              >
+                <motion.div
+                  whileHover={{ y: -2, scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                  className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.06)]"
+                >
+                  <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ui-surface-silver backdrop-blur transition-colors duration-300 group-hover:bg-accent">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-transparent opacity-70" />
+                    <Icon className="relative z-10 h-6 w-6 text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-white" />
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
 
-        <div className="space-y-3">
-          <p className="ui-eyebrow whitespace-nowrap text-muted-foreground/60">
-            Student Veterans Association | UTD Chapter
-          </p>
-          <p className="ui-eyebrow text-[10px] font-semibold text-muted-foreground/40">
-            All rights reserved. ©{currentYear} SVA-UT-Dallas.
-          </p>
+          <div className="max-w-full space-y-2">
+            <p className="ui-eyebrow break-words text-center text-muted-foreground/60">
+              The Student Veterans of America Association | UT-Dallas Chapter
+            </p>
+            <p className="ui-eyebrow text-[10px] font-semibold text-muted-foreground/40">
+              All rights reserved. ©{currentYear} SVA- UT-DALLAS.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,26 +1,15 @@
-// D:\ap_fe\src\components\home\HeroSection.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import Image from "next/image";
 import * as React from "react";
 
 const slides = ["/hero/sva_1.jpg", "/hero/sva_2.jpg", "/hero/sva_3.jpg"];
 
 export const HeroSection = () => {
-  const containerRef = React.useRef<HTMLElement | null>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.55], [1, 0.96]);
-
   const [current, setCurrent] = React.useState(0);
   const touchStartX = React.useRef<number | null>(null);
   const touchEndX = React.useRef<number | null>(null);
@@ -36,20 +25,12 @@ export const HeroSection = () => {
 
   React.useEffect(() => {
     if (count <= 1) return;
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setCurrent((prev) => (prev + 1) % count);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [count]);
+    }, 6000);
 
-  React.useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") goToPrevious();
-      if (e.key === "ArrowRight") goToNext();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [goToPrevious, goToNext]);
+    return () => window.clearInterval(interval);
+  }, [count]);
 
   const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     touchEndX.current = null;
@@ -64,138 +45,139 @@ export const HeroSection = () => {
     if (touchStartX.current == null || touchEndX.current == null) return;
     const delta = touchStartX.current - touchEndX.current;
     const threshold = 50;
+
     if (delta > threshold) goToNext();
     if (delta < -threshold) goToPrevious();
   };
 
   return (
-    <section
-      ref={containerRef}
-      className="relative min-h-screen w-full pt-8 sm:pt-12 md:pt-16"
-    >
-      <motion.div
-        style={{
-          opacity: heroOpacity,
-          scale: heroScale,
-          height: "56vh",
-          minHeight: "360px",
-          maxHeight: "720px",
-        }}
-        className="relative w-full overflow-hidden"
+    <section className="relative overflow-hidden bg-background pt-16 sm:pt-24 md:pt-28">
+      <div
+        className="ui-page-shell relative"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div className="relative h-full w-full">
-          {slides.map((src, idx) => (
-            <Image
-              key={src}
-              src={src}
-              alt={`Hero slide ${idx + 1}`}
-              fill
-              priority={idx === 0}
-              unoptimized
-              className={cn(
-                "absolute inset-0 object-cover",
-                "transition-opacity duration-1000 will-change-opacity",
-                idx === current ? "opacity-100 z-[1]" : "opacity-0 z-0"
-              )}
-              sizes="100vw"
-            />
-          ))}
+        <div className="relative overflow-hidden rounded-[2rem] border border-border/50 shadow-master sm:rounded-[2.5rem]">
+          <div className="relative min-h-[500px] sm:min-h-[580px] lg:min-h-[680px]">
+            {slides.map((src, idx) => (
+              <Image
+                key={src}
+                src={src}
+                alt={`Hero slide ${idx + 1}`}
+                fill
+                priority={idx === 0}
+                unoptimized
+                className={cn(
+                  "absolute inset-0 object-cover transition-opacity duration-1000",
+                  idx === current ? "opacity-100" : "opacity-0"
+                )}
+                sizes="100vw"
+              />
+            ))}
 
-          <div className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-b from-background/10 via-background/25 to-background/95" />
-          <div className="absolute inset-0 z-[5] pointer-events-none bg-gradient-to-r from-primary/35 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#081a35]/84 via-[#081a35]/58 to-[#081a35]/18" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent" />
 
-          <div className="absolute -bottom-2 left-0 right-0 z-[15]">
-            <div className="w-full px-4 pb-4 sm:pb-6">
-              <div className="text-center pointer-events-none space-y-2">
-                <motion.h1
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="
-                    mx-auto
-                    w-full
-                    max-w-none
-                    leading-[1.05]
-                    text-[#0b2d5b]/80
-                    [text-shadow:0_4px_12px_rgba(0,0,0,0.22)]
-                    text-[2.35rem]
-                    sm:text-5xl
-                    md:text-[3.2rem]
-                    lg:text-6xl
-                    ui-title
-                  "
-                >
-                  UTD: Student Veterans Association
-                </motion.h1>
-              </div>
-            </div>
-          </div>
+            <div className="relative z-10 flex min-h-[500px] sm:min-h-[580px] lg:min-h-[680px]">
+              <div className="flex w-full flex-col justify-between px-4 py-6 sm:px-10 sm:py-12 md:px-12 lg:px-16 lg:py-16">
+                <div className="mx-auto max-w-[18.5rem] rounded-[1.35rem] bg-black/20 p-4 text-center backdrop-blur-[2px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
+                  <p className="ui-eyebrow text-accent">
+                    UT Dallas Student Veterans Association
+                  </p>
 
-          {count > 1 && (
-            <>
-              <Button
-                type="button"
-                aria-label="Previous slide"
-                onClick={goToPrevious}
-                size="icon-lg"
-                variant="ghost"
-                className="absolute top-1/2 -translate-y-1/2 z-30 left-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
-              >
-                <ChevronLeft className="h-6 w-6 stroke-[2.5]" />
-              </Button>
+                  <h1 className="mt-3 text-[2.5rem] font-black leading-[0.95] tracking-tight text-white sm:mt-4 sm:text-[3.15rem] md:text-[3.75rem] lg:text-[clamp(42px,7.5vw,72px)]">
+                    Student Veteran Support
+                  </h1>
 
-              <Button
-                type="button"
-                aria-label="Next slide"
-                onClick={goToNext}
-                size="icon-lg"
-                variant="ghost"
-                className="absolute top-1/2 -translate-y-1/2 z-30 right-5 rounded-full bg-background/35 backdrop-blur-md border border-white/20 text-primary shadow-[0_10px_30px_rgba(0,0,0,0.30)] hover:bg-background/55 hover:scale-105 active:scale-95 transition-all"
-              >
-                <ChevronRight className="h-6 w-6 stroke-[2.5]" />
-              </Button>
-            </>
-          )}
-        </div>
-      </motion.div>
+                  <p className="mx-auto mt-4 max-w-[17rem] text-[0.98rem] font-medium leading-7 text-white/82 sm:max-w-[24rem] sm:text-[1.12rem] sm:leading-8 md:max-w-[28rem] md:text-[1.2rem] lg:mx-0 lg:mt-5 lg:max-w-[36rem] lg:text-[1.2rem] lg:leading-8">
+                    Serving student veterans through advocacy, mentorship, and
+                    community.
+                  </p>
+                </div>
 
-      <div className="relative z-10">
-        <div className="container max-w-5xl mx-auto px-6">
-          <div className="relative mt-6 sm:mt-6 md:mt-8 text-center">
-            <div className="mt-6 space-y-0">
-              <div className="flex justify-center">
-                <div className="relative flex flex-col items-center pt-[7rem] sm:pt-[8rem] md:pt-[9.25rem] lg:pt-[10.5rem]">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2">
-                    <div className="relative h-36 w-36 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-52 lg:w-52 opacity-90">
-                      <Image
-                        src="/icons/flag_icon.png"
-                        alt="Mission icon"
-                        fill
-                        className="object-contain saturate-[0.82] contrast-[0.94] brightness-[0.98]"
-                        sizes="(max-width: 640px) 144px, (max-width: 768px) 160px, (max-width: 1024px) 192px, 208px"
-                        priority={false}
-                      />
-                    </div>
-                  </div>
+                {/* Desktop / tablet CTA block */}
+                <div className="mt-8 hidden sm:flex sm:flex-row sm:justify-center sm:gap-3 lg:justify-start">
+                  <Button
+                    asChild
+                    size="lg"
+                    className="h-[50px] px-7 text-base font-semibold lg:h-[52px] rounded-full"
+                  >
+                    <Link href="/events">Explore Events</Link>
+                  </Button>
 
-                  <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl leading-none">
-                    Our Mission:
-                  </h2>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-[50px] px-7 text-base font-semibold text-white border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/18 hover:text-white lg:h-[52px] rounded-full"
+                  >
+                    <Link href="#contact">Get Involved</Link>
+                  </Button>
                 </div>
               </div>
-
-              <div className="mt-3 mx-auto h-px w-full max-w-xl bg-border/70" />
-
-              <p className="ui-body mt-4 text-muted-foreground leading-relaxed max-w-xl mx-auto font-medium">
-                We work to empower UT Dallas military-connected students and
-                supporters through advocacy, mentorship, and resources that
-                advance academic success, professional development, and
-                community engagement.
-              </p>
             </div>
+
+            {/* Mobile-only CTA block */}
+            <div className="absolute inset-x-0 bottom-14 z-20 flex flex-col items-center gap-2 px-4 sm:hidden">
+              <Button
+                asChild
+                size="lg"
+                className="h-[42px] w-full max-w-[13rem] rounded-full px-5 text-[0.92rem] font-semibold"
+              >
+                <Link href="/events">Explore Events</Link>
+              </Button>
+
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-[42px] w-full max-w-[13rem] rounded-full border-white/30 bg-white/10 px-5 text-[0.92rem] font-semibold text-white backdrop-blur-sm hover:bg-white/18 hover:text-white"
+              >
+                <Link href="#contact">Get Involved</Link>
+              </Button>
+            </div>
+
+            {count > 1 && (
+              <>
+                <Button
+                  type="button"
+                  aria-label="Previous slide"
+                  onClick={goToPrevious}
+                  size="icon"
+                  variant="ghost"
+                  className="absolute left-3 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:left-6 sm:h-11 sm:w-11"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+
+                <Button
+                  type="button"
+                  aria-label="Next slide"
+                  onClick={goToNext}
+                  size="icon"
+                  variant="ghost"
+                  className="absolute right-3 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:right-6 sm:h-11 sm:w-11"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+
+                <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-5">
+                  {slides.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      aria-label={`Go to slide ${idx + 1}`}
+                      onClick={() => setCurrent(idx)}
+                      className={cn(
+                        "h-2.5 rounded-full transition-all",
+                        idx === current ? "w-7 bg-white" : "w-2.5 bg-white/45"
+                      )}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

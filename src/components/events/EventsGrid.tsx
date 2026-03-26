@@ -6,13 +6,21 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-import type { Event, EventCategory } from "@/types/events";
+import type { Event, EventCategory, AttendanceStatus } from "@/types/events";
 import { EventCard } from "@/components/events/EventCard";
 
 type EventsGridProps = {
   events: Event[];
   loading?: boolean;
   onRegistered?: (eventId: string) => void;
+  onCheckedIn?: (
+    eventId: string,
+    payload?: {
+      status?: AttendanceStatus;
+      checkedInAt?: string;
+      pointsAwarded?: number;
+    }
+  ) => void;
 };
 
 const categoryLabel: Record<EventCategory, string> = {
@@ -25,10 +33,19 @@ function Section({
   title,
   events,
   onRegistered,
+  onCheckedIn,
 }: {
   title: string;
   events: Event[];
   onRegistered?: (eventId: string) => void;
+  onCheckedIn?: (
+    eventId: string,
+    payload?: {
+      status?: AttendanceStatus;
+      checkedInAt?: string;
+      pointsAwarded?: number;
+    }
+  ) => void;
 }) {
   if (events.length === 0) return null;
 
@@ -55,7 +72,11 @@ function Section({
                     exit={{ opacity: 0, scale: 0.96 }}
                     className="min-w-0 w-full max-w-[520px]"
                   >
-                    <EventCard event={event} onRegistered={onRegistered} />
+                    <EventCard
+                      event={event}
+                      onRegistered={onRegistered}
+                      onCheckedIn={onCheckedIn}
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -77,7 +98,11 @@ function Section({
                     exit={{ opacity: 0, scale: 0.96 }}
                     className="min-w-0 w-full max-w-[520px]"
                   >
-                    <EventCard event={event} onRegistered={onRegistered} />
+                    <EventCard
+                      event={event}
+                      onRegistered={onRegistered}
+                      onCheckedIn={onCheckedIn}
+                    />
                   </motion.div>
                 ))}
               </div>
@@ -93,6 +118,7 @@ export function EventsGrid({
   events,
   loading = false,
   onRegistered,
+  onCheckedIn,
 }: EventsGridProps) {
   const normalizedEvents = React.useMemo(
     () => (Array.isArray(events) ? events : []),
@@ -145,16 +171,19 @@ export function EventsGrid({
         title={categoryLabel.VOLUNTEERING}
         events={grouped.VOLUNTEERING}
         onRegistered={onRegistered}
+        onCheckedIn={onCheckedIn}
       />
       <Section
         title={categoryLabel.SOCIAL}
         events={grouped.SOCIAL}
         onRegistered={onRegistered}
+        onCheckedIn={onCheckedIn}
       />
       <Section
         title={categoryLabel.PROFESSIONAL_DEVELOPMENT}
         events={grouped.PROFESSIONAL_DEVELOPMENT}
         onRegistered={onRegistered}
+        onCheckedIn={onCheckedIn}
       />
     </div>
   );
