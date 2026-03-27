@@ -1,16 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { proxyToBackend } from "@/lib/proxy";
 
-import { mockAdminMembers } from "@/data/mockAdminMembers";
-import { mockAdminEvents } from "@/data/mockAdminEvents";
-import { mockAdminRecentActivity } from "@/data/mockAdminRecentActivity";
-
-export async function GET() {
-  return NextResponse.json({
-    success: true,
-    data: {
-      members: mockAdminMembers,
-      events: mockAdminEvents,
-      activities: mockAdminRecentActivity,
-    },
-  });
+export async function GET(req: NextRequest) {
+  return proxyToBackend(req, "/api/admin/dashboard");
 }

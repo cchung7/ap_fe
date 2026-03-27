@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import type { AdminMemberRow } from "@/data/mockAdminMembers";
+import type { AdminMemberRow } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

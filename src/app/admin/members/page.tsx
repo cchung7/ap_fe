@@ -5,7 +5,7 @@ import * as React from "react";
 import { Users } from "lucide-react";
 
 import AdminHeader from "../_components/AdminHeader/AdminHeader";
-import type { AdminMemberRow } from "@/data/mockAdminMembers";
+import type { AdminMemberRow } from "@/types/admin";
 import { Button } from "@/components/ui/button";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 import {

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { CalendarCheck2, Shield, Star, Users } from "lucide-react";
 
 import {
   Sheet,
@@ -11,7 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { MemberOverviewSections } from "@/components/admin/AdminEntityUI";
-import type { AdminMemberRow } from "@/data/mockAdminMembers";
+import type { AdminMemberRow } from "@/types/admin";
 
 type MemberDetailSheetProps = {
   member: AdminMemberRow | null;

@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { AdminMemberRow } from "@/types/admin";
 import {
   Dialog,
   DialogContent,
@@ -126,7 +127,11 @@ export function EventStatusBadge({
 }: {
   isCompleted: boolean;
 }) {
-  return <Badge variant={isCompleted ? "outline" : "default"}>{isCompleted ? "Completed" : "Upcoming"}</Badge>;
+  return (
+    <Badge variant={isCompleted ? "outline" : "default"}>
+      {isCompleted ? "Completed" : "Upcoming"}
+    </Badge>
+  );
 }
 
 export function formatMemberStatusLabel(status: "ACTIVE" | "PENDING" | "SUSPENDED") {
@@ -191,7 +196,9 @@ export function RowActionButton({
   );
 }
 
-export function ViewButton(props: Omit<React.ComponentProps<typeof RowActionButton>, "variant" | "icon">) {
+export function ViewButton(
+  props: Omit<React.ComponentProps<typeof RowActionButton>, "variant" | "icon">
+) {
   return (
     <RowActionButton
       variant="outline"
@@ -204,7 +211,9 @@ export function ViewButton(props: Omit<React.ComponentProps<typeof RowActionButt
   );
 }
 
-export function EditButton(props: Omit<React.ComponentProps<typeof RowActionButton>, "variant" | "icon">) {
+export function EditButton(
+  props: Omit<React.ComponentProps<typeof RowActionButton>, "variant" | "icon">
+) {
   return (
     <RowActionButton
       variant="outline"
@@ -255,7 +264,13 @@ export function MemberQuickStatusButton({
     return (
       <RowActionButton
         disabled={loading}
-        icon={loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
+        icon={
+          loading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <CheckCircle2 className="h-3 w-3" />
+          )
+        }
         onClick={onApprove}
       >
         Approve
@@ -269,7 +284,13 @@ export function MemberQuickStatusButton({
         variant="outline"
         className="border-border/70"
         disabled={loading}
-        icon={loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <PauseCircle className="h-3 w-3" />}
+        icon={
+          loading ? (
+            <Loader2 className="h-3 w-3 animate-spin" />
+          ) : (
+            <PauseCircle className="h-3 w-3" />
+          )
+        }
         onClick={onSetInactive}
       >
         Set Inactive
@@ -280,7 +301,13 @@ export function MemberQuickStatusButton({
   return (
     <RowActionButton
       disabled={loading}
-      icon={loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3" />}
+      icon={
+        loading ? (
+          <Loader2 className="h-3 w-3 animate-spin" />
+        ) : (
+          <RotateCcw className="h-3 w-3" />
+        )
+      }
       onClick={onReactivate}
     >
       Reactivate
@@ -325,7 +352,12 @@ export function ConfirmDeleteDialog({
         </DialogBody>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
             Cancel
           </Button>
           <Button type="button" variant="destructive" onClick={onConfirm} disabled={loading}>
@@ -347,31 +379,15 @@ export function ConfirmDeleteDialog({
 export function MemberOverviewSections({
   member,
 }: {
-  member: {
-    name: string;
-    email: string;
-    role: "ADMIN" | "MEMBER";
-    status: "ACTIVE" | "PENDING" | "SUSPENDED";
-    subRole: string;
-    major: string;
-    academicYear: string;
-    createdAt: string;
-    updatedAt: string;
-    pointsTotal: number;
-    eventsAttendedCount: number;
-    attendancePreview: Array<{
-      eventId: string;
-      title: string;
-      dateLabel: string;
-      statusLabel: "Checked In" | "Registered" | "Canceled";
-      pointsAwarded: number;
-    }>;
-  };
+  member: AdminMemberRow;
 }) {
   return (
     <div className="mt-4 grid gap-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <DetailSection title="Member Profile" icon={<CalendarCheck2 className="h-4 w-4 text-primary" />}>
+        <DetailSection
+          title="Member Profile"
+          icon={<CalendarCheck2 className="h-4 w-4 text-primary" />}
+        >
           <div className="mb-4">
             <PersonIdentityCell name={member.name} email={member.email} />
           </div>
@@ -384,23 +400,32 @@ export function MemberOverviewSections({
 
             <div>
               <DetailLabel>Academic Year</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">{member.academicYear || "—"}</p>
+              <p className="mt-1 font-medium text-foreground">
+                {member.academicYear || "—"}
+              </p>
             </div>
 
             <div>
               <DetailLabel>Joined</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">{formatShortDate(member.createdAt)}</p>
+              <p className="mt-1 font-medium text-foreground">
+                {formatShortDate(member.createdAt)}
+              </p>
             </div>
 
             <div>
               <DetailLabel>Last Updated</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">{formatShortDate(member.updatedAt)}</p>
+              <p className="mt-1 font-medium text-foreground">
+                {formatShortDate(member.updatedAt)}
+              </p>
             </div>
           </div>
         </DetailSection>
 
         <div className="space-y-4">
-          <DetailSection title="Access Management" icon={<CheckCircle2 className="h-4 w-4 text-primary" />}>
+          <DetailSection
+            title="Access Management"
+            icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
+          >
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <DetailLabel>Role</DetailLabel>
@@ -425,7 +450,10 @@ export function MemberOverviewSections({
             </div>
           </DetailSection>
 
-          <DetailSection title="Points Summary" icon={<CheckCircle2 className="h-4 w-4 text-primary" />}>
+          <DetailSection
+            title="Points Summary"
+            icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
+          >
             <div className="grid gap-3 sm:grid-cols-2">
               <DetailStatCard label="Total Points" value={member.pointsTotal} />
               <DetailStatCard label="Events Attended" value={member.eventsAttendedCount} />
@@ -434,12 +462,15 @@ export function MemberOverviewSections({
         </div>
       </div>
 
-      <DetailSection title="Attendance History" icon={<CalendarCheck2 className="h-4 w-4 text-primary" />}>
+      <DetailSection
+        title="Attendance History"
+        icon={<CalendarCheck2 className="h-4 w-4 text-primary" />}
+      >
         <div className="space-y-2">
           {member.attendancePreview.length > 0 ? (
             member.attendancePreview.map((entry) => (
               <div
-                key={`${member.name}-${entry.eventId}`}
+                key={`${member.id}-${entry.eventId}`}
                 className="rounded-2xl border border-border/50 bg-background/70 px-4 py-3"
               >
                 <div className="flex items-start justify-between gap-3">
