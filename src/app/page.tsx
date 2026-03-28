@@ -115,7 +115,9 @@ export default function Home() {
           <div className="ui-section-grid">
             <div className="lg:col-span-5">
               <div className="ui-section-copy">
-                <p className="ui-eyebrow text-muted-foreground">Our Purpose</p>
+                <p className="ui-eyebrow text-muted-foreground">
+                  Our Purpose
+                </p>
 
                 <h2 className="ui-title">Mission Statement</h2>
 
@@ -133,7 +135,9 @@ export default function Home() {
               <div className="ui-right-module">
                 <div className="rounded-[2.25rem] border border-border/50 bg-card/78 p-6 shadow-sm sm:p-7 lg:p-8">
                   <div className="space-y-2 text-center">
-                    <p className="ui-eyebrow text-muted-foreground">Upcoming Events</p>
+                    <p className="ui-eyebrow text-muted-foreground">
+                      Upcoming Events
+                    </p>
                   </div>
 
                   <div className="mt-6 space-y-4">
@@ -168,11 +172,11 @@ export default function Home() {
                               {e.title || "-"}
                             </div>
 
-                            <div className="mt-1.75 text-sm font-medium text-muted-foreground">
+                            <div className="mt-1 text-sm font-medium text-muted-foreground">
                               {dateTimeLabel}
                             </div>
 
-                            <div className="mt-1.25 flex justify-center">
+                            <div className="mt-2 flex justify-center">
                               <div className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <MapPin className="mt-[1px] h-4 w-4 shrink-0 opacity-70" />
                                 <span title={locationLabel}>{locationLabel}</span>
@@ -193,6 +197,20 @@ export default function Home() {
       <AboutSection />
       <CarouselSection />
       <ContactSection />
+
+      <section className="pb-12 md:pb-16">
+        <div className="ui-page-shell">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="!text-lg italic font-medium tracking-[0.01em] text-muted-foreground sm:text-[0.95rem]">
+              “One person can make a difference, and everyone should try.”
+            </p>
+
+            <p className="ui-eyebrow mt-3 text-muted-foreground/80">
+              — John F. Kennedy
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

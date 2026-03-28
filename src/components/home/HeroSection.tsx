@@ -83,16 +83,16 @@ export const HeroSection = () => {
               <div className="flex w-full flex-col justify-between px-4 py-6 sm:px-10 sm:py-12 md:px-12 lg:px-16 lg:py-16">
                 <div className="mx-auto max-w-[18.5rem] rounded-[1.35rem] bg-black/20 p-4 text-center backdrop-blur-[2px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
                   <p className="ui-eyebrow text-white/50">
-                    UT Dallas Student Veterans Association
+                    The University of Texas at Dallas
                   </p>
 
                   <h1 className="mt-3 text-[2.5rem] font-black leading-[0.95] tracking-tight text-white sm:mt-4 sm:text-[3.15rem] md:text-[3.75rem] lg:text-[clamp(42px,7.5vw,72px)]">
-                    Student Veteran Support
+                    Student Veterans Association
                   </h1>
 
                   <p className="mx-auto mt-4 max-w-[17rem] text-[0.98rem] font-medium leading-7 text-white/82 sm:max-w-[24rem] sm:text-[1.12rem] sm:leading-8 md:max-w-[28rem] md:text-[1.2rem] lg:mx-0 lg:mt-5 lg:max-w-[36rem] lg:text-[1.2rem] lg:leading-8">
-                    Serving student veterans through advocacy, mentorship, and
-                    community.
+                    Serving student veterans through advocacy and
+                    community support.
                   </p>
                 </div>
 

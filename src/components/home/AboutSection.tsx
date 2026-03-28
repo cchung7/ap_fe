@@ -10,9 +10,13 @@ export const AboutSection = () => {
         <div className="ui-section-grid">
           <div className="lg:col-span-5">
             <div className="ui-section-copy">
-              <p className="ui-eyebrow text-muted-foreground">Our Focus</p>
+              <p className="ui-eyebrow text-muted-foreground">
+                Our Focus
+              </p>
 
-              <h2 className="ui-title">Vision Statement</h2>
+              <h2 className="ui-title">
+                Vision Statement
+              </h2>
 
               <div className="ui-section-divider" />
 

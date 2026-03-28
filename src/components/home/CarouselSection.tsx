@@ -15,15 +15,19 @@ export const CarouselSection = () => {
         <div className="ui-section-grid">
           <div className="lg:col-span-5">
             <div className="ui-section-copy">
-              <p className="ui-eyebrow text-muted-foreground">Our Sponsors</p>
+              <p className="ui-eyebrow text-muted-foreground">
+                Our Network
+              </p>
 
-              <h2 className="ui-title">Organizations and Partners</h2>
+              <h2 className="ui-title">
+                Partners and Sponsors
+              </h2>
 
               <div className="ui-section-divider" />
 
               <p className="ui-section-body">
-                Recognizing partners who help empower student veterans through
-                opportunity, support, and community engagement.
+                Advancing student veteran success through
+                corporate contributions, career development events, and networking opportunities.
               </p>
             </div>
           </div>

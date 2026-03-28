@@ -59,7 +59,7 @@ export const ContactSection = () => {
         <div className="ui-section-grid">
           <div className="lg:col-span-6">
             <div className="mx-auto max-w-2xl space-y-6 text-center lg:mx-0 lg:text-left">
-              <p className="ui-eyebrow text-accent">
+              <p className="ui-eyebrow">
                 Our Community
               </p>
 
@@ -70,7 +70,7 @@ export const ContactSection = () => {
               <div className="mx-auto h-px w-full max-w-xl bg-border/70 lg:mx-0" />
 
               <p className="ui-section-body max-w-2xl">
-                Connecting military-connected students and supporters with advocacy, resources, 
+                Connecting student veterans, supporters, and community leaders with resources 
                 and opportunities to get involved.
               </p>
             </div>
@@ -140,14 +140,13 @@ export const ContactSection = () => {
                 </div>
 
                 <div className="relative z-10 p-6 sm:p-7 md:p-8 lg:p-9">
-                  <div className="mb-7 space-y-3 text-left">
+                  <div className="mb-5 space-y-3 text-left">
                     <p className="ui-eyebrow text-muted-foreground">
                       Contact Form
                     </p>
-                    <h3 className="ui-title text-3xl">Send a Message</h3>
-                    <p className="text-base font-medium text-muted-foreground">
-                      Contact us, and our team will follow up shortly.
-                    </p>
+                    <h3 className="ui-title text-3xl">
+                      Send a Message
+                    </h3>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
