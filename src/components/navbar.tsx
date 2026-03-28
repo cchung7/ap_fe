@@ -14,8 +14,10 @@ import {
   CalendarDays,
   LayoutDashboard,
   LogIn,
+  LogOut,
   Menu,
   User,
+  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -52,7 +54,7 @@ export function Navbar() {
     () =>
       publicNavLinks.map((link) => ({
         ...link,
-        name: link.name.toUpperCase(),
+        name: link.name,
       })),
     []
   );
@@ -125,10 +127,9 @@ export function Navbar() {
           <Button
             asChild
             size="sm"
-            variant="outline"
             className={cn(
               sharedButtonClass,
-              "border-border/60 bg-card/70 hover:bg-secondary/60"
+              "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
             <Link href="/profile">My Profile</Link>
@@ -140,7 +141,7 @@ export function Navbar() {
               size="sm"
               className={cn(
                 sharedButtonClass,
-                "bg-primary text-primary-foreground hover:bg-primary/90"
+                "bg-[#123a73] text-white hover:bg-[#10315f]"
               )}
             >
               <Link href="/admin">Admin</Link>
@@ -193,9 +194,11 @@ export function Navbar() {
       <DrawerMenu
         open={mobileMenuOpen}
         onOpenChange={setMobileMenuOpen}
-        title="MENU"
+        title="Menu"
         srTitle="Mobile Navigation"
         items={mobileItems}
+        itemsTitle=""
+        bottomTitle=""
         bottomContent={
           !loading ? (
             !isAuthed ? (
@@ -203,8 +206,8 @@ export function Navbar() {
                 <Button
                   asChild
                   className={cn(
-                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
-                    "bg-primary text-primary-foreground hover:bg-primary/90"
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
+                    "bg-primary text-primary-foreground hover:bg-primary/92"
                   )}
                 >
                   <Link
@@ -220,15 +223,16 @@ export function Navbar() {
                 <Button
                   asChild
                   className={cn(
-                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
                     "bg-accent text-accent-foreground hover:bg-accent/90"
                   )}
                 >
                   <Link
                     href="/signup"
                     onClick={handleMobileDrawerLinkClick}
-                    className="flex w-full items-center justify-center"
+                    className="flex w-full items-center justify-center gap-2"
                   >
+                    <UserPlus className="h-4 w-4" />
                     Sign Up
                   </Link>
                 </Button>
@@ -237,17 +241,17 @@ export function Navbar() {
               <>
                 <Button
                   asChild
-                  variant="outline"
                   className={cn(
-                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
-                    "border-border/60 bg-card/70 hover:bg-secondary/60"
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
+                    "bg-primary text-primary-foreground hover:bg-primary/92"
                   )}
                 >
                   <Link
                     href="/profile"
                     onClick={handleMobileDrawerLinkClick}
-                    className="flex w-full items-center justify-center"
+                    className="flex w-full items-center justify-center gap-2"
                   >
+                    <User className="h-4 w-4" />
                     My Profile
                   </Link>
                 </Button>
@@ -256,15 +260,16 @@ export function Navbar() {
                   <Button
                     asChild
                     className={cn(
-                      "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
-                      "bg-primary text-primary-foreground hover:bg-primary/90"
+                      "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
+                      "bg-[#123a73] text-white hover:bg-[#10315f]"
                     )}
                   >
                     <Link
                       href="/admin"
                       onClick={handleMobileDrawerLinkClick}
-                      className="flex w-full items-center justify-center"
+                      className="flex w-full items-center justify-center gap-2"
                     >
+                      <LayoutDashboard className="h-4 w-4" />
                       Admin Dashboard
                     </Link>
                   </Button>
@@ -273,11 +278,12 @@ export function Navbar() {
                 <Button
                   type="button"
                   className={cn(
-                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight",
+                    "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
                     "bg-accent text-accent-foreground hover:bg-accent/90"
                   )}
                   onClick={handleLogout}
                 >
+                  <LogOut className="h-4 w-4" />
                   Logout
                 </Button>
               </>

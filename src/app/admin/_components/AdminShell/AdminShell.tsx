@@ -1,4 +1,3 @@
-// D:\ap_fe\src\app\admin\_components\AdminShell\AdminShell.tsx
 "use client";
 
 import * as React from "react";
@@ -9,24 +8,26 @@ import { cn } from "@/lib/utils";
 import { DrawerMenu, type DrawerMenuItem } from "@/components/ui/DrawerMenu";
 import { Button } from "@/components/ui/button";
 import { AdminSidebar } from "./AdminSidebar";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 import {
   LayoutDashboard,
   Users,
   CalendarDays,
-  BookOpen,
-  LifeBuoy,
+  CircleHelp,
+  Home,
+  LogOut,
 } from "lucide-react";
 
 const adminDrawerItems: DrawerMenuItem[] = [
-  { name: "ADMIN DASHBOARD", href: "/admin", icon: LayoutDashboard },
-  { name: "VIEW ALL MEMBERS", href: "/admin/members", icon: Users },
-  { name: "VIEW ALL EVENTS", href: "/admin/events", icon: CalendarDays },
-];
-
-const adminResourceLinks = [
-  { name: "RESOURCES", href: "/admin/guide", icon: BookOpen },
-  { name: "SUPPORT", href: "/admin/support", icon: LifeBuoy },
+  { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "View All Members", href: "/admin/members", icon: Users },
+  { name: "View All Events", href: "/admin/events", icon: CalendarDays },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -86,146 +87,123 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const ResourceRow = ({
-    name,
-    href,
-    icon: Icon,
+  const SupportDisabledRow = ({
+    message = "Test message",
   }: {
-    name: string;
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
+    message?: string;
   }) => {
-    const active = pathname === href || pathname?.startsWith(href);
-
     return (
-      <Link
-        href={href}
-        onClick={() => setMobileOpen(false)}
-        className={cn(
-          "group flex items-center justify-between gap-3 rounded-[1.25rem] border px-3 py-3 transition-all",
-          active
-            ? "border-accent/60 bg-accent/10 shadow-[0_10px_30px_-14px_rgba(0,0,0,0.35)]"
-            : "ui-surface-brand border-transparent bg-transparent hover:border-white/40 hover:bg-white/35"
-        )}
-      >
-        <span
-          className={cn(
-            "flex min-w-0 items-center gap-3 transition-colors",
-            active ? "text-foreground" : "text-foreground group-hover:text-accent"
-          )}
-        >
-          <span
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
             className={cn(
-              "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors",
-              active
-                ? "bg-accent text-white"
-                : "ui-surface-silver text-accent group-hover:bg-accent group-hover:text-white"
+              "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
+              "border-border/50 bg-background/70 text-muted-foreground opacity-95",
+              "cursor-not-allowed"
             )}
           >
-            <Icon className="h-5 w-5" />
-          </span>
+            <span className="flex min-w-0 items-center gap-3">
+              <span
+                className={cn(
+                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border",
+                  "border-border/55 bg-card text-muted-foreground"
+                )}
+              >
+                <CircleHelp className="h-4.5 w-4.5" />
+              </span>
 
-          <span className="ui-title text-[0.92rem] leading-tight tracking-tight">
-            {name}
-          </span>
-        </span>
+              <span className="truncate text-[0.95rem] font-semibold tracking-tight">
+                Support
+              </span>
+            </span>
 
-        <span
-          className={cn(
-            "h-4.5 w-4.5 shrink-0 text-accent transition-all",
-            active
-              ? "translate-x-0 opacity-100"
-              : "-translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
-          )}
-        >
-          <span className="inline-block"></span>
-        </span>
-      </Link>
+            <span className="text-[11px] font-semibold text-muted-foreground/80">
+              Soon
+            </span>
+          </button>
+        </TooltipTrigger>
+
+        <TooltipContent side="top" align="start">
+          {message}
+        </TooltipContent>
+      </Tooltip>
     );
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9]">
-      <DrawerMenu
-        open={mobileOpen}
-        onOpenChange={setMobileOpen}
-        title="MENU"
-        srTitle="Admin Navigation"
-        items={adminDrawerItems}
-        itemsTitle="TOOLS"
-        middleTitle="RESOURCES"
-        middleContent={
-          <>
-            {adminResourceLinks.map((r) => (
-              <ResourceRow
-                key={r.href}
-                name={r.name}
-                href={r.href}
-                icon={r.icon}
-              />
-            ))}
-          </>
-        }
-        bottomTitle="ACTIONS"
-        bottomContent={
-          <>
-            <Button
-              asChild
-              className={cn(
-                "w-full rounded-2xl px-4 py-3",
-                "bg-primary text-primary-foreground hover:bg-primary/90",
-                "justify-center text-center",
-                "font-semibold tracking-tight"
-              )}
-            >
-              <Link
-                href="/"
-                onClick={() => setMobileOpen(false)}
-                className="flex w-full items-center justify-center"
+    <TooltipProvider>
+      <div className="min-h-screen bg-[#F1F5F9]">
+        <DrawerMenu
+          open={mobileOpen}
+          onOpenChange={setMobileOpen}
+          title="Menu"
+          srTitle="Admin Navigation"
+          items={adminDrawerItems}
+          itemsTitle=""
+          middleTitle=""
+          middleContent={<SupportDisabledRow message="Test message" />}
+          bottomTitle=""
+          bottomContent={
+            <>
+              <Button
+                asChild
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
+                  "bg-primary text-primary-foreground hover:bg-primary/92"
+                )}
               >
-                Main Website
-              </Link>
-            </Button>
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex w-full items-center justify-center gap-2"
+                >
+                  <Home className="h-4 w-4" />
+                  Main Website
+                </Link>
+              </Button>
 
-            <Button
-              type="button"
-              className={cn(
-                "w-full rounded-2xl px-4 py-3",
-                "bg-[var(--accent)] text-[var(--accent-foreground)] hover:bg-[var(--accent)]/90",
-                "justify-center text-center",
-                "font-semibold tracking-tight"
-              )}
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-            >
-              {isLoggingOut ? "Logging out..." : "Logout"}
-            </Button>
-          </>
-        }
-      />
+              <Button
+                type="button"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3 font-semibold tracking-tight shadow-none",
+                  "bg-accent text-accent-foreground hover:bg-accent/90"
+                )}
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                <LogOut className="h-4 w-4" />
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </Button>
+            </>
+          }
+        />
 
-      <div className="lg:flex">
-        <aside
-          className={cn(
-            "hidden lg:block sticky top-[72px] self-start shrink-0 h-[calc(100vh-72px)] border-r border-border/60 ui-surface-brand",
-            collapsed ? "w-[88px]" : "w-[248px]"
-          )}
-        >
-          <div className="h-full overflow-hidden px-4 pb-5 pt-5">
-            <AdminSidebar
-              variant="desktop"
-              compact={collapsed}
-              onToggleCompact={() => setCollapsed((v) => !v)}
-              onLogout={handleLogout}
-              isLoggingOut={isLoggingOut}
-            />
+        <div className="lg:flex">
+          <aside
+            className={cn(
+              "hidden lg:block sticky top-[72px] self-start shrink-0 h-[calc(100vh-72px)] border-r border-border/60 ui-surface-brand",
+              collapsed ? "w-[88px]" : "w-[248px]"
+            )}
+          >
+            <div className="h-full overflow-hidden px-4 pb-5 pt-5">
+              <AdminSidebar
+                variant="desktop"
+                compact={collapsed}
+                onToggleCompact={() => setCollapsed((v) => !v)}
+                onLogout={handleLogout}
+                isLoggingOut={isLoggingOut}
+              />
+            </div>
+          </aside>
+
+          <div className="flex-1 px-4 pb-7 pt-[72px] sm:px-6 lg:px-7">
+            <div className="mx-auto w-full max-w-[1180px]">{children}</div>
           </div>
-        </aside>
-
-        <div className="flex-1 px-4 pb-7 pt-[72px] sm:px-6 lg:px-7">
-          <div className="mx-auto w-full max-w-[1180px]">{children}</div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

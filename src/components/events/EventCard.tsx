@@ -124,11 +124,10 @@ function EventCardInner({
   const { showError, showSuccess } = useGlobalStatusBanner();
 
   const alreadyCheckedIn = attendanceStatus === "CHECKED_IN";
-  const canCheckIn = isLoggedIn && isRegistered && !alreadyCheckedIn;
 
   const handleRegistration = React.useCallback(async () => {
     if (!isLoggedIn) {
-      router.push("/signup?next=/events");
+      router.push("/login?next=/events");
       return;
     }
 
@@ -144,6 +143,11 @@ function EventCardInner({
       });
 
       const json = (await res.json().catch(() => null)) as ApiResponse | null;
+
+      if (res.status === 401 || res.status === 403) {
+        router.push("/login?next=/events");
+        return;
+      }
 
       if (!res.ok || !json?.success) {
         throw new Error(json?.message || "Failed to register for event");
@@ -171,7 +175,7 @@ function EventCardInner({
 
   const handleOpenCheckIn = React.useCallback(() => {
     if (!isLoggedIn) {
-      router.push("/signup?next=/events");
+      router.push("/login?next=/events");
       return;
     }
 
@@ -216,6 +220,12 @@ function EventCardInner({
         | ApiResponse<CheckInResponseData>
         | null;
 
+      if (res.status === 401 || res.status === 403) {
+        setCheckInOpen(false);
+        router.push("/login?next=/events");
+        return;
+      }
+
       if (!res.ok || !json?.success) {
         throw new Error(json?.message || "Failed to check in");
       }
@@ -241,7 +251,7 @@ function EventCardInner({
     } finally {
       setIsCheckingIn(false);
     }
-  }, [checkInCode, event.id, isCheckingIn, onCheckedIn, showError, showSuccess]);
+  }, [checkInCode, event.id, isCheckingIn, onCheckedIn, router, showError, showSuccess]);
 
   const registerLabel = alreadyCheckedIn
     ? "Registered"
@@ -401,7 +411,7 @@ function EventCardInner({
                 disabled={isRegistered || isRegistering}
                 title={
                   !isLoggedIn
-                    ? "Create an account to register for events."
+                    ? "Sign in to register for events."
                     : isRegistered
                       ? "You are already registered for this event."
                       : "Register for this event."

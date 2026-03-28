@@ -44,9 +44,11 @@ function DrawerSection({
   title?: string;
   children: React.ReactNode;
 }) {
+  const hasVisibleTitle = Boolean(title && title.trim());
+
   return (
-    <section className="rounded-[1.5rem] border border-border/50 bg-card/72 p-3 shadow-sm backdrop-blur-md">
-      {title ? (
+    <section className="rounded-[1.5rem] border border-transparent bg-transparent p-0 shadow-none backdrop-blur-none">
+      {hasVisibleTitle ? (
         <div className="px-1 pb-2">
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
             {title}
