@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Instagram } from "lucide-react";
 import { motion } from "framer-motion";
+import { FaDiscord } from "react-icons/fa";
 import { useMe } from "@/hooks/useMe";
 
 function XLogoIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -87,14 +88,19 @@ export function Footer() {
           <div className="flex gap-3 py-3">
             {[
               {
-                Icon: XLogoIcon,
-                href: "https://x.com/sva_utd",
-                label: "X",
-              },
-              {
                 Icon: Instagram,
                 href: "https://www.instagram.com/sva.utd/",
                 label: "Instagram",
+              },
+              {
+                Icon: FaDiscord,
+                href: "https://discord.gg/xKRJKJjk5g",
+                label: "Discord",
+              },
+              {
+                Icon: XLogoIcon,
+                href: "https://x.com/sva_utd",
+                label: "X",
               },
             ].map(({ Icon, href, label }) => (
               <Link

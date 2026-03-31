@@ -218,6 +218,14 @@
     @apply w-full;
   }
 
+  .ui-home-section {
+    @apply relative overflow-hidden bg-background px-6 py-16 sm:py-20 lg:py-14 xl:py-16;
+  }
+
+  .ui-home-section-terminal {
+    @apply relative overflow-hidden bg-background px-6 py-16 sm:py-20 lg:pt-14 lg:pb-28 xl:pt-16 xl:pb-32;
+  }
+
   /* =========================================
     Admin table utilities
     ========================================= */

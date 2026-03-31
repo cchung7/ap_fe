@@ -28,7 +28,7 @@ export function AdminTopbar() {
     <BrandLockup
       title={
         <div className="ui-title text-lg text-foreground tracking-tight truncate">
-          ADMINISTRATIVE DASHBOARD
+          ADMIN DASHBOARD
         </div>
       }
     />

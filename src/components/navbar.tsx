@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { useMe } from "@/hooks/useMe";
 import { Button } from "@/components/ui/button";
@@ -19,15 +20,17 @@ import {
   User,
   UserPlus,
   Users,
+  House,
 } from "lucide-react";
 
 const publicNavLinks = [
-  { name: "Home", href: "/", icon: User },
+  { name: "Home", href: "/", icon: House },
   { name: "Members", href: "/members", icon: Users },
   { name: "Events", href: "/events", icon: CalendarDays },
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
   const { loading, isAuthed, isAdmin } = useMe();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
@@ -72,18 +75,37 @@ export function Navbar() {
   );
 
   const desktopNav = (
-    <nav className="flex items-center gap-1 rounded-full border border-border/50 bg-card/70 p-1 shadow-sm backdrop-blur-sm">
+    <nav
+      aria-label="Primary"
+      className="flex items-center justify-center gap-6 xl:gap-7"
+    >
       {publicNavLinks.map((link) => {
-        const Icon = link.icon;
+        const isActive =
+          link.href === "/"
+            ? pathname === "/"
+            : pathname === link.href || pathname?.startsWith(`${link.href}/`);
 
         return (
           <Link
             key={link.href}
             href={link.href}
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[12px] font-bold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:bg-secondary/70 hover:text-foreground"
+            className={cn(
+              "group relative inline-flex items-center justify-center pb-1 text-[11px] font-black uppercase tracking-[0.20em] transition-colors duration-200 xl:text-[12px]",
+              isActive
+                ? "text-primary"
+                : "text-muted-foreground/78 hover:text-foreground"
+            )}
           >
-            <Icon className="h-4 w-4" />
-            {link.name}
+            <span>{link.name}</span>
+
+            <span
+              className={cn(
+                "absolute inset-x-0 -bottom-[2px] mx-auto h-[2px] rounded-full transition-all duration-200",
+                isActive
+                  ? "w-7 bg-accent/75"
+                  : "w-0 bg-accent/55 group-hover:w-6"
+              )}
+            />
           </Link>
         );
       })}

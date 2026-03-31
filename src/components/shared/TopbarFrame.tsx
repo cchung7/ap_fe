@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\shared\TopbarFrame.tsx
 "use client";
 
 import * as React from "react";
@@ -61,8 +60,8 @@ export function TopbarFrame({
       className={cn(
         "fixed inset-x-0 top-0 z-50 border-b transition-all duration-200",
         scrolled
-          ? "border-border/60 bg-background/96 shadow-[0_10px_30px_-18px_rgba(11,18,32,0.18)] backdrop-blur-xl"
-          : "border-border/40 bg-background/88 backdrop-blur-md"
+          ? "border-border/60 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.94),rgba(238,243,251,0.90))] shadow-[0_10px_30px_-18px_rgba(11,18,32,0.20)] backdrop-blur-xl"
+          : "border-border/40 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.78),rgba(247,248,250,0.62))] shadow-[0_8px_24px_-20px_rgba(11,18,32,0.10)] backdrop-blur-lg"
       )}
     >
       <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">

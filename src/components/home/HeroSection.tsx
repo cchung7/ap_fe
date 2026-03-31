@@ -51,7 +51,7 @@ export const HeroSection = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-background pt-16 sm:pt-24 md:pt-28">
+    <section className="relative overflow-hidden bg-background pt-12 sm:pt-16 md:pt-20">
       <div
         className="ui-page-shell relative"
         onTouchStart={onTouchStart}
@@ -82,7 +82,7 @@ export const HeroSection = () => {
             <div className="relative z-10 flex min-h-[500px] sm:min-h-[580px] lg:min-h-[680px]">
               <div className="flex w-full flex-col justify-between px-4 py-6 sm:px-10 sm:py-12 md:px-12 lg:px-16 lg:py-16">
                 <div className="mx-auto w-full rounded-[1.35rem] bg-black/30 px-8 py-4 text-center backdrop-blur-[0.01px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
-                  <div className="mx-auto flex max-w-[15.5rem] flex-col items-center sm:max-w-none sm:items-start">
+                  <div className="mx-auto flex w-full max-w-[15.5rem] flex-col items-center text-center sm:max-w-none sm:items-start sm:text-left">
                     <p className="ui-eyebrow text-white/50">
                       The University of Texas at Dallas
                     </p>
@@ -111,21 +111,25 @@ export const HeroSection = () => {
 
                 {/* Desktop / tablet CTA block */}
                 <div className="mt-8 hidden sm:flex sm:flex-row sm:justify-center sm:gap-3 lg:justify-start">
-                  <Button
-                    asChild
-                    size="lg"
-                    className="h-[50px] px-7 text-base font-semibold lg:h-[52px] rounded-full"
-                  >
-                    <Link href="/events">Explore Events</Link>
-                  </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-[50px] rounded-full border border-white/40 bg-primary px-7 text-base font-semibold text-white shadow-sm hover:bg-primary/92 lg:h-[52px]"
+                >
+                  <Link href="/events">
+                    Explore Events
+                  </Link>
+                </Button>
 
                   <Button
                     asChild
                     size="lg"
                     variant="outline"
-                    className="h-[50px] px-7 text-base font-semibold text-white border-white/30 bg-white/10 backdrop-blur-sm hover:bg-white/18 hover:text-white lg:h-[52px] rounded-full"
+                    className="h-[50px] px-7 text-base font-semibold text-white !border-white/40 bg-white/10 backdrop-blur-sm hover:bg-white/18 hover:text-white lg:h-[52px] rounded-full"
                   >
-                    <Link href="#contact">Get Involved</Link>
+                    <Link href="#contact">
+                      Get Involved
+                    </Link>
                   </Button>
                 </div>
               </div>

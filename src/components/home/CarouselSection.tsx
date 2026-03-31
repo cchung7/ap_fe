@@ -10,25 +10,28 @@ const sponsors = [
 
 export const CarouselSection = () => {
   return (
-    <section className="ui-section-shell">
+    <section className="ui-home-section">
       <div className="ui-page-shell">
         <div className="ui-section-grid">
           <div className="lg:col-span-5">
-            <div className="ui-section-copy">
-              <p className="ui-eyebrow text-muted-foreground">
-                Our Network
-              </p>
+            <div className="flex justify-center lg:justify-end lg:pl-10 xl:pl-12">
+              <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">
+                <p className="ui-eyebrow text-muted-foreground">
+                  Our Network
+                </p>
 
-              <h2 className="ui-title">
-                Partners and Sponsors
-              </h2>
+                <h2 className="ui-title text-[2.35rem] sm:text-[2.55rem] md:text-[2.85rem] lg:text-[3rem] xl:text-[3.2rem]">
+                  Partners and Sponsors
+                </h2>
 
-              <div className="ui-section-divider" />
+                <div className="ui-section-divider mx-auto lg:mx-0" />
 
-              <p className="ui-section-body">
-                Advancing student veteran success through
-                corporate contributions, career development events, and networking opportunities.
-              </p>
+                <p className="ui-section-body">
+                  Advancing student veteran success through corporate
+                  contributions, career development events, and networking
+                  opportunities.
+                </p>
+              </div>
             </div>
           </div>
 
