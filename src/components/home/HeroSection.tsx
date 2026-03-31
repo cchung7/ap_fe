@@ -81,19 +81,32 @@ export const HeroSection = () => {
 
             <div className="relative z-10 flex min-h-[500px] sm:min-h-[580px] lg:min-h-[680px]">
               <div className="flex w-full flex-col justify-between px-4 py-6 sm:px-10 sm:py-12 md:px-12 lg:px-16 lg:py-16">
-                <div className="mx-auto max-w-[18.5rem] rounded-[1.35rem] bg-black/20 p-4 text-center backdrop-blur-[2px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
-                  <p className="ui-eyebrow text-white/50">
-                    The University of Texas at Dallas
-                  </p>
+                <div className="mx-auto w-full rounded-[1.35rem] bg-black/30 px-8 py-4 text-center backdrop-blur-[0.01px] sm:max-w-[30rem] sm:bg-black/18 sm:p-6 md:max-w-[34rem] md:p-7 lg:mx-0 lg:max-w-4xl lg:bg-transparent lg:p-0 lg:text-left lg:backdrop-blur-0">
+                  <div className="mx-auto flex max-w-[15.5rem] flex-col items-center sm:max-w-none sm:items-start">
+                    <p className="ui-eyebrow text-white/50">
+                      The University of Texas at Dallas
+                    </p>
 
-                  <h1 className="mt-3 text-[2.5rem] font-black leading-[0.95] tracking-tight text-white sm:mt-4 sm:text-[3.15rem] md:text-[3.75rem] lg:text-[clamp(42px,7.5vw,72px)]">
-                    Student Veterans Association
-                  </h1>
+                    <h1 className="mt-3 font-black leading-[0.92] tracking-tight text-white sm:mt-4">
+                      <span className="flex justify-center sm:hidden">
+                        <span className="block text-[2.35rem] text-center">Student</span>
+                      </span>
+                      <span className="flex justify-center sm:hidden">
+                        <span className="block text-[2.35rem] text-center">Veterans</span>
+                      </span>
+                      <span className="flex justify-center sm:hidden">
+                        <span className="block text-[2.35rem] text-center">Association</span>
+                      </span>
 
-                  <p className="mx-auto mt-4 max-w-[17rem] text-[0.98rem] font-medium leading-7 text-white/82 sm:max-w-[24rem] sm:text-[1.12rem] sm:leading-8 md:max-w-[28rem] md:text-[1.2rem] lg:mx-0 lg:mt-5 lg:max-w-[36rem] lg:text-[1.2rem] lg:leading-8">
-                    Serving student veterans through advocacy and
-                    community support.
-                  </p>
+                      <span className="hidden sm:inline sm:text-[3.15rem] md:text-[3.75rem] lg:text-[clamp(42px,7.5vw,72px)]">
+                        Student Veterans Association
+                      </span>
+                    </h1>
+
+                    <p className="mt-4 max-w-[14rem] text-[0.95rem] font-medium leading-6 text-white/82 sm:max-w-[24rem] sm:text-[1.12rem] sm:leading-8 md:max-w-[28rem] md:text-[1.2rem] lg:mt-5 lg:max-w-[36rem] lg:text-[1.2rem] lg:leading-8">
+                      Serving student veterans through advocacy and community support.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Desktop / tablet CTA block */}
@@ -146,7 +159,7 @@ export const HeroSection = () => {
                   onClick={goToPrevious}
                   size="icon"
                   variant="ghost"
-                  className="absolute left-3 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:left-6 sm:h-11 sm:w-11"
+                  className="absolute left-3 top-[54%] z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:left-6 sm:top-1/2 sm:h-11 sm:w-11"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
@@ -157,7 +170,7 @@ export const HeroSection = () => {
                   onClick={goToNext}
                   size="icon"
                   variant="ghost"
-                  className="absolute right-3 top-1/2 z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:right-6 sm:h-11 sm:w-11"
+                  className="absolute right-3 top-[54%] z-20 h-10 w-10 -translate-y-1/2 rounded-full border border-white/20 bg-white/12 text-white backdrop-blur-sm hover:bg-white/20 sm:right-6 sm:top-1/2 sm:h-11 sm:w-11"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </Button>

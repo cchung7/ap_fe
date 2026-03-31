@@ -11,11 +11,6 @@ import { ArrowRight, X, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -79,11 +74,7 @@ function DrawerDisabledSupportRow({
   item: DrawerMenuItem;
 }) {
   const Icon = item.icon;
-
-  const rowClass = cn(
-    "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
-    "border-border/50 bg-background/80 text-foreground"
-  );
+  const [open, setOpen] = React.useState(false);
 
   const content = (
     <>
@@ -107,57 +98,49 @@ function DrawerDisabledSupportRow({
   );
 
   return (
-    <>
-      <div className="hidden lg:block">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="block w-full">
-              <button
-                type="button"
-                disabled
-                aria-disabled="true"
-                className={cn(rowClass, "cursor-not-allowed")}
-              >
-                {content}
-              </button>
-            </span>
-          </TooltipTrigger>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-disabled="true"
+          aria-expanded={open}
+          className={cn(
+            "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
+            "border-border/50 bg-background/80 text-foreground",
+            "cursor-not-allowed"
+          )}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen((prev) => !prev);
+          }}
+        >
+          {content}
+        </button>
+      </PopoverTrigger>
 
-          <TooltipContent side="top" align="start" className="max-w-[280px]">
-            {item.tooltip}
-          </TooltipContent>
-        </Tooltip>
-      </div>
+      <PopoverContent
+        side="top"
+        align="start"
+        sideOffset={10}
+        className="w-[min(18rem,calc(100vw-3rem))] rounded-2xl"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <div className="space-y-2">
+          <div className="ui-title text-[0.92rem] tracking-tight text-foreground">
+            Support
+          </div>
 
-      <div className="lg:hidden">
-        <Popover>
-          <PopoverTrigger asChild>
-            <button
-              type="button"
-              aria-disabled="true"
-              className={cn(rowClass, "cursor-not-allowed")}
-            >
-              {content}
-            </button>
-          </PopoverTrigger>
-
-          <PopoverContent
-            side="top"
-            align="start"
-            className="w-[min(18rem,calc(100vw-3rem))] rounded-2xl"
-          >
-            <div className="space-y-2">
-              <div className="ui-title text-[0.92rem] tracking-tight text-foreground">
-                Support
-              </div>
-              <p className="text-[0.82rem] leading-5 text-muted-foreground">
-                {item.tooltip}
-              </p>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </>
+          <div className="space-y-1 text-[0.82rem] leading-5 text-muted-foreground">
+            {typeof item.tooltip === "string" ? (
+              <p>{item.tooltip}</p>
+            ) : (
+              item.tooltip
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
