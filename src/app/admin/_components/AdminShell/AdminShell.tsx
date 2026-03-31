@@ -5,30 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { DrawerMenu, type DrawerMenuItem } from "@/components/ui/DrawerMenu";
+import { DrawerMenu } from "@/components/ui/DrawerMenu";
 import { Button } from "@/components/ui/button";
 import { AdminSidebar } from "./AdminSidebar";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { adminToolsItems } from "./adminNav";
 
-import {
-  LayoutDashboard,
-  Users,
-  CalendarDays,
-  CircleHelp,
-  Home,
-  LogOut,
-} from "lucide-react";
-
-const adminDrawerItems: DrawerMenuItem[] = [
-  { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "View All Members", href: "/admin/members", icon: Users },
-  { name: "View All Events", href: "/admin/events", icon: CalendarDays },
-];
+import { Home, LogOut } from "lucide-react";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -87,52 +70,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const SupportDisabledRow = ({
-    message = "Test message",
-  }: {
-    message?: string;
-  }) => {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className={cn(
-              "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
-              "border-border/50 bg-background/70 text-muted-foreground opacity-95",
-              "cursor-not-allowed"
-            )}
-          >
-            <span className="flex min-w-0 items-center gap-3">
-              <span
-                className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border",
-                  "border-border/55 bg-card text-muted-foreground"
-                )}
-              >
-                <CircleHelp className="h-4.5 w-4.5" />
-              </span>
-
-              <span className="truncate text-[0.95rem] font-semibold tracking-tight">
-                Support
-              </span>
-            </span>
-
-            <span className="text-[11px] font-semibold text-muted-foreground/80">
-              Soon
-            </span>
-          </button>
-        </TooltipTrigger>
-
-        <TooltipContent side="top" align="start">
-          {message}
-        </TooltipContent>
-      </Tooltip>
-    );
-  };
-
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-[#F1F5F9]">
@@ -141,10 +78,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           onOpenChange={setMobileOpen}
           title="Menu"
           srTitle="Admin Navigation"
-          items={adminDrawerItems}
+          items={adminToolsItems}
           itemsTitle=""
           middleTitle=""
-          middleContent={<SupportDisabledRow message="Test message" />}
           bottomTitle=""
           bottomContent={
             <>

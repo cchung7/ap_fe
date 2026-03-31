@@ -8,7 +8,6 @@ import {
   Menu,
   Globe,
   LogOut,
-  CircleHelp,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -79,29 +78,31 @@ function CompactDisabledIconButton({
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
-  message: string;
+  message: React.ReactNode;
 }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          className={cn(
-            "group flex items-center justify-center rounded-[1.15rem] border p-1.5 transition-all",
-            "ui-surface-silver border-border/70 opacity-85 cursor-not-allowed"
-          )}
-          title={title}
-          aria-label={title}
-        >
-          <div className="ui-surface-silver flex h-8 w-8 items-center justify-center rounded-[0.95rem] text-accent">
-            <Icon className="h-4 w-4" />
-          </div>
-        </button>
+        <span className="inline-flex">
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            className={cn(
+              "group flex items-center justify-center rounded-[1.15rem] border p-1.5 transition-all",
+              "ui-surface-silver border-border/70 opacity-85 cursor-not-allowed"
+            )}
+            title={title}
+            aria-label={title}
+          >
+            <div className="ui-surface-silver flex h-8 w-8 items-center justify-center rounded-[0.95rem] text-accent">
+              <Icon className="h-4 w-4" />
+            </div>
+          </button>
+        </span>
       </TooltipTrigger>
 
-      <TooltipContent side="right" align="center">
+      <TooltipContent side="right" align="center" className="max-w-[280px]">
         {message}
       </TooltipContent>
     </Tooltip>
@@ -176,35 +177,37 @@ function StandardDisabledRow({
 }: {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  message: string;
+  message: React.ReactNode;
 }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          className={cn(
-            "group flex w-full items-center justify-between gap-3 rounded-[1.05rem] border px-2.25 py-2.25 text-left transition-all",
-            "border-border/50 bg-background/75 text-muted-foreground opacity-95 cursor-not-allowed"
-          )}
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-2xl border border-border/55 bg-card text-accent">
-              <Icon className="h-4 w-4" />
+        <span className="block w-full">
+          <button
+            type="button"
+            disabled
+            aria-disabled="true"
+            className={cn(
+              "group flex w-full items-center justify-between gap-3 rounded-[1.05rem] border px-2.25 py-2.25 text-left transition-all",
+              "border-border/50 bg-background/75 text-muted-foreground opacity-95 cursor-not-allowed"
+            )}
+          >
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-2xl border border-border/55 bg-card text-accent">
+                <Icon className="h-4 w-4" />
+              </span>
+
+              <span className="ui-title text-[0.84rem] leading-tight tracking-tight text-foreground/88">
+                {name}
+              </span>
             </span>
 
-            <span className="ui-title text-[0.84rem] leading-tight tracking-tight text-muted-foreground">
-              {name}
-            </span>
-          </span>
-
-          <ArrowUpRight className="h-[0.95rem] w-[0.95rem] shrink-0 text-accent opacity-70" />
-        </button>
+            <ArrowUpRight className="h-[0.95rem] w-[0.95rem] shrink-0 text-accent opacity-70" />
+          </button>
+        </span>
       </TooltipTrigger>
 
-      <TooltipContent side="right" align="center">
+      <TooltipContent side="right" align="center" className="max-w-[280px]">
         {message}
       </TooltipContent>
     </Tooltip>
@@ -296,10 +299,22 @@ export function AdminSidebar({
               {adminToolsItems.map((item) => {
                 const Icon = item.icon;
                 const active =
-                  pathname === item.href ||
-                  (item.href !== "/admin" && pathname?.startsWith(item.href));
+                  !item.disabled &&
+                  (pathname === item.href ||
+                    (item.href !== "/admin" && pathname?.startsWith(item.href)));
 
                 if (compact) {
+                  if (item.disabled) {
+                    return (
+                      <CompactDisabledIconButton
+                        key={item.href}
+                        icon={Icon}
+                        title={item.name}
+                        message={item.tooltip ?? ""}
+                      />
+                    );
+                  }
+
                   return (
                     <CompactIconLink
                       key={item.href}
@@ -307,6 +322,17 @@ export function AdminSidebar({
                       icon={Icon}
                       title={item.name}
                       active={active}
+                    />
+                  );
+                }
+
+                if (item.disabled) {
+                  return (
+                    <StandardDisabledRow
+                      key={item.href}
+                      name={item.name}
+                      icon={Icon}
+                      message={item.tooltip ?? ""}
                     />
                   );
                 }
@@ -321,20 +347,6 @@ export function AdminSidebar({
                   />
                 );
               })}
-
-              {compact ? (
-                <CompactDisabledIconButton
-                  icon={CircleHelp}
-                  title="Support"
-                  message="Test message"
-                />
-              ) : (
-                <StandardDisabledRow
-                  name="Support"
-                  icon={CircleHelp}
-                  message="Test message"
-                />
-              )}
             </div>
           </div>
 

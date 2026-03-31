@@ -1,7 +1,6 @@
 // D:\ap_fe\src\app\admin\_components\AdminShell\adminNav.tsx
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { DrawerMenuItem } from "@/components/ui/DrawerMenu";
@@ -11,23 +10,27 @@ import {
   LayoutDashboard,
   Users,
   CalendarDays,
-  BookOpen,
-  LifeBuoy,
+  CircleHelp,
   ArrowUpRight,
 } from "lucide-react";
 
+export const ADMIN_SUPPORT_TOOLTIP =
+  "For site assistance, please contact Jay directly. Email: chung_chul@yahoo.com";
+
 export const adminToolsItems: DrawerMenuItem[] = [
-  { name: "ADMIN DASHBOARD", href: "/admin", icon: LayoutDashboard },
-  { name: "VIEW ALL MEMBERS", href: "/admin/members", icon: Users },
-  { name: "VIEW ALL EVENTS", href: "/admin/events", icon: CalendarDays },
+  { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "View All Members", href: "/admin/members", icon: Users },
+  { name: "View All Events", href: "/admin/events", icon: CalendarDays },
+  {
+    name: "Support",
+    href: "/admin/support",
+    icon: CircleHelp,
+    disabled: true,
+    tooltip: ADMIN_SUPPORT_TOOLTIP,
+  },
 ];
 
-export const adminResourcesItems: DrawerMenuItem[] = [
-  { name: "RESOURCES", href: "/admin/guide", icon: BookOpen },
-  { name: "SUPPORT", href: "/admin/support", icon: LifeBuoy },
-];
-
-// DrawerMenu TOOLS row sizing (shared so RESOURCES matches TOOLS exactly)
+// DrawerMenu row sizing shared with sidebar rows
 export function AdminDrawerRow({
   item,
   onNavigate,
@@ -39,11 +42,12 @@ export function AdminDrawerRow({
   const Icon = item.icon;
 
   const active =
-    pathname === item.href ||
-    (item.href !== "/" &&
-      item.href !== "/admin" &&
-      pathname?.startsWith(item.href)) ||
-    (item.href === "/admin" && pathname === "/admin");
+    !item.disabled &&
+    (pathname === item.href ||
+      (item.href !== "/" &&
+        item.href !== "/admin" &&
+        pathname?.startsWith(item.href)) ||
+      (item.href === "/admin" && pathname === "/admin"));
 
   return (
     <Link

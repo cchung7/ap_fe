@@ -10,12 +10,24 @@ import { ArrowRight, X, type LucideIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 export type DrawerMenuItem = {
   name: string;
   href: string;
   icon: LucideIcon;
   onClick?: () => void;
+  disabled?: boolean;
+  tooltip?: React.ReactNode;
 };
 
 type DrawerMenuProps = {
@@ -58,6 +70,94 @@ function DrawerSection({
 
       <div className="flex flex-col gap-2">{children}</div>
     </section>
+  );
+}
+
+function DrawerDisabledSupportRow({
+  item,
+}: {
+  item: DrawerMenuItem;
+}) {
+  const Icon = item.icon;
+
+  const rowClass = cn(
+    "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
+    "border-border/50 bg-background/80 text-foreground"
+  );
+
+  const content = (
+    <>
+      <span className="flex min-w-0 items-center gap-3">
+        <span
+          className={cn(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors",
+            "border-border/55 bg-card text-accent"
+          )}
+        >
+          <Icon className="h-4.5 w-4.5" />
+        </span>
+
+        <span className="truncate text-[0.95rem] font-semibold tracking-tight text-foreground/88">
+          {item.name}
+        </span>
+      </span>
+
+      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground/55 opacity-70" />
+    </>
+  );
+
+  return (
+    <>
+      <div className="hidden lg:block">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="block w-full">
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className={cn(rowClass, "cursor-not-allowed")}
+              >
+                {content}
+              </button>
+            </span>
+          </TooltipTrigger>
+
+          <TooltipContent side="top" align="start" className="max-w-[280px]">
+            {item.tooltip}
+          </TooltipContent>
+        </Tooltip>
+      </div>
+
+      <div className="lg:hidden">
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-disabled="true"
+              className={cn(rowClass, "cursor-not-allowed")}
+            >
+              {content}
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="top"
+            align="start"
+            className="w-[min(18rem,calc(100vw-3rem))] rounded-2xl"
+          >
+            <div className="space-y-2">
+              <div className="ui-title text-[0.92rem] tracking-tight text-foreground">
+                Support
+              </div>
+              <p className="text-[0.82rem] leading-5 text-muted-foreground">
+                {item.tooltip}
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </>
   );
 }
 
@@ -127,12 +227,28 @@ export function DrawerMenu({
                         <DrawerSection title={itemsTitle}>
                           {items.map((item, i) => {
                             const Icon = item.icon;
+
                             const active =
-                              pathname === item.href ||
-                              (item.href !== "/" &&
-                                item.href !== "/admin" &&
-                                pathname?.startsWith(item.href)) ||
-                              (item.href === "/admin" && pathname === "/admin");
+                              !item.disabled &&
+                              (pathname === item.href ||
+                                (item.href !== "/" &&
+                                  item.href !== "/admin" &&
+                                  pathname?.startsWith(item.href)) ||
+                                (item.href === "/admin" &&
+                                  pathname === "/admin"));
+
+                            if (item.disabled) {
+                              return (
+                                <motion.div
+                                  key={`${item.name}-${item.href}`}
+                                  initial={{ opacity: 0, x: 12 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: 0.04 * i }}
+                                >
+                                  <DrawerDisabledSupportRow item={item} />
+                                </motion.div>
+                              );
+                            }
 
                             return (
                               <motion.div
