@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\home\UpcomingEventsSection.tsx
 "use client";
 
 import * as React from "react";
@@ -70,17 +71,17 @@ export function UpcomingEventsSection() {
     <section className="ui-home-section">
       <div className="ui-page-shell">
         <div className="ui-right-module">
-          <div className=" rounded-[2.25rem] p-6 sm:p-7 lg:p-6">
-            <div className="flex justify center lg:justify-start lg:pl-2 xl:pl-4">                  
-              <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">                  
-                  <p className="ui-eyebrow text-muted-foreground">
-                    Event Calendar
-                  </p>
-                
-                <p className="ui-title text-[2.35rem] sm:text-[2.55rem] md:text-[2.85rem] lg:text-[3rem] xl:text-[3.2rem]">
-                  Upcoming Events
+          <div className="rounded-[2.25rem] p-6 sm:p-7 lg:p-6">
+            <div className="flex justify-center lg:justify-start lg:pl-2 xl:pl-4">
+              <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">
+                <p className="ui-eyebrow text-muted-foreground">
+                  Event Calendar
                 </p>
-            </div>
+
+                <h2 className="ui-title mx-auto max-w-[9ch] text-[2.35rem] leading-[1.05] sm:text-[2.55rem] md:text-[2.85rem] lg:mx-0 lg:max-w-[9ch] lg:text-[3rem] xl:text-[3.2rem]">
+                  Upcoming Events
+                </h2>
+              </div>
             </div>
 
             <div className="mt-6 space-y-4">
