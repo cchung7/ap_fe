@@ -14,10 +14,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import * as React from "react";
-import { toast } from "sonner";
 import { FaDiscord } from "react-icons/fa";
 
-const BACKEND_URL = "https://api.jayportfolio.me/contact";
+import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 
 function XLogoIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -34,9 +33,9 @@ function XLogoIcon(props: React.SVGProps<SVGSVGElement>) {
 
 const communityLinks = [
   {
-    Icon: Linkedin,
-    href: "https://www.linkedin.com/groups/12150361/",
-    label: "LinkedIn",
+    Icon: Instagram,
+    href: "https://www.instagram.com/sva.utd/?hl=en",
+    label: "Instagram",
   },
   {
     Icon: FaDiscord,
@@ -50,39 +49,80 @@ const communityLinks = [
   },
 ];
 
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export const ContactSection = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { showError, showSuccess } = useGlobalStatusBanner();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const body = String(formData.get("body") ?? "").trim();
+
+    if (!fullName) {
+      showError("Please provide your full name.");
+      return;
+    }
+
+    if (!email) {
+      showError("Please provide your email address.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showError("Please provide a valid email address.");
+      return;
+    }
+
+    if (!body) {
+      showError("Please enter a message before sending.");
+      return;
+    }
+
     setIsSubmitting(true);
 
-    const formData = new FormData(e.currentTarget);
-
-    const payload = {
-      fullName: formData.get("fullName"),
-      email: formData.get("email"),
-      body: formData.get("body"),
-    };
-
     try {
-      const response = await fetch(BACKEND_URL, {
+      const response = await fetch("/api/contact", {
         method: "POST",
+        credentials: "include",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          fullName,
+          email,
+          body,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to send message");
+      const json = await response.json().catch(() => null);
+
+      if (!response.ok || !json?.success) {
+        const message =
+          json?.message ||
+          json?.error ||
+          "Failed to send message. Please try again later.";
+
+        showError(message);
+        return;
       }
 
-      toast.success("Message received — we’ll be in touch soon.");
-      (e.target as HTMLFormElement).reset();
+      form.reset();
+      showSuccess(json?.message || "Message sent successfully.");
     } catch (error) {
-      console.error("Submission Error:", error);
-      toast.error("Unable to send right now. Please try again.");
+      console.error("Contact submission error:", error);
+      showError("Unable to send right now. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +136,7 @@ export const ContactSection = () => {
             <div className="flex justify-center lg:justify-start lg:pl-10 xl:pl-12">
               <div className="w-full max-w-2xl space-y-6 text-center lg:max-w-[28rem] lg:text-left">
                 <p className="ui-eyebrow">
-                  Our Community
+                  Community Outreach
                 </p>
 
                 <h2 className="ui-title text-[2.35rem] sm:text-[2.55rem] md:text-[2.85rem] lg:text-[3rem] xl:text-[3.2rem]">
@@ -138,10 +178,10 @@ export const ContactSection = () => {
                       newTab: true,
                     },
                     {
-                      icon: Instagram,
-                      label: "Instagram",
-                      value: "@sva.utd",
-                      href: "https://www.instagram.com/sva.utd/?hl=en",
+                      icon: Linkedin,
+                      label: "LinkedIn",
+                      value: "@UT Dallas SVA",
+                      href: "https://www.linkedin.com/groups/12150361/",
                       newTab: true,
                     },
                   ].map((item, i) => (
@@ -168,7 +208,7 @@ export const ContactSection = () => {
                   ))}
                 </div>
 
-                <div className="mt-10 ui-surface-brand rounded-[1.75rem] border border-border/50 p-5 sm:p-6">
+                <div className="mt-10 rounded-[1.75rem] border border-border/50 p-5 sm:p-6">
                   <div className="space-y-3 text-center lg:text-left">
                     <h3 className="ui-title text-[1.4rem] sm:text-[1.5rem]">
                       Connect-SVA:
@@ -228,7 +268,7 @@ export const ContactSection = () => {
                     </h3>
                   </div>
 
-                  <form onSubmit={handleSubmit} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                     <div className="space-y-4">
                       <div className="ui-surface-silver rounded-3xl border border-slate-500/25 p-4 sm:p-5 transition-all focus-within:border-accent/35 focus-within:ring-2 focus-within:ring-accent/15">
                         <label className="relative z-10 ml-1 block text-[11px] font-black uppercase tracking-[0.24em] text-muted-foreground/80">
@@ -240,6 +280,7 @@ export const ContactSection = () => {
                             name="fullName"
                             type="text"
                             placeholder="Your name"
+                            autoComplete="name"
                             className="w-full border-none bg-transparent p-0 text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
                           />
                         </div>
@@ -255,6 +296,7 @@ export const ContactSection = () => {
                             name="email"
                             type="email"
                             placeholder="netid@utdallas.edu"
+                            autoComplete="email"
                             className="w-full border-none bg-transparent p-0 text-base font-bold text-foreground placeholder:text-muted-foreground/45 focus:outline-none focus:ring-0"
                           />
                         </div>
@@ -279,7 +321,7 @@ export const ContactSection = () => {
                       type="submit"
                       size="lg"
                       disabled={isSubmitting}
-                      className="h-14 w-full cursor-pointer rounded-full text-[12px] font-black uppercase tracking-[0.18em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white sm:text-[13px] sm:tracking-[0.22em]"
+                      className="h-14 w-full cursor-pointer rounded-full text-[12px] font-black uppercase tracking-[0.18em] shadow-xl transition-all hover:-translate-y-0.5 hover:bg-accent hover:text-white disabled:cursor-not-allowed disabled:opacity-75 sm:text-[13px] sm:tracking-[0.22em]"
                     >
                       {isSubmitting ? (
                         <>
@@ -289,7 +331,7 @@ export const ContactSection = () => {
                       ) : (
                         <>
                           <span className="truncate">Send Message</span>
-                          <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" />
+                          <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                         </>
                       )}
                     </Button>

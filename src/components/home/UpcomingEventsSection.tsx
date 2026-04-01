@@ -70,11 +70,17 @@ export function UpcomingEventsSection() {
     <section className="ui-home-section">
       <div className="ui-page-shell">
         <div className="ui-right-module">
-          <div className="ui-surface-brand rounded-[2.25rem] p-6 sm:p-7 lg:p-8">
-            <div className="space-y-2 text-center lg:text-left">
-              <p className="ui-title text-[1.4rem] sm:text-[1.5rem]">
-                Upcoming Events:
-              </p>
+          <div className=" rounded-[2.25rem] p-6 sm:p-7 lg:p-6">
+            <div className="flex justify center lg:justify-start lg:pl-2 xl:pl-4">                  
+              <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">                  
+                  <p className="ui-eyebrow text-muted-foreground">
+                    Event Calendar
+                  </p>
+                
+                <p className="ui-title text-[2.35rem] sm:text-[2.55rem] md:text-[2.85rem] lg:text-[3rem] xl:text-[3.2rem]">
+                  Upcoming Events
+                </p>
+            </div>
             </div>
 
             <div className="mt-6 space-y-4">

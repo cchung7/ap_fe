@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Instagram } from "lucide-react";
+import { Instagram, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa";
 import { useMe } from "@/hooks/useMe";

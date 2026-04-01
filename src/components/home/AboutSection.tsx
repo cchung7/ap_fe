@@ -16,8 +16,8 @@ export const AboutSection = () => {
       <div className="ui-page-shell">
         <div className="flex flex-col gap-10 lg:gap-12">
           {/* Row 1: Mission + Vision */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start lg:gap-10 xl:gap-14">
-            <div className="flex justify-center lg:justify-end lg:pl-10 xl:pl-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start lg:gap-18 xl:gap-20">
+            <div className="flex justify-center lg:justify-start lg:pl-8 xl:pl-10">
               <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">
                 <p className="ui-eyebrow text-muted-foreground">
                   Our Purpose
@@ -40,7 +40,7 @@ export const AboutSection = () => {
             {/* Mobile / half-width divider between Mission and Vision */}
             <div className="mx-auto my-8 block h-px w-full max-w-[12rem] bg-border/70 lg:hidden" />
 
-            <div className="flex justify-center lg:justify-start lg:pl-8 xl:pl-10">
+            <div className="flex justify-center lg:justify-start lg:pl-10 xl:pl-12">
               <div className="ui-section-copy w-full max-w-2xl text-center lg:max-w-[28rem] lg:text-left">
                 <p className="ui-eyebrow text-muted-foreground">
                   Our Focus
@@ -62,12 +62,12 @@ export const AboutSection = () => {
           </div>
 
           {/* Row 2: Shared stat band */}
-          <div className="ui-right-module">
+          <div className="ui-right-module mx-auto w-full max-w-[92rem]">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
               {stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="ui-surface-brand rounded-[1.75rem] px-5 py-6 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_18px_42px_-24px_rgba(11,18,32,0.14)] lg:px-6 lg:py-7"
+                  className="rounded-[1.75rem] border border-border/50 bg-card/88 px-5 py-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-[0_18px_42px_-24px_rgba(11,18,32,0.14)] lg:px-6 lg:py-7"
                 >
                   <div className="mx-auto mb-1 flex w-fit items-start gap-[2px] text-[2.2rem] font-black tracking-tight text-foreground/90 sm:text-[2.45rem] lg:text-[2.7rem]">
                     <AnimatedCounter value={stat.value} />

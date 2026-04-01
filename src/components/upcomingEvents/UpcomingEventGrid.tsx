@@ -21,7 +21,7 @@ function UpcomingEventGridInner({ events }: UpcomingEventGridProps) {
       return "mx-auto grid max-w-[72rem] grid-cols-1 gap-4 xl:grid-cols-2";
     }
 
-    return "grid grid-cols-1 gap-4 md:mx-auto md:max-w-[38rem] xl:max-w-[90rem] xl:grid-cols-3";
+    return "grid grid-cols-1 gap-4 md:mx-auto md:max-w-[34rem] xl:max-w-[90rem] xl:grid-cols-3";
   }, [events.length]);
 
   return (
