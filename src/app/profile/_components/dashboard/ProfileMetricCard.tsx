@@ -4,8 +4,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 type ProfileMetricCardProps = {
-  title: string;
-  value: number;
+  title: React.ReactNode;
+  value: number | string;
   icon: React.ReactNode;
   bgClassName: string;
 };
@@ -20,9 +20,9 @@ export function ProfileMetricCard({
     <div className="min-w-0 overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
       <div className="flex items-center justify-between px-4 py-4 sm:px-5 sm:py-5">
         <div className="min-w-0 space-y-1.5">
-          <p className="text-[11px] sm:text-[12px] font-medium leading-snug text-muted-foreground">
+          <div className="text-[11px] sm:text-[12px] font-medium leading-snug text-muted-foreground">
             {title}
-          </p>
+          </div>
 
           <p className="text-[1.75rem] sm:text-[2rem] font-black tracking-tight leading-none text-foreground">
             {value}

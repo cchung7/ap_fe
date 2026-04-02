@@ -27,7 +27,7 @@ export function ProfileTopbar() {
     <BrandLockup
       title={
         <div className="ui-title truncate text-lg tracking-tight text-foreground">
-          MEMBER DASHBOARD
+          USER DASHBOARD
         </div>
       }
     />

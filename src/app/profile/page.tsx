@@ -13,8 +13,14 @@ type DashboardActivity = {
   createdAt?: string | Date;
 };
 
+type LeaderboardPreviewEntry = {
+  rank: number;
+  name: string;
+};
+
 type MePayload = {
   name?: string;
+  pointsTotal?: number;
   [key: string]: unknown;
 };
 
@@ -23,8 +29,11 @@ type DashboardResponse = {
   stats?: {
     upcomingEvents?: number;
     totalPoints?: number;
+    totalEventsAttended?: number;
+    leaderboardRank?: number | null;
   };
   activities?: DashboardActivity[];
+  leaderboardTopFivePreview?: LeaderboardPreviewEntry[];
 };
 
 function formatDashboardDate(date: Date) {
@@ -46,6 +55,11 @@ export default function ProfileDashboardPage() {
   const [now, setNow] = React.useState(() => new Date());
   const [upcomingEvents, setUpcomingEvents] = React.useState(0);
   const [totalPoints, setTotalPoints] = React.useState(0);
+  const [totalEventsAttended, setTotalEventsAttended] = React.useState(0);
+  const [leaderboardRank, setLeaderboardRank] = React.useState<number | null>(null);
+  const [leaderboardTopFivePreview, setLeaderboardTopFivePreview] = React.useState<
+    LeaderboardPreviewEntry[]
+  >([]);
   const [activities, setActivities] = React.useState<DashboardActivity[]>([]);
 
   React.useEffect(() => {
@@ -83,6 +97,17 @@ export default function ProfileDashboardPage() {
         setDisplayName(resolvedName);
         setUpcomingEvents(Number(data?.stats?.upcomingEvents ?? 0));
         setTotalPoints(Number(data?.stats?.totalPoints ?? 0));
+        setTotalEventsAttended(Number(data?.stats?.totalEventsAttended ?? 0));
+        setLeaderboardRank(
+          typeof data?.stats?.leaderboardRank === "number"
+            ? data.stats.leaderboardRank
+            : null
+        );
+        setLeaderboardTopFivePreview(
+          Array.isArray(data?.leaderboardTopFivePreview)
+            ? data.leaderboardTopFivePreview
+            : []
+        );
         setActivities(Array.isArray(data?.activities) ? data.activities : []);
       } catch {
         if (!alive) return;
@@ -91,6 +116,9 @@ export default function ProfileDashboardPage() {
         );
         setUpcomingEvents(0);
         setTotalPoints(Number((me as any)?.pointsTotal ?? 0));
+        setTotalEventsAttended(0);
+        setLeaderboardRank(null);
+        setLeaderboardTopFivePreview([]);
         setActivities([]);
       }
     }
@@ -127,6 +155,9 @@ export default function ProfileDashboardPage() {
       <ProfileDashboardOverview
         upcomingEvents={upcomingEvents}
         totalPoints={totalPoints}
+        totalEventsAttended={totalEventsAttended}
+        leaderboardRank={leaderboardRank}
+        leaderboardTopFivePreview={leaderboardTopFivePreview}
         activities={activities}
       />
     </div>

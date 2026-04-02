@@ -406,7 +406,11 @@ function EventCardInner({
           <div className="mt-auto pt-7">
             <div className="flex min-w-0 flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
               <Button
-                className="h-11 w-full max-w-full rounded-2xl bg-accent px-5 text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 disabled:opacity-100 sm:w-auto"
+                className={
+                  isRegistered
+                    ? "h-11 w-full max-w-full rounded-2xl bg-green-600 px-5 text-white shadow-sm transition-colors hover:bg-green-700 disabled:opacity-100 sm:w-auto"
+                    : "h-11 w-full max-w-full rounded-2xl bg-accent px-5 text-accent-foreground shadow-sm transition-colors hover:bg-accent/90 disabled:opacity-100 sm:w-auto"
+                }
                 onClick={() => void handleRegistration()}
                 disabled={isRegistered || isRegistering}
                 title={

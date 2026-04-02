@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Instagram, Linkedin } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa";
 import { useMe } from "@/hooks/useMe";
@@ -51,7 +51,9 @@ export function Footer() {
             </div>
 
             <h4 className="ui-title font-heading text-xl uppercase italic tracking-tighter sm:text-2xl">
-              <span className="text-muted-foreground/60">SVA- UT-Dallas</span>
+              <span className="text-muted-foreground/60">
+                SVA- UT-Dallas
+              </span>
             </h4>
           </div>
 
@@ -115,11 +117,11 @@ export function Footer() {
                   whileHover={{ y: -2, scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   transition={{ type: "spring", stiffness: 340, damping: 26 }}
-                  className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.06)]"
+                  className="ui-social-shell"
                 >
-                  <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ui-surface-silver backdrop-blur transition-colors duration-300 group-hover:bg-accent">
+                  <div className="ui-social-core">
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-transparent opacity-70" />
-                    <Icon className="relative z-10 h-6 w-6 text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-white" />
+                    <Icon className="ui-social-icon relative z-10 h-6 w-6" />
                   </div>
                 </motion.div>
               </Link>

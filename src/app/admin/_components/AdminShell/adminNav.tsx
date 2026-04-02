@@ -18,7 +18,7 @@ export const ADMIN_SUPPORT_TOOLTIP =
   "For site assistance, please contact Jay directly. Email: chung_chul@yahoo.com";
 
 export const adminToolsItems: DrawerMenuItem[] = [
-  { name: "Admin Dashboard", href: "/admin", icon: LayoutDashboard },
+  { name: "My Admin Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "View All Members", href: "/admin/members", icon: Users },
   { name: "View All Events", href: "/admin/events", icon: CalendarDays },
   {

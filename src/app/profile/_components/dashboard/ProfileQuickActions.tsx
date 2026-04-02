@@ -1,8 +1,7 @@
-// D:\ap_fe\src\app\admin\_components\dashboard\DashboardQuickActions.tsx
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, CalendarPlus, Users } from "lucide-react";
+import { ArrowUpRight, CalendarRange, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Action = {
@@ -13,22 +12,24 @@ type Action = {
 
 const actions: Action[] = [
   {
-    title: "Manage All Members",
-    href: "/admin/members",
-    icon: <Users className="h-4.5 w-4.5" />,
+    title: "Edit My Profile",
+    href: "/profile/edit",
+    icon: <UserCog className="h-4.5 w-4.5" />,
   },
   {
-    title: "Manage All Events",
-    href: "/admin/events",
-    icon: <CalendarPlus className="h-4.5 w-4.5" />,
+    title: "Manage My Events",
+    href: "/profile/events",
+    icon: <CalendarRange className="h-4.5 w-4.5" />,
   },
 ];
 
-export function DashboardQuickActions() {
+export function ProfileQuickActions() {
   return (
     <div className="overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
       <div className="border-b border-border/70 px-5 py-3.5">
-        <h2 className="text-base font-semibold text-foreground">Quick Actions</h2>
+        <h2 className="text-base font-semibold text-foreground">
+          Quick Actions
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
@@ -50,7 +51,7 @@ export function DashboardQuickActions() {
                   {action.icon}
                 </span>
 
-                <span className="ui-title truncate text-[0.92rem] leading-tight tracking-tight text-foreground/90 group-hover:text-accent transition-colors">
+                <span className="ui-title truncate text-[0.92rem] leading-tight tracking-tight text-foreground/90 transition-colors group-hover:text-accent">
                   {action.title}
                 </span>
               </span>

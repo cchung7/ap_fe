@@ -192,7 +192,7 @@ export const ContactSection = () => {
                       rel={item.newTab ? "noopener noreferrer" : undefined}
                       className="ui-surface-brand group relative flex items-center gap-4 rounded-[1.5rem] px-5 py-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/35 hover:shadow-[0_22px_50px_-24px_rgba(11,18,32,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
-                      <div className="ui-surface-silver relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-primary transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+                      <div className="ui-contact-icon relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl">
                         <item.icon className="relative z-10 h-5 w-5 transition-all duration-300" />
                       </div>
 
@@ -239,11 +239,11 @@ export const ContactSection = () => {
                             stiffness: 340,
                             damping: 26,
                           }}
-                          className="h-12 w-12 rounded-full border border-border/80 bg-gradient-to-b from-white/30 to-black/10 p-[1px] shadow-[0_6px_8px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-[0_12px_20px_rgba(0,0,0,0.06)]"
+                          className="ui-social-shell"
                         >
-                          <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full ui-surface-silver backdrop-blur transition-colors duration-300 group-hover:bg-accent">
+                          <div className="ui-social-core">
                             <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-transparent opacity-70" />
-                            <Icon className="relative z-10 h-6 w-6 text-muted-foreground transition-all duration-300 group-hover:scale-105 group-hover:text-white" />
+                            <Icon className="ui-social-icon relative z-10 h-6 w-6" />
                           </div>
                         </motion.div>
                       </Link>
@@ -330,7 +330,9 @@ export const ContactSection = () => {
                         </>
                       ) : (
                         <>
-                          <span className="truncate">Send Message</span>
+                          <span className="truncate">
+                            Send Message
+                          </span>
                           <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                         </>
                       )}

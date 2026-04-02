@@ -1,9 +1,10 @@
 "use client";
 
 import type { DrawerMenuItem } from "@/components/ui/DrawerMenu";
-import { UserCog, CalendarRange } from "lucide-react";
+import { LayoutDashboard, UserCog, CalendarRange } from "lucide-react";
 
 export const profileToolsItems: DrawerMenuItem[] = [
-  { name: "EDIT PROFILE", href: "/profile/edit", icon: UserCog },
-  { name: "VIEW MY EVENTS", href: "/profile/events", icon: CalendarRange },
+  { name: "My Dashboard", href: "/profile", icon: LayoutDashboard },
+  { name: "Edit My Profile", href: "/profile/edit", icon: UserCog },
+  { name: "View My Events", href: "/profile/events", icon: CalendarRange },
 ];
