@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\ProfileTopbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -27,7 +28,7 @@ export function ProfileTopbar() {
     <BrandLockup
       title={
         <div className="ui-title truncate text-lg tracking-tight text-foreground">
-          USER DASHBOARD
+          MEMBER DASHBOARD
         </div>
       }
     />
@@ -95,6 +96,7 @@ export function ProfileTopbar() {
   return (
     <TopbarFrame
       disableHideOnScroll
+      fullBleed
       compactBreakpointClassName="md"
       desktopBreakpointClassName="xl"
       leftMobile={brand}

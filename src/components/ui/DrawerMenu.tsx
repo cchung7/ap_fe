@@ -44,6 +44,17 @@ type DrawerMenuProps = {
   bottomTitle?: string;
 };
 
+function isDrawerItemActive(pathname: string | null, href: string, disabled?: boolean) {
+  if (!pathname || disabled) return false;
+  if (pathname === href) return true;
+
+  // Treat section roots as exact-match only so `/profile` does not stay active
+  // on `/profile/edit`, and `/admin` does not stay active on `/admin/events`.
+  if (href === "/" || href === "/admin" || href === "/profile") return false;
+
+  return pathname.startsWith(`${href}/`) || pathname.startsWith(href);
+}
+
 function DrawerSection({
   title,
   children,
@@ -210,15 +221,11 @@ export function DrawerMenu({
                         <DrawerSection title={itemsTitle}>
                           {items.map((item, i) => {
                             const Icon = item.icon;
-
-                            const active =
-                              !item.disabled &&
-                              (pathname === item.href ||
-                                (item.href !== "/" &&
-                                  item.href !== "/admin" &&
-                                  pathname?.startsWith(item.href)) ||
-                                (item.href === "/admin" &&
-                                  pathname === "/admin"));
+                            const active = isDrawerItemActive(
+                              pathname,
+                              item.href,
+                              item.disabled
+                            );
 
                             if (item.disabled) {
                               return (

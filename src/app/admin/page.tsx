@@ -36,12 +36,8 @@ export default function AdminDashboardPage() {
   const [displayName, setDisplayName] = React.useState("Admin");
   const [now, setNow] = React.useState(() => new Date());
 
-  const [members, setMembers] = React.useState<Array<{ status?: string | null }>>(
-    []
-  );
-  const [events, setEvents] = React.useState<Array<{ date?: string | Date | null }>>(
-    []
-  );
+  const [members, setMembers] = React.useState<Array<{ status?: string | null }>>([]);
+  const [events, setEvents] = React.useState<Array<{ date?: string | Date | null }>>([]);
   const [activities, setActivities] = React.useState<
     Array<{
       id?: string | number;
@@ -124,11 +120,11 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-5 pt-5 sm:pt-6">
-      <div className="space-y-1">
-        <h1 className="text-[1.7rem] sm:text-[1.95rem] font-black tracking-tight text-[#111827]">
+      <div className="space-y-1.5">
+        <h1 className="text-[1.8rem] font-black tracking-tight text-[#111827] sm:text-[2.05rem]">
           Welcome, {displayName}
         </h1>
-        <p className="text-[13px] sm:text-sm text-[#6B7280]">
+        <p className="text-[13px] text-[#6B7280] sm:text-sm">
           {weekday}, {fullDate}
         </p>
       </div>

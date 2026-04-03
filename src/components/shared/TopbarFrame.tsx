@@ -1,3 +1,4 @@
+// D:\ap_fe\src\components\shared\TopbarFrame.tsx
 "use client";
 
 import * as React from "react";
@@ -18,6 +19,12 @@ type TopbarFrameProps = {
   desktopBreakpointClassName?: "xl";
 
   disableHideOnScroll?: boolean;
+
+  /**
+   * When true, the topbar uses full viewport width with only horizontal padding,
+   * instead of centering content inside a max-width container.
+   */
+  fullBleed?: boolean;
 };
 
 export function TopbarFrame({
@@ -30,6 +37,7 @@ export function TopbarFrame({
   rightDesktop,
   compactBreakpointClassName = "md",
   desktopBreakpointClassName = "xl",
+  fullBleed = false,
 }: TopbarFrameProps) {
   const [scrolled, setScrolled] = React.useState(false);
 
@@ -64,7 +72,12 @@ export function TopbarFrame({
           : "border-border/40 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.78),rgba(247,248,250,0.62))] shadow-[0_8px_24px_-20px_rgba(11,18,32,0.10)] backdrop-blur-lg"
       )}
     >
-      <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
+      <div
+        className={cn(
+          "w-full px-4 sm:px-6 lg:px-8",
+          !fullBleed && "mx-auto max-w-[1600px]"
+        )}
+      >
         <div
           className={cn(
             mobileHiddenClass,

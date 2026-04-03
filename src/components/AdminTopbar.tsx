@@ -27,7 +27,7 @@ export function AdminTopbar() {
   const brand = (
     <BrandLockup
       title={
-        <div className="ui-title text-lg text-foreground tracking-tight truncate">
+        <div className="ui-title truncate text-lg tracking-tight text-foreground">
           ADMIN DASHBOARD
         </div>
       }
@@ -77,7 +77,6 @@ export function AdminTopbar() {
     </>
   );
 
-  // Hamburger triggers AdminShell drawer (mobileOpen) via the window event listeners in AdminShell.tsx
   const drawerHamburger = (
     <Button
       type="button"
@@ -97,6 +96,7 @@ export function AdminTopbar() {
   return (
     <TopbarFrame
       disableHideOnScroll
+      fullBleed
       compactBreakpointClassName="md"
       desktopBreakpointClassName="xl"
       leftMobile={brand}

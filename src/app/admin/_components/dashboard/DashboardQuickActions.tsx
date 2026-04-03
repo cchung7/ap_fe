@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 type Action = {
   title: string;
+  description: string;
   href: string;
   icon: React.ReactNode;
 };
@@ -14,44 +15,70 @@ type Action = {
 const actions: Action[] = [
   {
     title: "Manage All Members",
+    description: "Review member records, approvals, and status changes.",
     href: "/admin/members",
     icon: <Users className="h-4.5 w-4.5" />,
   },
   {
     title: "Manage All Events",
+    description: "Create, update, and oversee event operations.",
     href: "/admin/events",
     icon: <CalendarPlus className="h-4.5 w-4.5" />,
   },
 ];
 
-export function DashboardQuickActions() {
+type DashboardQuickActionsProps = {
+  className?: string;
+};
+
+export function DashboardQuickActions({
+  className,
+}: DashboardQuickActionsProps) {
   return (
-    <div className="overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
-      <div className="border-b border-border/70 px-5 py-3.5">
-        <h2 className="text-base font-semibold text-foreground">Quick Actions</h2>
+    <section
+      className={cn(
+        "flex h-full min-h-0 flex-col overflow-hidden rounded-[1.2rem] border border-border/70 bg-white shadow-sm",
+        className
+      )}
+    >
+      <div className="border-b border-border/70 px-5 py-4">
+        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">
+          Actions
+        </p>
+        <h2 className="mt-1 text-[1.02rem] font-semibold tracking-tight text-foreground">
+          Quick Actions
+        </h2>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          Jump directly into the main admin workflows.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+      <div className="flex flex-1 flex-col gap-4 p-5">
         {actions.map((action) => (
           <Link key={action.title} href={action.href} className="block min-w-0">
             <div
               className={cn(
-                "group flex min-w-0 items-center justify-between gap-3 rounded-[1.1rem] border px-3 py-3 transition-all",
-                "ui-surface-silver border-transparent hover:border-accent/35 hover:-translate-y-0.5"
+                "group flex min-h-[92px] min-w-0 items-center justify-between gap-4 rounded-[1.1rem] border px-4 py-4 transition-all",
+                "ui-surface-silver border-transparent hover:-translate-y-0.5 hover:border-accent/35"
               )}
             >
-              <span className="flex min-w-0 items-center gap-3">
+              <span className="flex min-w-0 items-start gap-3">
                 <span
                   className={cn(
-                    "ui-surface-silver flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl",
+                    "ui-surface-silver mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
                     "text-accent transition-colors group-hover:bg-accent group-hover:text-white"
                   )}
                 >
                   {action.icon}
                 </span>
 
-                <span className="ui-title truncate text-[0.92rem] leading-tight tracking-tight text-foreground/90 group-hover:text-accent transition-colors">
-                  {action.title}
+                <span className="min-w-0">
+                  <span className="ui-title block text-[0.95rem] leading-tight tracking-tight text-foreground/90 transition-colors group-hover:text-accent">
+                    {action.title}
+                  </span>
+                  <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
+                    {action.description}
+                  </span>
                 </span>
               </span>
 
@@ -65,6 +92,6 @@ export function DashboardQuickActions() {
           </Link>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

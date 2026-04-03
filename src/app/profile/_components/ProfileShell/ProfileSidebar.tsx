@@ -1,3 +1,4 @@
+// D:\ap_fe\src\app\profile\_components\ProfileShell\ProfileSidebar.tsx
 "use client";
 
 import Link from "next/link";
@@ -22,6 +23,13 @@ type ProfileSidebarProps = {
   onLogout: () => void;
   isLoggingOut?: boolean;
 };
+
+function isProfileItemActive(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (pathname === href) return true;
+  if (href === "/" || href === "/profile") return false;
+  return pathname.startsWith(`${href}/`) || pathname.startsWith(href);
+}
 
 function CompactIconLink({
   href,
@@ -205,10 +213,7 @@ export function ProfileSidebar({
             >
               {profileToolsItems.map((item) => {
                 const Icon = item.icon;
-                const active =
-                  pathname === item.href ||
-                  (item.href !== "/profile" && pathname?.startsWith(item.href)) ||
-                  (item.href === "/profile" && pathname === "/profile");
+                const active = isProfileItemActive(pathname, item.href);
 
                 if (compact) {
                   return (

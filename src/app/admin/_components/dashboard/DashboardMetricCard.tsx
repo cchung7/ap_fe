@@ -18,25 +18,30 @@ export function DashboardMetricCard({
   bgClassName,
 }: DashboardMetricCardProps) {
   return (
-    <div className="min-w-0 overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
-      <div className="flex items-center justify-between px-4 py-4 sm:px-5 sm:py-5">
-        <div className="min-w-0 space-y-1.5">
-          <p className="text-[11px] sm:text-[12px] font-medium leading-snug text-muted-foreground">
+    <div
+      className={cn(
+        "min-w-0 overflow-hidden rounded-[1.2rem] border border-border/70 bg-white shadow-sm",
+        "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      )}
+    >
+      <div className="flex items-start justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5">
+        <div className="min-w-0 space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:text-[12px]">
             {title}
           </p>
 
-          <p className="text-[1.75rem] sm:text-[2rem] font-black tracking-tight leading-none text-foreground">
+          <p className="text-[1.9rem] font-black leading-none tracking-tight text-foreground sm:text-[2.1rem]">
             {value}
           </p>
         </div>
 
         <div
           className={cn(
-            "flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-[1rem]",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] sm:h-12 sm:w-12",
             bgClassName
           )}
         >
-          <div className="text-foreground/80 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-[1.15rem] sm:[&_svg]:w-[1.15rem]">
+          <div className="text-foreground/80 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-[1.1rem] sm:[&_svg]:w-[1.1rem]">
             {icon}
           </div>
         </div>
