@@ -60,11 +60,14 @@ export function ProfileRecentActivity({
   const hasMoreLogs = sortedActivities.length > previewList.length;
 
   return (
-    <div className="overflow-hidden rounded-[1.15rem] border border-border/70 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b border-border/70 px-5 py-3.5">
-        <h2 className="text-base font-semibold text-foreground">
-          Recent Activity
-        </h2>
+    <div className="overflow-hidden rounded-[1.55rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md">
+      <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
+        <div className="space-y-1">
+          <p className="ui-eyebrow text-muted-foreground">Activity</p>
+          <h2 className="text-[1.18rem] font-black tracking-tight text-foreground">
+            Recent Activity
+          </h2>
+        </div>
 
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -175,10 +178,10 @@ export function ProfileRecentActivity({
         </Popover>
       </div>
 
-      <div className="divide-y divide-[#E2E8F0]">
+      <div className="divide-y divide-border/60">
         {previewList.length === 0 ? (
-          <div className="px-5 py-4.5">
-            <p className="text-[13px] text-[#718096]">
+          <div className="px-5 py-4.5 sm:px-6">
+            <p className="text-[13px] text-muted-foreground">
               No recent activity has been recorded yet.
             </p>
           </div>
@@ -186,7 +189,7 @@ export function ProfileRecentActivity({
           previewList.map((activity, index) => (
             <div
               key={activity.id ?? index}
-              className="flex items-start gap-3.5 px-5 py-4.5 transition-colors hover:bg-gray-50"
+              className="flex items-start gap-3.5 px-5 py-4.5 transition-colors hover:bg-secondary/20 sm:px-6"
             >
               <div
                 className={cn(
@@ -196,10 +199,10 @@ export function ProfileRecentActivity({
               />
 
               <div className="flex min-w-0 flex-col gap-1">
-                <p className="break-words text-[0.95rem] font-medium leading-snug text-[#2D3748]">
+                <p className="break-words text-[0.95rem] font-medium leading-snug text-foreground">
                   {activity.description || "Activity recorded"}
                 </p>
-                <span className="text-[12px] text-[#718096]">
+                <span className="text-[12px] text-muted-foreground">
                   {formatActivityDate(activity.createdAt)}
                 </span>
               </div>
@@ -209,9 +212,9 @@ export function ProfileRecentActivity({
       </div>
 
       {hasMoreLogs && (
-        <div className="border-t border-[#E2E8F0] px-5 py-3">
+        <div className="border-t border-border/60 px-5 py-3 sm:px-6">
           <p className="text-[12px] text-muted-foreground">
-            Showing 4 most recent logs. Select{" "}
+            Showing 3 most recent logs. Select{" "}
             <span className="font-semibold text-foreground">Activity Log</span>{" "}
             to view the full history.
           </p>

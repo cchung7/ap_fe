@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { CalendarRange } from "lucide-react";
+import { CalendarRange, CheckCircle2, Clock, Shield, User as UserIcon } from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
-import AdminHeader from "@/app/admin/_components/AdminHeader/AdminHeader";
+import { ProfilePageHero } from "../_components/ProfilePageHero";
 import {
   Table,
   TableHeader,
@@ -83,6 +83,39 @@ function formatCategory(category?: string) {
     default:
       return category || "—";
   }
+}
+
+function buildProfileBadges(me: any) {
+  const role = String(me?.role || "MEMBER").toUpperCase();
+  const status = String(me?.status || "PENDING").toUpperCase();
+
+  return [
+    {
+      key: "role",
+      icon:
+        role === "ADMIN" ? (
+          <Shield size={13} className="text-accent" />
+        ) : (
+          <UserIcon size={13} className="text-primary" />
+        ),
+      label: role === "ADMIN" ? "Admin" : "Member",
+    },
+    {
+      key: "status",
+      icon:
+        status === "ACTIVE" ? (
+          <CheckCircle2 size={13} className="text-success" />
+        ) : (
+          <Clock size={13} className="text-warning" />
+        ),
+      label:
+        status === "ACTIVE"
+          ? "Active"
+          : status === "SUSPENDED"
+            ? "Suspended"
+            : "Pending",
+    },
+  ];
 }
 
 function StatusBadge({ status }: { status: AttendanceStatus }) {
@@ -167,11 +200,14 @@ export default function ProfileEventsPage() {
   if (loading || !me) return null;
 
   return (
-    <div className="space-y-5 overflow-x-hidden pt-6 sm:pt-7">
-      <AdminHeader
+    <div className="relative space-y-5 overflow-x-hidden overflow-y-hidden pt-5 pb-10 sm:space-y-6 sm:pt-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[20rem] bg-navy-wash opacity-75" />
+
+      <ProfilePageHero
+        eyebrow="Member Activity"
         title="My Events"
-        subtitle="Review your registrations, check-ins, and points earned"
-        icon={CalendarRange}
+        subtitle="Review your registrations, check-ins, and points earned."
+        badges={buildProfileBadges(me)}
       />
 
       <AdminDataTableCard

@@ -2,9 +2,11 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, Clock, Shield, User as UserIcon } from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
 import { ProfileDashboardOverview } from "./_components/dashboard/ProfileDashboardOverview";
+import { ProfilePageHero } from "./_components/ProfilePageHero";
 
 type DashboardActivity = {
   id?: string | number;
@@ -21,6 +23,8 @@ type LeaderboardPreviewEntry = {
 type MePayload = {
   name?: string;
   pointsTotal?: number;
+  role?: string;
+  status?: string;
   [key: string]: unknown;
 };
 
@@ -45,6 +49,41 @@ function formatDashboardDate(date: Date) {
   });
 
   return { weekday, fullDate };
+}
+
+function buildProfileBadges(me: any) {
+  const role = String(me?.role || "MEMBER").toUpperCase();
+  const status = String(me?.status || "PENDING").toUpperCase();
+
+  const badges = [
+    {
+      key: "role",
+      icon:
+        role === "ADMIN" ? (
+          <Shield size={13} className="text-accent" />
+        ) : (
+          <UserIcon size={13} className="text-primary" />
+        ),
+      label: role === "ADMIN" ? "Admin" : "Member",
+    },
+    {
+      key: "status",
+      icon:
+        status === "ACTIVE" ? (
+          <CheckCircle2 size={13} className="text-success" />
+        ) : (
+          <Clock size={13} className="text-warning" />
+        ),
+      label:
+        status === "ACTIVE"
+          ? "Active"
+          : status === "SUSPENDED"
+            ? "Suspended"
+            : "Pending",
+    },
+  ];
+
+  return badges;
 }
 
 export default function ProfileDashboardPage() {
@@ -142,15 +181,15 @@ export default function ProfileDashboardPage() {
   const { weekday, fullDate } = formatDashboardDate(now);
 
   return (
-    <div className="space-y-5 pt-5 sm:pt-6">
-      <div className="space-y-1">
-        <h1 className="text-[1.7rem] sm:text-[1.95rem] font-black tracking-tight text-[#111827]">
-          Welcome, {displayName}
-        </h1>
-        <p className="text-[13px] sm:text-sm text-[#6B7280]">
-          {weekday}, {fullDate}
-        </p>
-      </div>
+    <div className="relative space-y-5 overflow-hidden pt-5 pb-10 sm:space-y-6 sm:pt-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[20rem] bg-navy-wash opacity-75" />
+
+      <ProfilePageHero
+        eyebrow="Member Dashboard"
+        title={`Welcome, ${displayName}`}
+        subtitle={`${weekday}, ${fullDate}`}
+        badges={buildProfileBadges(me)}
+      />
 
       <ProfileDashboardOverview
         upcomingEvents={upcomingEvents}
