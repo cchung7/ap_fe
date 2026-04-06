@@ -1,12 +1,14 @@
-// D:\ap_fe\src\app\admin\page.tsx
 "use client";
 
 import * as React from "react";
+import { Shield } from "lucide-react";
 
 import { DashboardOverview } from "./_components/dashboard/DashboardOverview";
+import { AdminPageHero } from "./_components/AdminPageHero";
 
 type MePayload = {
   name?: string;
+  subRole?: string | null;
   [key: string]: unknown;
 };
 
@@ -34,6 +36,7 @@ function formatAdminDate(date: Date) {
 
 export default function AdminDashboardPage() {
   const [displayName, setDisplayName] = React.useState("Admin");
+  const [adminSubRole, setAdminSubRole] = React.useState("Admin");
   const [now, setNow] = React.useState(() => new Date());
 
   const [members, setMembers] = React.useState<Array<{ status?: string | null }>>([]);
@@ -64,16 +67,24 @@ export default function AdminDashboardPage() {
         };
 
         const me = (json?.data?.me ?? json?.me ?? null) as MePayload | null;
+
         const nextName =
           typeof me?.name === "string" && me.name.trim()
             ? me.name.trim()
             : "Admin";
 
+        const nextSubRole =
+          typeof me?.subRole === "string" && me.subRole.trim()
+            ? me.subRole.trim()
+            : "Admin";
+
         if (!alive) return;
         setDisplayName(nextName);
+        setAdminSubRole(nextSubRole);
       } catch {
         if (!alive) return;
         setDisplayName("Admin");
+        setAdminSubRole("Admin");
       }
     }
 
@@ -119,15 +130,21 @@ export default function AdminDashboardPage() {
   const { weekday, fullDate } = formatAdminDate(now);
 
   return (
-    <div className="space-y-5 pt-5 sm:pt-6">
-      <div className="space-y-1.5">
-        <h1 className="text-[1.8rem] font-black tracking-tight text-[#111827] sm:text-[2.05rem]">
-          Welcome, {displayName}
-        </h1>
-        <p className="text-[13px] text-[#6B7280] sm:text-sm">
-          {weekday}, {fullDate}
-        </p>
-      </div>
+    <div className="relative space-y-5 overflow-hidden pt-5 pb-10 sm:space-y-6 sm:pt-6">
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[20rem] bg-navy-wash opacity-75" />
+
+      <AdminPageHero
+        eyebrow="Admin Workspace"
+        title={`Welcome, ${displayName}`}
+        subtitle={`${weekday}, ${fullDate}`}
+        badges={[
+          {
+            key: "subRole",
+            icon: <Shield size={13} className="text-accent" />,
+            label: adminSubRole,
+          },
+        ]}
+      />
 
       <DashboardOverview
         members={members}

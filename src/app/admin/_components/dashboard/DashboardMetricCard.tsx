@@ -1,4 +1,3 @@
-// D:\ap_fe\src\app\admin\_components\dashboard\DashboardMetricCard.tsx
 "use client";
 
 import * as React from "react";
@@ -20,8 +19,10 @@ export function DashboardMetricCard({
   return (
     <div
       className={cn(
-        "min-w-0 overflow-hidden rounded-[1.2rem] border border-border/70 bg-white shadow-sm",
-        "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+        "min-w-0 overflow-hidden rounded-[1.2rem] border border-[rgba(11,45,91,0.10)]",
+        "bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,247,252,0.98)_100%)]",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.14)]",
+        "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.78),0_18px_28px_-18px_rgba(11,18,32,0.18)]"
       )}
     >
       <div className="flex items-start justify-between gap-3 px-4 py-4 sm:px-5 sm:py-5">
@@ -37,7 +38,7 @@ export function DashboardMetricCard({
 
         <div
           className={cn(
-            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] sm:h-12 sm:w-12",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border border-white/60 sm:h-12 sm:w-12",
             bgClassName
           )}
         >

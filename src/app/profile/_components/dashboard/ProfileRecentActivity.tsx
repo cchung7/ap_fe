@@ -63,7 +63,9 @@ export function ProfileRecentActivity({
     <div className="overflow-hidden rounded-[1.55rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md">
       <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
         <div className="space-y-1">
-          <p className="ui-eyebrow text-muted-foreground">Activity</p>
+          <p className="ui-eyebrow text-muted-foreground">
+            Logs
+          </p>
           <h2 className="text-[1.18rem] font-black tracking-tight text-foreground">
             Recent Activity
           </h2>

@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarDays } from "lucide-react";
 
 import AdminHeader from "../../_components/AdminHeader/AdminHeader";
 import { Button } from "@/components/ui/button";
@@ -38,8 +37,17 @@ const defaultForm: CreateEventPayload = {
   pointsValue: 0,
 };
 
+const FIELD_LABEL_CLASS =
+  "text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/80";
+
 const INPUT_CLASSNAME =
-  "h-12 w-full rounded-2xl border border-border/60 bg-background px-4 text-sm outline-none transition focus:border-ring";
+  "h-11 w-full rounded-[1rem] border border-[rgba(11,45,91,0.10)] bg-white px-4 text-[14px] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_24px_-18px_rgba(11,18,32,0.10)] outline-none transition placeholder:text-[12px] placeholder:text-muted-foreground/80 focus:border-accent/45";
+
+const TEXTAREA_CLASSNAME =
+  "w-full resize-none rounded-[1rem] border border-[rgba(11,45,91,0.10)] bg-white px-4 py-3 text-[14px] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_24px_-18px_rgba(11,18,32,0.10)] outline-none transition placeholder:text-[12px] placeholder:text-muted-foreground/80 focus:border-accent/45";
+
+const SECTION_CLASS =
+  "overflow-hidden rounded-[1.55rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md";
 
 export default function AdminCreateEventPage() {
   const router = useRouter();
@@ -150,189 +158,172 @@ export default function AdminCreateEventPage() {
   };
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-5 overflow-hidden pt-6 pb-16 sm:space-y-6 sm:pt-7 sm:pb-20">
       <AdminHeader
         title="Create Event"
-        subtitle="Create and publish a new event for members"
+        subtitle="Create and publish a new event for members."
+        icon={CalendarDays}
       />
 
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          key="admin-create-event"
-          layout
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          className="overflow-hidden rounded-[2.5rem] border border-border/60 bg-secondary/10"
-        >
-          <div className="border-b border-border/50 p-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.25em] text-muted-foreground/70">
-                  Event Details
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Dates are submitted in YYYY-MM-DD format. A unique check-in
-                  code will be generated automatically when the event is created.
-                </p>
-              </div>
-            </div>
+      <form onSubmit={handleFormSubmit} noValidate className="space-y-6 sm:space-y-7">
+        <section className={SECTION_CLASS}>
+          <div className="border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
+            <p className="ui-eyebrow text-muted-foreground">Event Setup</p>
+            <h2 className="mt-1 text-[1.18rem] font-black tracking-tight text-foreground">
+              Event Details
+            </h2>
+            <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
+              Enter the primary scheduling and publishing details for the new event.
+            </p>
           </div>
 
-          <form onSubmit={handleFormSubmit} noValidate className="p-6 pb-14">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={onChange("title")}
-                  placeholder="Enter event title"
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Category
-                </label>
-                <select
-                  value={form.category}
-                  onChange={onChange("category")}
-                  className={INPUT_CLASSNAME}
-                >
-                  <option value="VOLUNTEERING">Volunteering</option>
-                  <option value="SOCIAL">Social</option>
-                  <option value="PROFESSIONAL_DEVELOPMENT">
-                    Professional Development
-                  </option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={onChange("date")}
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Start Time
-                </label>
-                <input
-                  type="time"
-                  value={form.startTime}
-                  onChange={onChange("startTime")}
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  value={form.endTime}
-                  onChange={onChange("endTime")}
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  value={form.location}
-                  onChange={onChange("location")}
-                  placeholder="Enter event location"
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Capacity
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  value={form.capacity}
-                  onChange={onChange("capacity")}
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Points Value
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  value={form.pointsValue}
-                  onChange={onChange("pointsValue")}
-                  className={INPUT_CLASSNAME}
-                />
-              </div>
-
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-                  Description
-                </label>
-                <textarea
-                  value={form.description}
-                  onChange={onChange("description")}
-                  placeholder="Describe the event"
-                  rows={6}
-                  className="w-full resize-none rounded-2xl border border-border/60 bg-background px-4 py-3 text-sm outline-none transition focus:border-ring"
-                />
-              </div>
+          <div className="grid gap-4 px-5 py-5 md:grid-cols-2 sm:px-6">
+            <div className="space-y-2 md:col-span-2">
+              <label className={FIELD_LABEL_CLASS}>Title</label>
+              <input
+                type="text"
+                value={form.title}
+                onChange={onChange("title")}
+                placeholder="Enter event title"
+                className={INPUT_CLASSNAME}
+              />
             </div>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 border-t border-border/50 pt-8 sm:flex-row">
-              <Button
-                type="button"
-                variant="logout"
-                size="lg"
-                onClick={() => void submitCreateEvent()}
-                className="min-w-[180px] rounded-2xl"
-                disabled={submitting}
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>Category</label>
+              <select
+                value={form.category}
+                onChange={onChange("category")}
+                className={INPUT_CLASSNAME}
               >
-                {submitting ? (
-                  <>
-                    <Loader2 className="animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  "Create Event"
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                onClick={() => router.push("/admin/events")}
-                className="min-w-[180px] rounded-2xl"
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
+                <option value="VOLUNTEERING">Volunteering</option>
+                <option value="SOCIAL">Social</option>
+                <option value="PROFESSIONAL_DEVELOPMENT">
+                  Professional Development
+                </option>
+              </select>
             </div>
-          </form>
-        </motion.div>
-      </AnimatePresence>
+
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>Date</label>
+              <input
+                type="date"
+                value={form.date}
+                onChange={onChange("date")}
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>Start Time</label>
+              <input
+                type="time"
+                value={form.startTime}
+                onChange={onChange("startTime")}
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>End Time</label>
+              <input
+                type="time"
+                value={form.endTime}
+                onChange={onChange("endTime")}
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className={FIELD_LABEL_CLASS}>Location</label>
+              <input
+                type="text"
+                value={form.location}
+                onChange={onChange("location")}
+                placeholder="Enter event location"
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className={SECTION_CLASS}>
+          <div className="border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
+            <p className="ui-eyebrow text-muted-foreground">Capacity & Content</p>
+            <h2 className="mt-1 text-[1.18rem] font-black tracking-tight text-foreground">
+              Registration and Description
+            </h2>
+            <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
+              Set attendance limits, points value, and the member-facing description.
+            </p>
+          </div>
+
+          <div className="grid gap-4 px-5 py-5 md:grid-cols-2 sm:px-6">
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>Capacity</label>
+              <input
+                type="number"
+                min={0}
+                value={form.capacity}
+                onChange={onChange("capacity")}
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className={FIELD_LABEL_CLASS}>Points Value</label>
+              <input
+                type="number"
+                min={0}
+                value={form.pointsValue}
+                onChange={onChange("pointsValue")}
+                className={INPUT_CLASSNAME}
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label className={FIELD_LABEL_CLASS}>Description</label>
+              <textarea
+                value={form.description}
+                onChange={onChange("description")}
+                placeholder="Describe the event"
+                rows={6}
+                className={TEXTAREA_CLASSNAME}
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className="flex flex-col items-center justify-center gap-4 pt-2 sm:flex-row">
+          <Button
+            type="submit"
+            variant="logout"
+            size="lg"
+            className="min-w-[190px] rounded-2xl"
+            disabled={submitting}
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Event"
+            )}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={() => router.push("/admin/events")}
+            className="min-w-[190px] rounded-2xl"
+            disabled={submitting}
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -8,16 +8,42 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-background/95 backdrop-blur-md shadow-master border border-border/60 p-6 transition ease-in-out data-[state=closed]:duration-200 data-[state=open]:duration-300",
+  [
+    "fixed z-50 flex flex-col",
+    "bg-white text-foreground",
+    "border border-border/70",
+    "shadow-[0_32px_100px_-28px_rgba(11,18,32,0.34)]",
+    "transition ease-in-out",
+    "data-[state=closed]:duration-200 data-[state=open]:duration-300",
+    "overflow-hidden",
+  ].join(" "),
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
-        bottom:
-          "inset-x-0 bottom-0 border-t data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full w-full border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-xl",
-        right:
-          "inset-y-0 right-0 h-full w-full border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-2xl",
+        top: [
+          "inset-x-0 top-0 w-full",
+          "max-h-[calc(100vh-1rem)]",
+          "rounded-b-[1.5rem] border-b",
+          "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+        ].join(" "),
+        bottom: [
+          "inset-x-0 bottom-0 w-full",
+          "max-h-[calc(100vh-1rem)]",
+          "rounded-t-[1.5rem] border-t",
+          "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+        ].join(" "),
+        left: [
+          "inset-y-0 left-0 h-full w-full",
+          "max-w-[min(40rem,100vw)]",
+          "border-r",
+          "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+        ].join(" "),
+        right: [
+          "inset-y-0 right-0 h-full w-full",
+          "max-w-[min(52rem,100vw)]",
+          "border-l",
+          "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+        ].join(" "),
       },
     },
     defaultVariants: {
@@ -52,7 +78,7 @@ function SheetOverlay({
     <DialogPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/50",
+        "fixed inset-0 z-50 bg-[rgba(11,18,32,0.52)] backdrop-blur-[2px]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
@@ -85,8 +111,9 @@ function SheetContent({
 
         <DialogPrimitive.Close
           className={cn(
-            "absolute right-4 top-4 rounded-sm opacity-70 transition-opacity",
-            "hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+            "absolute right-4 top-4 z-10 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border/60 bg-white text-muted-foreground shadow-[0_8px_20px_-16px_rgba(11,18,32,0.22)] transition-all",
+            "hover:border-accent/40 hover:text-accent",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
             "disabled:pointer-events-none"
           )}
           aria-label="Close"
@@ -118,7 +145,10 @@ function SheetFooter({
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      className={cn(
+        "mt-auto flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        className
+      )}
       {...props}
     />
   );
@@ -162,15 +192,22 @@ function DetailSection({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-2xl border border-border/60 bg-secondary/10 p-4", className)}>
-      <div className="mb-3 flex items-center gap-2">
-        {icon}
-        <p className="text-sm font-black uppercase tracking-[0.16em] text-foreground">
-          {title}
-        </p>
+    <section
+      className={cn(
+        "rounded-[1.35rem] border border-border/60",
+        "bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)]",
+        "p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)]",
+        className
+      )}
+    >
+      <div className="mb-3 space-y-1.5">
+        <div className="flex items-center gap-2">
+          {icon}
+          <p className="ui-eyebrow text-muted-foreground">{title}</p>
+        </div>
       </div>
       {children}
-    </div>
+    </section>
   );
 }
 
@@ -181,7 +218,7 @@ function DetailLabel({
   return (
     <p
       className={cn(
-        "text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/75",
+        "text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground/80",
         className
       )}
     >
@@ -200,7 +237,14 @@ function DetailStatCard({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-2xl border border-border/50 bg-background/70 p-4", className)}>
+    <div
+      className={cn(
+        "rounded-[1.15rem] border border-[rgba(11,45,91,0.10)]",
+        "bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(244,247,252,0.98)_100%)]",
+        "p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_24px_-18px_rgba(11,18,32,0.10)]",
+        className
+      )}
+    >
       <DetailLabel>{label}</DetailLabel>
       <div className="mt-2 text-2xl font-black text-foreground">{value}</div>
     </div>

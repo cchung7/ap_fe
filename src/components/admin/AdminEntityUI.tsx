@@ -10,6 +10,8 @@ import {
   Pencil,
   RotateCcw,
   Trash2,
+  ShieldCheck,
+  Award,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -185,7 +187,7 @@ export function RowActionButton({
       type="button"
       size="sm"
       className={cn(
-        "h-8 rounded-lg px-2.5 text-[9px] font-black uppercase tracking-[0.15em]",
+        "h-8 rounded-xl px-2.75 text-[9px] font-black uppercase tracking-[0.15em] shadow-none",
         className
       )}
       {...props}
@@ -202,7 +204,7 @@ export function ViewButton(
   return (
     <RowActionButton
       variant="outline"
-      className="border-border/70"
+      className="border-border/70 bg-white hover:border-accent/35 hover:bg-white"
       icon={<Eye className="h-3 w-3" />}
       {...props}
     >
@@ -217,7 +219,7 @@ export function EditButton(
   return (
     <RowActionButton
       variant="outline"
-      className="border-border/70"
+      className="border-border/70 bg-white hover:border-accent/35 hover:bg-white"
       icon={<Pencil className="h-3 w-3" />}
       {...props}
     >
@@ -264,6 +266,7 @@ export function MemberQuickStatusButton({
     return (
       <RowActionButton
         disabled={loading}
+        className="border border-green-300 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
         icon={
           loading ? (
             <Loader2 className="h-3 w-3 animate-spin" />
@@ -273,7 +276,7 @@ export function MemberQuickStatusButton({
         }
         onClick={onApprove}
       >
-        Approve
+        Set as Active
       </RowActionButton>
     );
   }
@@ -281,9 +284,8 @@ export function MemberQuickStatusButton({
   if (status === "ACTIVE") {
     return (
       <RowActionButton
-        variant="outline"
-        className="border-border/70"
         disabled={loading}
+        className="border border-orange-300 bg-orange-500 text-white hover:border-orange-600 hover:bg-orange-600"
         icon={
           loading ? (
             <Loader2 className="h-3 w-3 animate-spin" />
@@ -293,7 +295,7 @@ export function MemberQuickStatusButton({
         }
         onClick={onSetInactive}
       >
-        Set Inactive
+        Set as Inactive
       </RowActionButton>
     );
   }
@@ -301,6 +303,7 @@ export function MemberQuickStatusButton({
   return (
     <RowActionButton
       disabled={loading}
+      className="border border-green-300 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
       icon={
         loading ? (
           <Loader2 className="h-3 w-3 animate-spin" />
@@ -336,43 +339,137 @@ export function ConfirmDeleteDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-lg p-0">
+        <div className="flex max-h-[calc(100vh-2rem)] min-h-0 flex-col bg-white">
+          <DialogHeader className="shrink-0 border-b border-border/60 px-6 py-5 pr-14">
+            <div className="space-y-1.5">
+              <p className="ui-eyebrow text-muted-foreground">Delete Record</p>
+              <DialogTitle className="text-[1.4rem] font-black tracking-tight text-foreground">
+                {title}
+              </DialogTitle>
+              <DialogDescription className="max-w-xl text-[13px] leading-6 text-muted-foreground">
+                {description}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
 
-        <DialogBody>
-          <div className="rounded-2xl border border-destructive/25 bg-destructive/5 p-4">
-            <p className="font-semibold text-foreground">{primaryText}</p>
-            {secondaryText ? (
-              <p className="mt-1 text-sm text-muted-foreground">{secondaryText}</p>
-            ) : null}
-          </div>
-        </DialogBody>
+          <DialogBody className="px-6 py-5">
+            <div className="rounded-[1.2rem] border border-destructive/20 bg-destructive/5 p-4">
+              <p className="font-semibold text-foreground">{primaryText}</p>
+              {secondaryText ? (
+                <p className="mt-1 text-sm text-muted-foreground">{secondaryText}</p>
+              ) : null}
+            </div>
+          </DialogBody>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-          <Button type="button" variant="destructive" onClick={onConfirm} disabled={loading}>
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              "Permanently Delete"
-            )}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border/60 bg-white px-6 py-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-2xl border-border/60 bg-white hover:border-accent/35 hover:bg-white"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="rounded-2xl"
+              onClick={onConfirm}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Permanently Delete"
+              )}
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function MemberIdentitySummaryCard({ member }: { member: AdminMemberRow }) {
+  return (
+    <div className="rounded-[1.2rem] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)]">
+      <div className="mb-4">
+        <PersonIdentityCell name={member.name} email={member.email} />
+      </div>
+
+      <div className="space-y-3 text-sm">
+        <div>
+          <DetailLabel>Major</DetailLabel>
+          <p className="mt-1 font-medium text-foreground">{member.major || "—"}</p>
+        </div>
+
+        <div>
+          <DetailLabel>Academic Year</DetailLabel>
+          <p className="mt-1 font-medium text-foreground">{member.academicYear || "—"}</p>
+        </div>
+
+        <div>
+          <DetailLabel>Joined</DetailLabel>
+          <p className="mt-1 font-medium text-foreground">{formatShortDate(member.createdAt)}</p>
+        </div>
+
+        <div>
+          <DetailLabel>Last Updated</DetailLabel>
+          <p className="mt-1 font-medium text-foreground">{formatShortDate(member.updatedAt)}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MemberAccessSummaryCard({ member }: { member: AdminMemberRow }) {
+  return (
+    <DetailSection
+      title="Access Management"
+      icon={<ShieldCheck className="h-4 w-4 text-primary" />}
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <DetailLabel>Role</DetailLabel>
+          <div className="mt-1">
+            <MemberRoleBadge role={member.role} />
+          </div>
+        </div>
+
+        <div>
+          <DetailLabel>Status</DetailLabel>
+          <div className="mt-1">
+            <MemberStatusBadge status={member.status} />
+          </div>
+        </div>
+
+        <div className="sm:col-span-2">
+          <DetailLabel>Sub-Role</DetailLabel>
+          <p className="mt-1 text-sm font-medium text-foreground">
+            {member.subRole?.trim() || "—"}
+          </p>
+        </div>
+      </div>
+    </DetailSection>
+  );
+}
+
+function MemberPointsSummaryCard({ member }: { member: AdminMemberRow }) {
+  return (
+    <DetailSection
+      title="Points Summary"
+      icon={<Award className="h-4 w-4 text-primary" />}
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
+        <DetailStatCard label="Total Points" value={member.pointsTotal} />
+        <DetailStatCard label="Events Attended" value={member.eventsAttendedCount} />
+      </div>
+    </DetailSection>
   );
 }
 
@@ -382,68 +479,67 @@ export function MemberOverviewSections({
   member: AdminMemberRow;
 }) {
   return (
-    <div className="mt-4 grid gap-4">
-      <div className="grid gap-4 md:grid-cols-2">
-        <DetailSection
-          title="Member Profile"
-          icon={<CalendarCheck2 className="h-4 w-4 text-primary" />}
-        >
-          <div className="mb-4">
+    <div className="mt-4 space-y-5">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-stretch">
+        <div className="rounded-[1.35rem] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)]">
+          <div className="space-y-5">
             <PersonIdentityCell name={member.name} email={member.email} />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
+                <DetailLabel>Major</DetailLabel>
+                <p className="mt-1 break-words font-medium text-foreground">
+                  {member.major || "—"}
+                </p>
+              </div>
+
+              <div className="min-w-0">
+                <DetailLabel>Academic Year</DetailLabel>
+                <p className="mt-1 break-words font-medium text-foreground">
+                  {member.academicYear || "—"}
+                </p>
+              </div>
+
+              <div className="min-w-0">
+                <DetailLabel>Joined</DetailLabel>
+                <p className="mt-1 break-words font-medium text-foreground">
+                  {formatShortDate(member.createdAt)}
+                </p>
+              </div>
+
+              <div className="min-w-0">
+                <DetailLabel>Last Updated</DetailLabel>
+                <p className="mt-1 break-words font-medium text-foreground">
+                  {formatShortDate(member.updatedAt)}
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div className="space-y-3 text-sm">
-            <div>
-              <DetailLabel>Major</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">{member.major || "—"}</p>
-            </div>
-
-            <div>
-              <DetailLabel>Academic Year</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">
-                {member.academicYear || "—"}
-              </p>
-            </div>
-
-            <div>
-              <DetailLabel>Joined</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">
-                {formatShortDate(member.createdAt)}
-              </p>
-            </div>
-
-            <div>
-              <DetailLabel>Last Updated</DetailLabel>
-              <p className="mt-1 font-medium text-foreground">
-                {formatShortDate(member.updatedAt)}
-              </p>
-            </div>
-          </div>
-        </DetailSection>
-
-        <div className="space-y-4">
+        <div className="grid gap-5">
           <DetailSection
             title="Access Management"
             icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
           >
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
                 <DetailLabel>Role</DetailLabel>
-                <div className="mt-1">
+                <div className="mt-2 flex flex-wrap gap-2">
                   <MemberRoleBadge role={member.role} />
                 </div>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <DetailLabel>Status</DetailLabel>
-                <div className="mt-1">
+                <div className="mt-2 flex flex-wrap gap-2">
                   <MemberStatusBadge status={member.status} />
                 </div>
               </div>
 
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <DetailLabel>Sub-Role</DetailLabel>
-                <p className="mt-1 text-sm font-medium text-foreground">
+                <p className="mt-2 break-words text-sm font-medium text-foreground">
                   {member.subRole?.trim() || "—"}
                 </p>
               </div>
@@ -455,12 +551,27 @@ export function MemberOverviewSections({
             icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
           >
             <div className="grid gap-3 sm:grid-cols-2">
-              <DetailStatCard label="Total Points" value={member.pointsTotal} />
-              <DetailStatCard label="Events Attended" value={member.eventsAttendedCount} />
+              <div className="min-w-0 rounded-[1.15rem] border border-border/60 bg-white/70 px-4 py-4 text-center">
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Total Points
+                </p>
+                <p className="mt-3 break-words text-[2rem] font-black leading-none tracking-tight text-foreground">
+                  {member.pointsTotal}
+                </p>
+              </div>
+
+              <div className="min-w-0 rounded-[1.15rem] border border-border/60 bg-white/70 px-4 py-4 text-center">
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Events Attended
+                </p>
+                <p className="mt-3 break-words text-[2rem] font-black leading-none tracking-tight text-foreground">
+                  {member.eventsAttendedCount}
+                </p>
+              </div>
             </div>
           </DetailSection>
         </div>
-      </div>
+      </section>
 
       <DetailSection
         title="Attendance History"
@@ -473,13 +584,16 @@ export function MemberOverviewSections({
                 key={`${member.id}-${entry.eventId}`}
                 className="rounded-2xl border border-border/50 bg-background/70 px-4 py-3"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-foreground">{entry.title}</p>
-                    <p className="mt-1 text-[12px] text-muted-foreground">
+                    <p className="break-words font-semibold text-foreground">
+                      {entry.title}
+                    </p>
+                    <p className="mt-1 break-words text-[12px] text-muted-foreground">
                       {entry.dateLabel} · {entry.statusLabel}
                     </p>
                   </div>
+
                   <p className="shrink-0 text-[12px] font-black text-foreground">
                     +{entry.pointsAwarded}
                   </p>
@@ -493,11 +607,20 @@ export function MemberOverviewSections({
           )}
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" className="rounded-xl">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+          <Button
+            type="button"
+            size="sm"
+            className="min-w-[170px] rounded-2xl bg-primary px-4 text-primary-foreground shadow-[0_16px_34px_-18px_rgba(11,45,91,0.35)] hover:bg-primary/92"
+          >
             Manage Attendance
           </Button>
-          <Button type="button" variant="outline" size="sm" className="rounded-xl">
+
+          <Button
+            type="button"
+            size="sm"
+            className="min-w-[150px] rounded-2xl border border-green-300 bg-green-600 text-white shadow-[0_16px_34px_-18px_rgba(22,101,52,0.35)] hover:border-green-700 hover:bg-green-700"
+          >
             Adjust Points
           </Button>
         </div>

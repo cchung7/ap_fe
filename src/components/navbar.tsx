@@ -154,7 +154,9 @@ export function Navbar() {
               "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
-            <Link href="/profile">My Profile</Link>
+            <Link href="/profile">
+              My Profile
+            </Link>
           </Button>
 
           {isAdmin && (
@@ -166,7 +168,9 @@ export function Navbar() {
                 "bg-[#123a73] text-white hover:bg-[#10315f]"
               )}
             >
-              <Link href="/admin">Admin</Link>
+              <Link href="/admin">
+                Admin Dashboard
+              </Link>
             </Button>
           )}
 

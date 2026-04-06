@@ -1,4 +1,3 @@
-// D:\ap_fe\src\app\admin\_components\dashboard\DashboardQuickActions.tsx
 "use client";
 
 import Link from "next/link";
@@ -37,18 +36,16 @@ export function DashboardQuickActions({
   return (
     <section
       className={cn(
-        "flex h-full min-h-0 flex-col overflow-hidden rounded-[1.2rem] border border-border/70 bg-white shadow-sm",
+        "flex h-full min-h-0 flex-col overflow-hidden rounded-[1.55rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md",
         className
       )}
     >
-      <div className="border-b border-border/70 px-5 py-4">
-        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-muted-foreground">
-          Actions
-        </p>
-        <h2 className="mt-1 text-[1.02rem] font-semibold tracking-tight text-foreground">
+      <div className="border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
+        <p className="ui-eyebrow text-muted-foreground">Shortcuts</p>
+        <h2 className="mt-1 text-[1.28rem] font-black tracking-tight text-foreground">
           Quick Actions
         </h2>
-        <p className="mt-1 text-[13px] text-muted-foreground">
+        <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
           Jump directly into the main admin workflows.
         </p>
       </div>

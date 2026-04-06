@@ -1,30 +1,25 @@
-// D:\ap_fe\src\app\admin\events\page.tsx
 "use client";
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+import {
+  CalendarDays,
+  Clock3,
+  MapPin,
+  ShieldCheck,
+  Ticket,
+  Users,
+  Award,
+} from "lucide-react";
 
 import AdminHeader from "../_components/AdminHeader/AdminHeader";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  AdminDataTableCard,
-  AdminTableViewport,
-  AdminTableState,
-} from "@/components/ui/table";
 import {
   ConfirmDeleteDialog,
   DeleteButton,
   EditButton,
   EventStatusBadge,
   formatShortDate,
-  StackedInfoCell,
   ViewButton,
 } from "@/components/admin/AdminEntityUI";
 import { EventDetailSheet, type AdminEventDetail } from "@/components/admin/EventDetailSheet";
@@ -99,7 +94,7 @@ function formatCategory(category: EventCategory) {
     case "SOCIAL":
       return "Social";
     case "PROFESSIONAL_DEVELOPMENT":
-      return "Professional Dev";
+      return "Professional Development";
     default:
       return category;
   }
@@ -111,6 +106,178 @@ function getCheckInCode(event: AdminEvent) {
 
 function getCapacityLabel(event: AdminEvent) {
   return `${event.totalRegistered}/${event.capacity}`;
+}
+
+function EventsSummary({
+  totalEvents,
+  upcomingEvents,
+  completedEvents,
+}: {
+  totalEvents: number;
+  upcomingEvents: number;
+  completedEvents: number;
+}) {
+  const cardClass =
+    "rounded-[1.2rem] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)]";
+
+  return (
+    <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+
+      <div className={cardClass}>
+        <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Upcoming Events
+        </p>
+        <p className="mt-2 text-[2rem] font-black leading-none tracking-tight text-foreground">
+          {upcomingEvents}
+        </p>
+      </div>
+
+      <div className={cardClass}>
+        <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Past Events
+        </p>
+        <p className="mt-2 text-[2rem] font-black leading-none tracking-tight text-foreground">
+          {completedEvents}
+        </p>
+      </div>
+
+      <div className={cardClass}>
+        <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+          Total Events
+        </p>
+        <p className="mt-2 text-[2rem] font-black leading-none tracking-tight text-foreground">
+          {totalEvents}
+        </p>
+      </div>
+
+    </section>
+  );
+}
+
+function EventManagementRow({
+  event,
+  isDeleting,
+  onView,
+  onEdit,
+  onDelete,
+}: {
+  event: AdminEvent;
+  isDeleting: boolean;
+  onView: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const completed = isCompletedEvent(event.date);
+
+  return (
+    <article className="overflow-hidden rounded-[1.35rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md">
+      <div className="grid gap-4 px-5 py-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(300px,1fr)_auto] xl:items-center">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="truncate text-[1.02rem] font-black tracking-tight text-foreground">
+              {event.title}
+            </p>
+            <EventStatusBadge isCompleted={completed} />
+          </div>
+
+          <p className="mt-2 text-[13px] leading-6 text-muted-foreground">
+            {event.description?.trim() || "No description provided."}
+          </p>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-border/60 bg-white px-3 py-1 text-[11px] font-semibold text-foreground">
+              {formatCategory(event.category)}
+            </span>
+            <span className="text-[12px] text-muted-foreground">
+              Created {formatShortDate(event.createdAt)}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-[1.15rem] border border-border/60 bg-secondary/15 px-4 py-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+            Event Snapshot
+          </p>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="flex items-start gap-2.5">
+              <CalendarDays className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Date
+                </p>
+                <p className="mt-1 text-[13px] text-foreground">
+                  {formatShortDate(event.date)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <Clock3 className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Time
+                </p>
+                <p className="mt-1 text-[13px] text-foreground">
+                  {formatEventTimeRange(event.startTime, event.endTime)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <MapPin className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Location
+                </p>
+                <p className="mt-1 text-[13px] text-foreground">{event.location}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <Users className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Capacity
+                </p>
+                <p className="mt-1 text-[13px] text-foreground">
+                  {getCapacityLabel(event)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <Award className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Points
+                </p>
+                <p className="mt-1 text-[13px] text-foreground">{event.pointsValue}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2.5">
+              <Ticket className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+                  Check-In Code
+                </p>
+                <p className="mt-1 font-mono text-[13px] font-black text-foreground">
+                  {getCheckInCode(event)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+          <ViewButton onClick={onView} />
+          <EditButton onClick={onEdit} />
+          <DeleteButton loading={isDeleting} onClick={onDelete} />
+        </div>
+      </div>
+    </article>
+  );
 }
 
 export default function AdminEventsPage() {
@@ -182,11 +349,21 @@ export default function AdminEventsPage() {
     }
   };
 
+  const upcomingCount = React.useMemo(
+    () => events.filter((event) => !isCompletedEvent(event.date)).length,
+    [events]
+  );
+
+  const completedCount = React.useMemo(
+    () => events.filter((event) => isCompletedEvent(event.date)).length,
+    [events]
+  );
+
   return (
-    <div className="space-y-5 overflow-x-hidden pt-6 sm:pt-7">
+    <div className="space-y-5 overflow-hidden pt-6 pb-12 sm:space-y-6 sm:pt-7 sm:pb-16">
       <AdminHeader
         title="All Events"
-        subtitle="Manage scheduled events, registration capacity, and check-in details"
+        subtitle="Manage scheduled events, registration capacity, and check-in details."
         icon={CalendarDays}
         actionLabel="Create Event"
         onAddClick={() => {
@@ -194,99 +371,56 @@ export default function AdminEventsPage() {
         }}
       />
 
-      <AdminDataTableCard
-        tableLabel="Events Table"
-        description="Standardized admin view with event details, right-side actions, and extended detail sheet support."
-      >
-        <AdminTableViewport>
-          <AdminTableState
-            loading={loading}
-            error={error}
-            isEmpty={!loading && !error && events.length === 0}
-            loadingMessage="Loading events..."
-            emptyMessage="No events have been created yet."
-          >
-            <Table className="admin-table">
-              <TableHeader className="admin-table-head">
-                <TableRow>
-                  <TableHead className="admin-table-head-cell">Event</TableHead>
-                  <TableHead className="admin-table-head-cell">Category</TableHead>
-                  <TableHead className="admin-table-head-cell">Date</TableHead>
-                  <TableHead className="admin-table-head-cell">Time</TableHead>
-                  <TableHead className="admin-table-head-cell">Location</TableHead>
-                  <TableHead className="admin-table-head-cell-right">Capacity</TableHead>
-                  <TableHead className="admin-table-head-cell-right">Points</TableHead>
-                  <TableHead className="admin-table-head-cell">Status</TableHead>
-                  <TableHead className="admin-table-head-cell">Check-In Code</TableHead>
-                  <TableHead className="admin-table-head-cell-last">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
+      <EventsSummary
+        totalEvents={events.length}
+        upcomingEvents={upcomingCount}
+        completedEvents={completedCount}
+      />
 
-              <TableBody>
-                {events.map((event) => {
-                  const isDeleting = deletingEventId === event.id;
+      <section className="overflow-hidden rounded-[1.55rem] border border-border/60 bg-white/72 shadow-master backdrop-blur-md">
+        <div className="border-b border-border/60 px-5 py-4.5 sm:px-6 sm:py-5">
+          <p className="ui-eyebrow text-muted-foreground">Events Directory</p>
+          <h2 className="mt-1 text-[1.18rem] font-black tracking-tight text-foreground">
+            Event Management
+          </h2>
+          <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
+            A responsive event management view standardized to the newer admin workspace design.
+          </p>
+        </div>
 
-                  return (
-                    <TableRow key={event.id} className="admin-table-row">
-                      <TableCell className="admin-table-cell">
-                        <StackedInfoCell
-                          primary={<span className="font-bold text-foreground">{event.title}</span>}
-                          secondary={event.description?.trim() || "No description provided."}
-                        />
-                      </TableCell>
+        <div className="px-4 py-4 sm:px-5 sm:py-5">
+          {loading ? (
+            <div className="rounded-[1.2rem] border border-dashed border-border/70 bg-white/60 px-5 py-10 text-center text-[13px] text-muted-foreground">
+              Loading events...
+            </div>
+          ) : error ? (
+            <div className="rounded-[1.2rem] border border-red-200 bg-red-50 px-5 py-10 text-center text-[13px] text-red-700">
+              {error}
+            </div>
+          ) : events.length === 0 ? (
+            <div className="rounded-[1.2rem] border border-dashed border-border/70 bg-white/60 px-5 py-10 text-center text-[13px] text-muted-foreground">
+              No events have been created yet.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {events.map((event) => {
+                const isDeleting = deletingEventId === event.id;
 
-                      <TableCell className="admin-table-cell">
-                        <span className="font-medium text-foreground">
-                          {formatCategory(event.category)}
-                        </span>
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-muted">
-                        {formatShortDate(event.date)}
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-muted">
-                        {formatEventTimeRange(event.startTime, event.endTime)}
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-muted">
-                        {event.location}
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-right">
-                        {getCapacityLabel(event)}
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-right">
-                        {event.pointsValue}
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell">
-                        <EventStatusBadge isCompleted={isCompletedEvent(event.date)} />
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell">
-                        <span className="admin-table-code-pill">{getCheckInCode(event)}</span>
-                      </TableCell>
-
-                      <TableCell className="admin-table-cell-last">
-                        <div className="flex items-center justify-end gap-2">
-                          <ViewButton onClick={() => setViewingEvent(event)} />
-                          <EditButton onClick={() => router.push(`/admin/events/${event.id}/edit`)} />
-                          <DeleteButton
-                            loading={isDeleting}
-                            onClick={() => setConfirmDeleteEvent(event)}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </AdminTableState>
-        </AdminTableViewport>
-      </AdminDataTableCard>
+                return (
+                  <EventManagementRow
+                    key={event.id}
+                    event={event}
+                    isDeleting={isDeleting}
+                    onView={() => setViewingEvent(event)}
+                    onEdit={() => router.push(`/admin/events/${event.id}/edit`)}
+                    onDelete={() => setConfirmDeleteEvent(event)}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
       <EventDetailSheet
         event={viewingEvent}

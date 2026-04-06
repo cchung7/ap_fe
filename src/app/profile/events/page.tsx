@@ -2,88 +2,25 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { CalendarRange, CheckCircle2, Clock, Shield, User as UserIcon } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  Shield,
+  User as UserIcon,
+} from "lucide-react";
 
 import { useMe } from "@/hooks/useMe";
 import { ProfilePageHero } from "../_components/ProfilePageHero";
+import { ProfileEventsSummary } from "./_components/ProfileEventsSummary";
+import { ProfileEventsSection } from "./_components/ProfileEventsSection";
+import type {
+  AttendanceRow,
+  AttendancesResponse,
+} from "./_components/profileEvents.types";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-  AdminDataTableCard,
-  AdminTableViewport,
-  AdminTableState,
-} from "@/components/ui/table";
-
-type AttendanceStatus = "REGISTERED" | "CHECKED_IN" | "CANCELED";
-
-type AttendanceRow = {
-  id: string;
-  status: AttendanceStatus;
-  registeredAt?: string;
-  checkedInAt?: string | null;
-  pointsAwarded?: number;
-  event?: {
-    id: string;
-    title: string;
-    category: string;
-    date?: string;
-    startTime?: string;
-    endTime?: string;
-    location?: string;
-    description?: string | null;
-    pointsValue?: number;
-  } | null;
-};
-
-type AttendancesResponse = {
-  success?: boolean;
-  message?: string;
-  data?: AttendanceRow[];
-};
-
-function formatShortDate(value?: string | Date | null) {
-  const date = new Date(value || "");
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  });
-}
-
-function formatTimeRange(startTime?: string, endTime?: string) {
-  if (!startTime || !endTime) return "—";
-
-  const formatOne = (value: string) => {
-    const [hoursRaw, minutes] = value.split(":");
-    const hours = Number(hoursRaw);
-
-    if (Number.isNaN(hours) || !minutes) return value;
-
-    const suffix = hours >= 12 ? "PM" : "AM";
-    const normalized = hours % 12 || 12;
-    return `${normalized}:${minutes} ${suffix}`;
-  };
-
-  return `${formatOne(startTime)} - ${formatOne(endTime)}`;
-}
-
-function formatCategory(category?: string) {
-  switch ((category || "").toUpperCase()) {
-    case "VOLUNTEERING":
-      return "Volunteering";
-    case "SOCIAL":
-      return "Social";
-    case "PROFESSIONAL_DEVELOPMENT":
-      return "Professional Dev";
-    default:
-      return category || "—";
-  }
-}
+  buildProfileEventSummary,
+  splitAttendanceRows,
+} from "./_components/profileEvents.utils";
 
 function buildProfileBadges(me: any) {
   const role = String(me?.role || "MEMBER").toUpperCase();
@@ -116,30 +53,6 @@ function buildProfileBadges(me: any) {
             : "Pending",
     },
   ];
-}
-
-function StatusBadge({ status }: { status: AttendanceStatus }) {
-  const classes =
-    status === "CHECKED_IN"
-      ? "border-green-200 bg-green-50 text-green-700"
-      : status === "REGISTERED"
-        ? "border-blue-200 bg-blue-50 text-blue-700"
-        : "border-slate-200 bg-slate-50 text-slate-700";
-
-  const label =
-    status === "CHECKED_IN"
-      ? "Checked In"
-      : status === "REGISTERED"
-        ? "Registered"
-        : "Canceled";
-
-  return (
-    <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] ${classes}`}
-    >
-      {label}
-    </span>
-  );
 }
 
 export default function ProfileEventsPage() {
@@ -197,90 +110,52 @@ export default function ProfileEventsPage() {
     };
   }, [loading, me]);
 
+  const { upcoming, past } = React.useMemo(() => splitAttendanceRows(rows), [rows]);
+  const summary = React.useMemo(() => buildProfileEventSummary(rows), [rows]);
+
   if (loading || !me) return null;
 
   return (
-    <div className="relative space-y-5 overflow-x-hidden overflow-y-hidden pt-5 pb-10 sm:space-y-6 sm:pt-6">
+    <div className="relative space-y-5 overflow-hidden pt-5 pb-10 sm:space-y-6 sm:pt-6">
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[20rem] bg-navy-wash opacity-75" />
 
       <ProfilePageHero
         eyebrow="Member Activity"
         title="My Events"
-        subtitle="Review your registrations, check-ins, and points earned."
+        subtitle="Review your registrations, upcoming schedule, check-ins, and points earned."
         badges={buildProfileBadges(me)}
       />
 
-      <AdminDataTableCard
-        tableLabel="My Event Activity"
-        description="This table shows your attendance state across events."
-      >
-        <AdminTableViewport>
-          <AdminTableState
-            loading={loadingRows}
-            error={error}
-            isEmpty={!loadingRows && !error && rows.length === 0}
-            loadingMessage="Loading your events..."
-            emptyMessage="You have not registered for any events yet."
-          >
-            <Table className="admin-table">
-              <TableHeader className="admin-table-head">
-                <TableRow>
-                  <TableHead className="admin-table-head-cell">Event</TableHead>
-                  <TableHead className="admin-table-head-cell">Category</TableHead>
-                  <TableHead className="admin-table-head-cell">Date</TableHead>
-                  <TableHead className="admin-table-head-cell">Time</TableHead>
-                  <TableHead className="admin-table-head-cell">Location</TableHead>
-                  <TableHead className="admin-table-head-cell">Status</TableHead>
-                  <TableHead className="admin-table-head-cell-right">Points</TableHead>
-                </TableRow>
-              </TableHeader>
+      <ProfileEventsSummary
+        totalEvents={summary.totalEvents}
+        upcomingEvents={summary.upcomingEvents}
+        checkedInEvents={summary.checkedInEvents}
+        totalPoints={summary.totalPoints}
+      />
 
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} className="admin-table-row">
-                    <TableCell className="admin-table-cell">
-                      <div className="space-y-1">
-                        <p className="font-bold text-foreground">
-                          {row.event?.title || "Unknown Event"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Registered: {formatShortDate(row.registeredAt)}
-                        </p>
-                      </div>
-                    </TableCell>
+      <div className="flex flex-col gap-5 sm:gap-6">
+        <ProfileEventsSection
+          title="Upcoming"
+          description="Events you are currently registered for and have not yet completed."
+          rows={upcoming}
+          loading={loadingRows}
+          error={error}
+          emptyMessage="You do not have any upcoming event activity right now."
+          emptyCtaHref="/events"
+          emptyCtaLabel="Browse Events"
+        />
 
-                    <TableCell className="admin-table-cell">
-                      {formatCategory(row.event?.category)}
-                    </TableCell>
-
-                    <TableCell className="admin-table-cell-muted">
-                      {formatShortDate(row.event?.date)}
-                    </TableCell>
-
-                    <TableCell className="admin-table-cell-muted">
-                      {formatTimeRange(row.event?.startTime, row.event?.endTime)}
-                    </TableCell>
-
-                    <TableCell className="admin-table-cell-muted">
-                      {row.event?.location || "—"}
-                    </TableCell>
-
-                    <TableCell className="admin-table-cell">
-                      <StatusBadge status={row.status} />
-                    </TableCell>
-
-                    <TableCell className="admin-table-cell-right">
-                      {row.status === "CHECKED_IN"
-                        ? row.pointsAwarded ?? row.event?.pointsValue ?? 0
-                        : 0}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </AdminTableState>
-        </AdminTableViewport>
-      </AdminDataTableCard>
+        <ProfileEventsSection
+          title="Past Activity"
+          description="Your attended, missed, and canceled event history."
+          rows={past}
+          loading={loadingRows}
+          error={error}
+          emptyMessage="Your past event activity will appear here once you begin registering."
+          emptyCtaHref="/events"
+          emptyCtaLabel="Explore Events"
+        />
+      </div>
     </div>
   );
 }

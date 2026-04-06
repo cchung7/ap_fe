@@ -130,18 +130,19 @@ export function ProfileDashboardOverview({
             />
 
             <ProfileMetricCard
+              title="Events Attended"
+              value={totalEventsAttended}
+              icon={<BadgeCheck />}
+              bgClassName="bg-violet-100"
+            />
+
+            <ProfileMetricCard
               title="Upcoming Events"
               value={upcomingEvents}
               icon={<CalendarDays />}
               bgClassName="bg-blue-100"
             />
 
-            <ProfileMetricCard
-              title="Events Attended"
-              value={totalEventsAttended}
-              icon={<BadgeCheck />}
-              bgClassName="bg-violet-100"
-            />
           </div>
         </div>
 
