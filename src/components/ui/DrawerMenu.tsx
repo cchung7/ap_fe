@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\ui\DrawerMenu.tsx
 "use client";
 
 import * as React from "react";
@@ -15,6 +14,11 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export type DrawerMenuItem = {
   name: string;
@@ -44,7 +48,11 @@ type DrawerMenuProps = {
   bottomTitle?: string;
 };
 
-function isDrawerItemActive(pathname: string | null, href: string, disabled?: boolean) {
+function isDrawerItemActive(
+  pathname: string | null,
+  href: string,
+  disabled?: boolean
+) {
   if (!pathname || disabled) return false;
   if (pathname === href) return true;
 
@@ -79,13 +87,96 @@ function DrawerSection({
   );
 }
 
+function DisclosureMessagePanel({
+  title,
+  message,
+}: {
+  title: string;
+  message: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[1.35rem]">
+      <div className="relative border-b border-[rgba(11,45,91,0.14)] bg-[linear-gradient(180deg,rgba(238,243,251,0.92)_0%,rgba(255,255,255,1)_100%)] px-4 py-3.5 sm:px-5">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(11,45,91,0.85)_0%,rgba(177,18,38,0.85)_100%)]" />
+
+        <div className="min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-[0.20em] text-muted-foreground">
+            Support
+          </p>
+
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h3 className="text-[1.02rem] font-black tracking-tight text-foreground">
+              {title}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white px-4 py-3.5 sm:px-5">
+        <div className="text-[13px] leading-5 text-muted-foreground">
+          {typeof message === "string" ? <p>{message}</p> : message}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DrawerInfoDisclosure({
+  title,
+  message,
+  children,
+}: {
+  title: string;
+  message: React.ReactNode;
+  children: React.ReactElement;
+}) {
+  return (
+    <Popover>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>{children}</PopoverTrigger>
+        </TooltipTrigger>
+
+        <TooltipContent
+          side="top"
+          align="start"
+          sideOffset={10}
+          className={cn(
+            "z-[95] max-w-none w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[1.35rem] p-0",
+            "border-2 border-[rgba(11,45,91,0.28)] bg-white",
+            "shadow-[0_32px_90px_-24px_rgba(11,18,32,0.42),0_18px_36px_-22px_rgba(11,45,91,0.30)]",
+            "ring-1 ring-white"
+          )}
+        >
+          <DisclosureMessagePanel title={title} message={message} />
+        </TooltipContent>
+      </Tooltip>
+
+      <PopoverContent
+        side="top"
+        align="start"
+        sideOffset={10}
+        className={cn(
+          "z-[95] w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-[1.35rem] p-0",
+          "border-2 border-[rgba(11,45,91,0.28)] bg-white",
+          "shadow-[0_32px_90px_-24px_rgba(11,18,32,0.42),0_18px_36px_-22px_rgba(11,45,91,0.30)]",
+          "ring-1 ring-white",
+          "before:pointer-events-none before:absolute before:inset-0 before:rounded-[1.35rem] before:border before:border-white/70 before:content-['']"
+        )}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DisclosureMessagePanel title={title} message={message} />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 function DrawerDisabledSupportRow({
   item,
 }: {
   item: DrawerMenuItem;
 }) {
   const Icon = item.icon;
-  const [open, setOpen] = React.useState(false);
 
   const content = (
     <>
@@ -109,49 +200,24 @@ function DrawerDisabledSupportRow({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-disabled="true"
-          aria-expanded={open}
-          className={cn(
-            "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
-            "border-border/50 bg-background/80 text-foreground",
-            "cursor-not-allowed"
-          )}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setOpen((prev) => !prev);
-          }}
-        >
-          {content}
-        </button>
-      </PopoverTrigger>
-
-      <PopoverContent
-        side="top"
-        align="start"
-        sideOffset={10}
-        className="w-[min(18rem,calc(100vw-3rem))] rounded-2xl"
-        onOpenAutoFocus={(e) => e.preventDefault()}
+    <DrawerInfoDisclosure title={item.name} message={item.tooltip ?? ""}>
+      <button
+        type="button"
+        aria-disabled="true"
+        aria-label={item.name}
+        className={cn(
+          "group flex w-full items-center justify-between gap-3 rounded-[1rem] border px-3 py-3 text-left transition-all",
+          "border-border/50 bg-background/80 text-foreground",
+          "cursor-help"
+        )}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
       >
-        <div className="space-y-2">
-          <div className="ui-title text-[0.92rem] tracking-tight text-foreground">
-            Support
-          </div>
-
-          <div className="space-y-1 text-[0.82rem] leading-5 text-muted-foreground">
-            {typeof item.tooltip === "string" ? (
-              <p>{item.tooltip}</p>
-            ) : (
-              item.tooltip
-            )}
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        {content}
+      </button>
+    </DrawerInfoDisclosure>
   );
 }
 

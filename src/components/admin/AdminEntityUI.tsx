@@ -109,11 +109,27 @@ export function MemberStatusBadge({
 }: {
   status: "ACTIVE" | "PENDING" | "SUSPENDED";
 }) {
+  const classes =
+    status === "ACTIVE"
+      ? "border-green-200 bg-green-100 text-green-800"
+      : status === "PENDING"
+        ? "border-amber-200 bg-amber-100 text-amber-800"
+        : "border-rose-200 bg-rose-100 text-rose-800";
+
   return (
-    <Badge variant={getMemberStatusBadgeVariant(status)}>
+    <Badge
+      variant="outline"
+      className={classes}
+    >
       {formatMemberStatusLabel(status)}
     </Badge>
   );
+}
+
+export function getMemberStatusBadgeVariant(
+  _status: "ACTIVE" | "PENDING" | "SUSPENDED"
+): "default" | "secondary" | "destructive" | "outline" {
+  return "outline";
 }
 
 export function MemberRoleBadge({
@@ -129,8 +145,12 @@ export function EventStatusBadge({
 }: {
   isCompleted: boolean;
 }) {
+  const classes = isCompleted
+    ? "border-green-200 bg-green-100 text-green-600"
+    : "border-orange-200 bg-orange-100 text-orange-600";
+
   return (
-    <Badge variant={isCompleted ? "outline" : "default"}>
+    <Badge variant="outline" className={classes}>
       {isCompleted ? "Completed" : "Upcoming"}
     </Badge>
   );
@@ -146,21 +166,6 @@ export function formatMemberStatusLabel(status: "ACTIVE" | "PENDING" | "SUSPENDE
       return "Inactive";
     default:
       return status;
-  }
-}
-
-export function getMemberStatusBadgeVariant(
-  status: "ACTIVE" | "PENDING" | "SUSPENDED"
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (status) {
-    case "ACTIVE":
-      return "default";
-    case "PENDING":
-      return "secondary";
-    case "SUSPENDED":
-      return "outline";
-    default:
-      return "outline";
   }
 }
 
@@ -264,57 +269,57 @@ export function MemberQuickStatusButton({
 }) {
   if (status === "PENDING") {
     return (
-      <RowActionButton
+      <Button
+        type="button"
+        size="sm"
         disabled={loading}
-        className="border border-green-300 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
-        icon={
-          loading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <CheckCircle2 className="h-3 w-3" />
-          )
-        }
         onClick={onApprove}
+        className="min-w-[170px] rounded-2xl border border-green-300 bg-green-600 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(22,101,52,0.35)] hover:border-green-700 hover:bg-green-700"
       >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <CheckCircle2 className="h-4 w-4" />
+        )}
         Set as Active
-      </RowActionButton>
+      </Button>
     );
   }
 
   if (status === "ACTIVE") {
     return (
-      <RowActionButton
+      <Button
+        type="button"
+        size="sm"
         disabled={loading}
-        className="border border-orange-300 bg-orange-500 text-white hover:border-orange-600 hover:bg-orange-600"
-        icon={
-          loading ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
-          ) : (
-            <PauseCircle className="h-3 w-3" />
-          )
-        }
         onClick={onSetInactive}
+        className="min-w-[170px] rounded-2xl border border-orange-300 bg-orange-500 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(194,65,12,0.35)] hover:border-orange-600 hover:bg-orange-600"
       >
+        {loading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <PauseCircle className="h-4 w-4" />
+        )}
         Set as Inactive
-      </RowActionButton>
+      </Button>
     );
   }
 
   return (
-    <RowActionButton
+    <Button
+      type="button"
+      size="sm"
       disabled={loading}
-      className="border border-green-300 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
-      icon={
-        loading ? (
-          <Loader2 className="h-3 w-3 animate-spin" />
-        ) : (
-          <RotateCcw className="h-3 w-3" />
-        )
-      }
       onClick={onReactivate}
+      className="min-w-[170px] rounded-2xl border border-green-300 bg-green-600 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(22,101,52,0.35)] hover:border-green-700 hover:bg-green-700"
     >
+      {loading ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <RotateCcw className="h-4 w-4" />
+      )}
       Reactivate
-    </RowActionButton>
+    </Button>
   );
 }
 
@@ -475,17 +480,25 @@ function MemberPointsSummaryCard({ member }: { member: AdminMemberRow }) {
 
 export function MemberOverviewSections({
   member,
+  isActing = false,
+  onApprove,
+  onSetInactive,
+  onReactivate,
 }: {
   member: AdminMemberRow;
+  isActing?: boolean;
+  onApprove: () => void;
+  onSetInactive: () => void;
+  onReactivate: () => void;
 }) {
   return (
-    <div className="mt-4 space-y-5">
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:items-stretch">
-        <div className="rounded-[1.35rem] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)]">
+    <div className="mt-1 min-w-0 space-y-5">
+      <section className="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] xl:items-start">
+        <div className="min-w-0 rounded-[1.35rem] border border-border/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_12px_24px_-18px_rgba(11,18,32,0.12)] sm:p-5">
           <div className="space-y-5">
             <PersonIdentityCell name={member.name} email={member.email} />
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="min-w-0">
                 <DetailLabel>Major</DetailLabel>
                 <p className="mt-1 break-words font-medium text-foreground">
@@ -517,12 +530,12 @@ export function MemberOverviewSections({
           </div>
         </div>
 
-        <div className="grid gap-5">
+        <div className="grid min-w-0 gap-5">
           <DetailSection
             title="Access Management"
             icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
           >
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="min-w-0">
                 <DetailLabel>Role</DetailLabel>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -544,13 +557,23 @@ export function MemberOverviewSections({
                 </p>
               </div>
             </div>
+
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <MemberQuickStatusButton
+                status={member.status}
+                loading={isActing}
+                onApprove={onApprove}
+                onSetInactive={onSetInactive}
+                onReactivate={onReactivate}
+              />
+            </div>
           </DetailSection>
 
           <DetailSection
             title="Points Summary"
             icon={<CheckCircle2 className="h-4 w-4 text-primary" />}
           >
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="min-w-0 rounded-[1.15rem] border border-border/60 bg-white/70 px-4 py-4 text-center">
                 <p className="text-[11px] font-black uppercase tracking-[0.14em] text-muted-foreground">
                   Total Points
@@ -582,9 +605,9 @@ export function MemberOverviewSections({
             member.attendancePreview.map((entry) => (
               <div
                 key={`${member.id}-${entry.eventId}`}
-                className="rounded-2xl border border-border/50 bg-background/70 px-4 py-3"
+                className="min-w-0 rounded-2xl border border-border/50 bg-background/70 px-4 py-3"
               >
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
                     <p className="break-words font-semibold text-foreground">
                       {entry.title}

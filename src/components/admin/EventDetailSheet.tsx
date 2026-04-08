@@ -1,183 +1,34 @@
 "use client";
 
 import * as React from "react";
+
 import {
-  Award,
-  CalendarDays,
-  Clock3,
-  MapPin,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { EventDetailContent } from "@/components/admin/EventDetailContent";
+import type {
+  AdminEventDetail as EventDetailData,
+  EventAttendancesPayload,
+  EventAttendancesResponse,
+} from "@/app/admin/events/_components/eventsShared";
 
-import { Button } from "@/components/ui/button";
-import {
-  DetailLabel,
-  DetailSection,
-  DetailStatCard,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { EventStatusBadge, formatShortDate } from "@/components/admin/AdminEntityUI";
-
-type EventCategory =
-  | "VOLUNTEERING"
-  | "SOCIAL"
-  | "PROFESSIONAL_DEVELOPMENT";
-
-export type AdminEventDetail = {
-  id: string;
-  title: string;
-  category: EventCategory;
-  date: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  description?: string | null;
-  capacity: number;
-  totalRegistered: number;
-  pointsValue: number;
-  checkInCode?: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type AttendanceStatus = "REGISTERED" | "CHECKED_IN" | "CANCELED";
-
-type EventAttendanceUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  subRole?: string | null;
-  academicYear?: string | null;
-  major?: string | null;
-  pointsTotal?: number;
-};
-
-type EventAttendanceItem = {
-  id: string;
-  status: AttendanceStatus;
-  registeredAt?: string;
-  checkedInAt?: string | null;
-  pointsAwarded?: number;
-  user?: EventAttendanceUser | null;
-};
-
-type EventAttendancesPayload = {
-  event?: {
-    id: string;
-    title: string;
-  };
-  summary?: {
-    registered: number;
-    checkedIn: number;
-    canceled: number;
-    total: number;
-  };
-  attendances?: EventAttendanceItem[];
-};
-
-type EventAttendancesResponse = {
-  success?: boolean;
-  message?: string;
-  data?: EventAttendancesPayload;
-};
+export type AdminEventDetail = EventDetailData;
 
 type EventDetailSheetProps = {
   event: AdminEventDetail | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit: (event: AdminEventDetail) => void;
 };
-
-function getChicagoDateKey(input: string | Date) {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Chicago",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(input));
-}
-
-function isCompletedEvent(dateIso: string) {
-  const eventDay = getChicagoDateKey(dateIso);
-  const todayDay = getChicagoDateKey(new Date());
-  return eventDay < todayDay;
-}
-
-function formatEventTimeRange(startTime: string, endTime: string) {
-  const formatOne = (value: string) => {
-    const [hoursRaw, minutes] = value.split(":");
-    const hours = Number(hoursRaw);
-
-    if (Number.isNaN(hours) || !minutes) return value;
-
-    const suffix = hours >= 12 ? "PM" : "AM";
-    const normalized = hours % 12 || 12;
-    return `${normalized}:${minutes} ${suffix}`;
-  };
-
-  return `${formatOne(startTime)} - ${formatOne(endTime)}`;
-}
-
-function formatCategory(category: EventCategory) {
-  switch (category) {
-    case "VOLUNTEERING":
-      return "Volunteering";
-    case "SOCIAL":
-      return "Social";
-    case "PROFESSIONAL_DEVELOPMENT":
-      return "Professional Dev";
-    default:
-      return category;
-  }
-}
-
-function getCheckInCode(event: AdminEventDetail) {
-  return event.checkInCode?.trim() ? event.checkInCode : "—";
-}
-
-function safeShortDate(value?: string | Date | null) {
-  if (!value) return "—";
-  return formatShortDate(
-    value instanceof Date ? value.toISOString() : value
-  );
-}
-
-function AttendanceBadge({ status }: { status: AttendanceStatus }) {
-  const classes =
-    status === "CHECKED_IN"
-      ? "border-green-200 bg-green-50 text-green-700"
-      : status === "REGISTERED"
-        ? "border-blue-200 bg-blue-50 text-blue-700"
-        : "border-slate-200 bg-slate-50 text-slate-700";
-
-  const label =
-    status === "CHECKED_IN"
-      ? "Checked In"
-      : status === "REGISTERED"
-        ? "Registered"
-        : "Canceled";
-
-  return (
-    <span
-      className={`inline-flex rounded-full border px-2 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${classes}`}
-    >
-      {label}
-    </span>
-  );
-}
 
 export function EventDetailSheet({
   event,
   open,
   onOpenChange,
-  onEdit,
 }: EventDetailSheetProps) {
   const [attendancePayload, setAttendancePayload] =
     React.useState<EventAttendancesPayload | null>(null);
@@ -230,221 +81,46 @@ export function EventDetailSheet({
     };
   }, [open, event?.id]);
 
-  const summary = attendancePayload?.summary ?? {
-    registered: 0,
-    checkedIn: 0,
-    canceled: 0,
-    total: 0,
-  };
-
-  const attendances = Array.isArray(attendancePayload?.attendances)
-    ? attendancePayload.attendances
-    : [];
-
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className={[
+          "w-[min(68rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] p-0 overflow-hidden",
+          "sm:w-[min(68rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)]",
+          "rounded-[1.75rem] border-2 border-[rgba(11,45,91,0.28)] bg-white",
+          "shadow-[0_32px_90px_-24px_rgba(11,18,32,0.42),0_18px_36px_-22px_rgba(11,45,91,0.30)]",
+          "ring-1 ring-white",
+        ].join(" ")}
+      >
         {event && (
-          <>
-            <SheetHeader>
-              <SheetTitle>Event Overview</SheetTitle>
-              <SheetDescription>
-                Review event scheduling, registration, points, and check-in details.
-              </SheetDescription>
-            </SheetHeader>
+          <div className="relative flex max-h-[calc(100vh-1rem)] min-h-0 flex-col overflow-hidden rounded-[1.75rem] bg-white sm:max-h-[calc(100vh-2rem)]">
+            <div className="pointer-events-none absolute inset-0 rounded-[1.75rem] border border-white/70" />
 
-            <div className="mt-4 grid gap-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <DetailSection
-                  title="Event Profile"
-                  icon={<CalendarDays className="h-4 w-4 text-primary" />}
-                >
-                  <div className="mb-4">
-                    <p className="text-xl font-black tracking-tight text-foreground">
-                      {event.title}
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {event.description?.trim() || "No description provided."}
-                    </p>
-                  </div>
+            <DialogHeader className="relative shrink-0 overflow-hidden border-b border-[rgba(11,45,91,0.14)] bg-[linear-gradient(180deg,rgba(238,243,251,0.92)_0%,rgba(255,255,255,1)_100%)] px-4 py-4 pr-14 sm:px-5 sm:py-5 lg:px-6">
+              <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(11,45,91,0.85)_0%,rgba(177,18,38,0.85)_100%)]" />
 
-                  <div className="grid gap-4 text-sm">
-                    <div className="flex items-start gap-3">
-                      <CalendarDays className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <DetailLabel>Date</DetailLabel>
-                        <p className="mt-1 font-medium text-foreground">
-                          {safeShortDate(event.date)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <Clock3 className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <DetailLabel>Time</DetailLabel>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatEventTimeRange(event.startTime, event.endTime)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                      <div>
-                        <DetailLabel>Location</DetailLabel>
-                        <p className="mt-1 font-medium text-foreground">
-                          {event.location}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </DetailSection>
-
-                <div className="space-y-4">
-                  <DetailSection
-                    title="Event Status"
-                    icon={<ShieldCheck className="h-4 w-4 text-primary" />}
-                  >
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <div>
-                        <DetailLabel>Category</DetailLabel>
-                        <p className="mt-1 font-medium text-foreground">
-                          {formatCategory(event.category)}
-                        </p>
-                      </div>
-
-                      <div>
-                        <DetailLabel>Status</DetailLabel>
-                        <div className="mt-1">
-                          <EventStatusBadge isCompleted={isCompletedEvent(event.date)} />
-                        </div>
-                      </div>
-                    </div>
-                  </DetailSection>
-
-                  <DetailSection
-                    title="Registration Summary"
-                    icon={<Users className="h-4 w-4 text-primary" />}
-                  >
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      <DetailStatCard label="Capacity" value={event.capacity} />
-                      <DetailStatCard label="Registered" value={event.totalRegistered} />
-                      <DetailStatCard label="Checked In" value={summary.checkedIn} />
-                      <DetailStatCard label="Canceled" value={summary.canceled} />
-                    </div>
-                  </DetailSection>
-                </div>
+              <div className="space-y-1.5">
+                <p className="ui-eyebrow text-muted-foreground">Event Record</p>
+                <DialogTitle className="text-[1.35rem] font-black tracking-tight text-foreground sm:text-[1.55rem]">
+                  Event Overview
+                </DialogTitle>
+                <DialogDescription className="max-w-2xl text-[13px] leading-6 text-muted-foreground">
+                  Review scheduling, registration, attendance, points, and check-in details.
+                </DialogDescription>
               </div>
+            </DialogHeader>
 
-              <DetailSection
-                title="Attendee Roster"
-                icon={<Users className="h-4 w-4 text-primary" />}
-              >
-                {loadingAttendances ? (
-                  <div className="py-6 text-sm text-muted-foreground">
-                    Loading attendee roster...
-                  </div>
-                ) : attendanceError ? (
-                  <div className="py-6 text-sm text-destructive">
-                    {attendanceError}
-                  </div>
-                ) : attendances.length === 0 ? (
-                  <div className="py-6 text-sm text-muted-foreground">
-                    No attendees have been recorded yet.
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {attendances.map((attendance) => (
-                      <div
-                        key={attendance.id}
-                        className="rounded-2xl border border-border/50 bg-background/70 p-4"
-                      >
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <div className="min-w-0">
-                            <p className="font-bold text-foreground">
-                              {attendance.user?.name || "Unknown User"}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {attendance.user?.email || "No email"}
-                            </p>
-
-                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                              {attendance.user?.subRole ? (
-                                <span>{attendance.user.subRole}</span>
-                              ) : null}
-                              {attendance.user?.academicYear ? (
-                                <span>{attendance.user.academicYear}</span>
-                              ) : null}
-                              {attendance.user?.major ? (
-                                <span>{attendance.user.major}</span>
-                              ) : null}
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col items-start gap-2 sm:items-end">
-                            <AttendanceBadge status={attendance.status} />
-                            <p className="text-xs text-muted-foreground">
-                              Registered: {safeShortDate(attendance.registeredAt)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Checked In: {safeShortDate(attendance.checkedInAt)}
-                            </p>
-                            <p className="text-xs font-semibold text-foreground">
-                              Points Awarded: {attendance.pointsAwarded ?? 0}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </DetailSection>
-
-              <DetailSection
-                title="Check-In & Points"
-                icon={<Award className="h-4 w-4 text-primary" />}
-              >
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <DetailLabel>Points Value</DetailLabel>
-                    <p className="mt-1 font-medium text-foreground">
-                      {event.pointsValue}
-                    </p>
-                  </div>
-
-                  <div>
-                    <DetailLabel>Check-In Code</DetailLabel>
-                    <p className="mt-1 font-mono text-sm font-black text-foreground">
-                      {getCheckInCode(event)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <DetailLabel>Created</DetailLabel>
-                    <p className="mt-1 font-medium text-foreground">
-                      {safeShortDate(event.createdAt)}
-                    </p>
-                  </div>
-
-                  <div>
-                    <DetailLabel>Updated</DetailLabel>
-                    <p className="mt-1 font-medium text-foreground">
-                      {safeShortDate(event.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex justify-end">
-                  <Button type="button" onClick={() => onEdit(event)}>
-                    Edit Event
-                  </Button>
-                </div>
-              </DetailSection>
-            </div>
-          </>
+            <DialogBody className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-white px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
+              <EventDetailContent
+                event={event}
+                attendancePayload={attendancePayload}
+                loadingAttendances={loadingAttendances}
+                attendanceError={attendanceError}
+              />
+            </DialogBody>
+          </div>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -3,12 +3,7 @@
 import Link from "next/link";
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import {
-  ArrowUpRight,
-  Menu,
-  Globe,
-  LogOut,
-} from "lucide-react";
+import { ArrowUpRight, Menu, Globe, LogOut } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +13,11 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 
 import { adminToolsItems } from "./adminNav";
 
@@ -33,6 +33,89 @@ type AdminSidebarProps = {
   onLogout: () => void;
   isLoggingOut?: boolean;
 };
+
+type SidebarInfoDisclosureProps = {
+  title: string;
+  message: React.ReactNode;
+  tooltipSide?: "top" | "right" | "bottom" | "left";
+  popoverSide?: "top" | "right" | "bottom" | "left";
+  popoverAlign?: "start" | "center" | "end";
+  children: React.ReactElement;
+};
+
+function DisclosureMessagePanel({
+  title,
+  message,
+}: {
+  title: string;
+  message: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[1.35rem]">
+      <div className="relative border-b border-[rgba(11,45,91,0.14)] bg-[linear-gradient(180deg,rgba(238,243,251,0.92)_0%,rgba(255,255,255,1)_100%)] px-4 py-3.5">
+        <div className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,rgba(11,45,91,0.85)_0%,rgba(177,18,38,0.85)_100%)]" />
+
+        <div className="min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-[0.20em] text-muted-foreground">
+            Support
+          </p>
+
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h3 className="text-[1.02rem] font-black tracking-tight text-foreground">
+              {title}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white px-4 py-3.5">
+        <div className="text-[13px] leading-5 text-muted-foreground">
+          {typeof message === "string" ? <p>{message}</p> : message}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SidebarInfoDisclosure({
+  title,
+  message,
+  tooltipSide = "right",
+  popoverSide = "right",
+  popoverAlign = "start",
+  children,
+}: SidebarInfoDisclosureProps) {
+  return (
+    <Popover>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>{children}</PopoverTrigger>
+        </TooltipTrigger>
+
+        <TooltipContent
+          side={tooltipSide}
+          align="center"
+          sideOffset={10}
+          className={cn(
+            "z-[95] max-w-none w-[18rem] rounded-2xl border border-border/60 bg-background p-4 shadow-master outline-none"
+          )}
+        >
+          <DisclosureMessagePanel title={title} message={message} />
+        </TooltipContent>
+      </Tooltip>
+
+      <PopoverContent
+        side={popoverSide}
+        align={popoverAlign}
+        sideOffset={10}
+        className="w-[18rem] rounded-2xl"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DisclosureMessagePanel title={title} message={message} />
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function CompactIconLink({
   href,
@@ -81,31 +164,27 @@ function CompactDisabledIconButton({
   message: React.ReactNode;
 }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-flex">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className={cn(
-              "group flex items-center justify-center rounded-[1.15rem] border p-1.5 transition-all",
-              "ui-surface-silver border-border/70 opacity-85 cursor-not-allowed"
-            )}
-            title={title}
-            aria-label={title}
-          >
-            <div className="ui-surface-silver flex h-8 w-8 items-center justify-center rounded-[0.95rem] text-accent">
-              <Icon className="h-4 w-4" />
-            </div>
-          </button>
-        </span>
-      </TooltipTrigger>
-
-      <TooltipContent side="right" align="center" className="max-w-[280px]">
-        {message}
-      </TooltipContent>
-    </Tooltip>
+    <SidebarInfoDisclosure
+      title={title}
+      message={message}
+      tooltipSide="right"
+      popoverSide="right"
+      popoverAlign="start"
+    >
+      <button
+        type="button"
+        aria-disabled="true"
+        aria-label={title}
+        className={cn(
+          "group flex items-center justify-center rounded-[1.15rem] border p-1.5 transition-all",
+          "ui-surface-silver border-border/70 opacity-85 cursor-help"
+        )}
+      >
+        <div className="ui-surface-silver flex h-8 w-8 items-center justify-center rounded-[0.95rem] text-accent">
+          <Icon className="h-4 w-4" />
+        </div>
+      </button>
+    </SidebarInfoDisclosure>
   );
 }
 
@@ -180,37 +259,35 @@ function StandardDisabledRow({
   message: React.ReactNode;
 }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="block w-full">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className={cn(
-              "group flex w-full items-center justify-between gap-3 rounded-[1.05rem] border px-2.25 py-2.25 text-left transition-all",
-              "border-border/50 bg-background/75 text-muted-foreground opacity-95 cursor-not-allowed"
-            )}
-          >
-            <span className="flex min-w-0 items-center gap-3">
-              <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-2xl border border-border/55 bg-card text-accent">
-                <Icon className="h-4 w-4" />
-              </span>
+    <SidebarInfoDisclosure
+      title={name}
+      message={message}
+      tooltipSide="right"
+      popoverSide="right"
+      popoverAlign="start"
+    >
+      <button
+        type="button"
+        aria-disabled="true"
+        aria-label={name}
+        className={cn(
+          "group flex w-full items-center justify-between gap-3 rounded-[1.05rem] border px-2.25 py-2.25 text-left transition-all",
+          "border-border/50 bg-background/75 text-muted-foreground opacity-95 cursor-help"
+        )}
+      >
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-2xl border border-border/55 bg-card text-accent">
+            <Icon className="h-4 w-4" />
+          </span>
 
-              <span className="ui-title text-[0.84rem] leading-tight tracking-tight text-foreground/88">
-                {name}
-              </span>
-            </span>
-
-            <ArrowUpRight className="h-[0.95rem] w-[0.95rem] shrink-0 text-accent opacity-70" />
-          </button>
+          <span className="ui-title text-[0.84rem] leading-tight tracking-tight text-foreground/88">
+            {name}
+          </span>
         </span>
-      </TooltipTrigger>
 
-      <TooltipContent side="right" align="center" className="max-w-[280px]">
-        {message}
-      </TooltipContent>
-    </Tooltip>
+        <ArrowUpRight className="h-[0.95rem] w-[0.95rem] shrink-0 text-accent opacity-70" />
+      </button>
+    </SidebarInfoDisclosure>
   );
 }
 
@@ -247,8 +324,8 @@ export function AdminSidebar({
   return (
     <TooltipProvider>
       <div className="flex h-full min-h-0 flex-col overflow-hidden">
-        {effectiveShowHeader && isDesktop && (
-          compact ? (
+        {effectiveShowHeader && isDesktop &&
+          (compact ? (
             <div className="shrink-0 flex items-center justify-center pb-3">
               <button
                 type="button"
@@ -276,13 +353,9 @@ export function AdminSidebar({
                 <Menu size={16} />
               </button>
             </div>
-          )
-        )}
+          ))}
 
-        <div
-          ref={middleScrollRef}
-          className="min-h-0 flex-1 overflow-y-auto pr-1"
-        >
+        <div ref={middleScrollRef} className="min-h-0 flex-1 overflow-y-auto pr-1">
           <div className={sectionCard}>
             {!compact && (
               <div className="px-1 pb-2">

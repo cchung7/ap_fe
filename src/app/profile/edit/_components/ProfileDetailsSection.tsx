@@ -54,8 +54,7 @@ export function ProfileDetailsSection({
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
-            variant="outline"
-            className="rounded-2xl border-border/60 bg-white/90 px-4 shadow-[0_8px_20px_-16px_rgba(11,18,32,0.18)] hover:border-accent/35 hover:bg-white"
+            className="rounded-2xl border border-red-700/10 bg-[linear-gradient(135deg,rgba(220,38,38,1)_0%,rgba(185,28,28,1)_100%)] px-4 text-white shadow-[0_14px_28px_-18px_rgba(185,28,28,0.45)] hover:bg-[linear-gradient(135deg,rgba(200,30,30,1)_0%,rgba(153,27,27,1)_100%)]"
             onClick={onReset}
             disabled={!isDirty || isBusy}
           >

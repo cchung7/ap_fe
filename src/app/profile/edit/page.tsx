@@ -6,6 +6,7 @@ import { EditProfileHeader } from "./_components/EditProfileHeader";
 import { ProfileDetailsSection } from "./_components/ProfileDetailsSection";
 import { ProfilePasswordSection } from "./_components/ProfilePasswordSection";
 import { ProfileActionBar } from "./_components/ProfileActionBar";
+import { ProfileTopActionRow } from "./_components/ProfileTopActionRow";
 import { useEditProfileForm } from "./_hooks/useEditProfileForm";
 
 export default function EditProfilePage() {
@@ -33,6 +34,13 @@ export default function EditProfilePage() {
       <EditProfileHeader />
 
       <form onSubmit={onSubmit} noValidate className="space-y-6 sm:space-y-7">
+        <ProfileTopActionRow
+          isBusy={isBusy}
+          isDirty={isDirty}
+          submitting={submitting}
+          onBack={goBack}
+        />
+
         <ProfileDetailsSection
           values={values}
           isBusy={isBusy}
@@ -52,6 +60,7 @@ export default function EditProfilePage() {
 
         <ProfileActionBar
           isBusy={isBusy}
+          isDirty={isDirty}
           submitting={submitting}
           onBack={goBack}
         />
