@@ -26,7 +26,7 @@ export function MembersTableRowActions({
         className="bg-primary text-primary-foreground hover:bg-primary/90"
         icon={<Eye className="h-3 w-3" />}
       >
-        View
+        View User
       </RowActionButton>
 
       <RowActionButton
@@ -34,7 +34,7 @@ export function MembersTableRowActions({
         className="border border-green-300 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
         icon={<Pencil className="h-3 w-3" />}
       >
-        Edit
+        Edit Roles
       </RowActionButton>
 
       <DeleteButton loading={isDeleting} onClick={onDelete} />

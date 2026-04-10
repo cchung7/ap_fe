@@ -348,7 +348,9 @@ export function ConfirmDeleteDialog({
         <div className="flex max-h-[calc(100vh-2rem)] min-h-0 flex-col bg-white">
           <DialogHeader className="shrink-0 border-b border-border/60 px-6 py-5 pr-14">
             <div className="space-y-1.5">
-              <p className="ui-eyebrow text-muted-foreground">Delete Record</p>
+              <p className="ui-eyebrow text-muted-foreground">
+                Delete Record
+              </p>
               <DialogTitle className="text-[1.4rem] font-black tracking-tight text-foreground">
                 {title}
               </DialogTitle>

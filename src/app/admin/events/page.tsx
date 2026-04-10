@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useGlobalStatusBanner } from "@/components/ui/GlobalStatusBannerProvider";
 import { ConfirmDeleteDialog } from "@/components/admin/AdminEntityUI";
 import { EventDetailSheet, type AdminEventDetail } from "@/components/admin/EventDetailSheet";
+import { EventEditDialog } from "@/components/admin/EventEditDialog";
 
 import { EventsPageHero } from "./_components/EventsPageHero";
 import { EventsOverview } from "./_components/EventsOverview";
@@ -26,6 +27,7 @@ export default function AdminEventsPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [deletingEventId, setDeletingEventId] = React.useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = React.useState<AdminEventDetail | null>(null);
+  const [editingEventId, setEditingEventId] = React.useState<string | null>(null);
   const [confirmDeleteEvent, setConfirmDeleteEvent] = React.useState<AdminEvent | null>(null);
 
   const loadEvents = React.useCallback(async () => {
@@ -121,7 +123,7 @@ export default function AdminEventsPage() {
         error={error}
         deletingEventId={deletingEventId}
         onView={(event) => setViewingEvent(event)}
-        onEdit={(event) => router.push(`/admin/events/${event.id}/edit`)}
+        onEdit={(event) => setEditingEventId(event.id)}
         onDelete={(event) => setConfirmDeleteEvent(event)}
       />
 
@@ -130,6 +132,17 @@ export default function AdminEventsPage() {
         open={!!viewingEvent}
         onOpenChange={(open) => {
           if (!open) setViewingEvent(null);
+        }}
+      />
+
+      <EventEditDialog
+        eventId={editingEventId}
+        open={!!editingEventId}
+        onOpenChange={(open) => {
+          if (!open) setEditingEventId(null);
+        }}
+        onSaved={() => {
+          void loadEvents();
         }}
       />
 

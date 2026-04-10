@@ -85,22 +85,37 @@ function validateEventForm(form: UpdateEventPayload) {
   return "";
 }
 
-export function useEditEventForm() {
+type UseEditEventFormOptions = {
+  eventId?: string | null;
+  enabled?: boolean;
+  onCancel?: () => void;
+  onSuccess?: (event: AdminEvent) => void;
+};
+
+export function useEditEventForm(options?: UseEditEventFormOptions) {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const { showError, showSuccess, clear } = useGlobalStatusBanner();
 
-  const eventId = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const routeEventId = Array.isArray(params?.id) ? params.id[0] : params?.id;
+  const eventId = options?.eventId ?? routeEventId;
+  const enabled = options?.enabled ?? true;
 
   const [form, setForm] = React.useState<UpdateEventPayload>(defaultForm);
   const [initialForm, setInitialForm] =
     React.useState<UpdateEventPayload>(defaultForm);
   const [eventRecord, setEventRecord] = React.useState<AdminEvent | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(Boolean(enabled));
   const [submitting, setSubmitting] = React.useState(false);
   const [loadError, setLoadError] = React.useState<string | null>(null);
 
   const fetchEvent = React.useCallback(async () => {
+    if (!enabled) {
+      setLoading(false);
+      setLoadError(null);
+      return;
+    }
+
     if (!eventId) {
       setLoadError("Missing event id.");
       setLoading(false);
@@ -139,10 +154,13 @@ export function useEditEventForm() {
       setLoadError(
         error instanceof Error ? error.message : "Failed to fetch event details"
       );
+      setEventRecord(null);
+      setForm(defaultForm);
+      setInitialForm(defaultForm);
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [enabled, eventId]);
 
   React.useEffect(() => {
     void fetchEvent();
@@ -168,8 +186,15 @@ export function useEditEventForm() {
   }, [clear, initialForm]);
 
   const onCancel = React.useCallback(() => {
+    clear();
+
+    if (options?.onCancel) {
+      options.onCancel();
+      return;
+    }
+
     router.push("/admin/events");
-  }, [router]);
+  }, [clear, options, router]);
 
   const isDirty = !areEventFormsEqual(form, initialForm);
   const isBusy = loading || submitting;
@@ -218,10 +243,31 @@ export function useEditEventForm() {
           throw new Error(json?.message || "Failed to update event");
         }
 
+        const updatedEvent =
+          json?.data && typeof json.data === "object"
+            ? json.data
+            : eventRecord
+              ? {
+                  ...eventRecord,
+                  ...normalizedPayload,
+                }
+              : null;
+
         setForm(normalizedPayload);
         setInitialForm(normalizedPayload);
 
+        if (updatedEvent) {
+          setEventRecord(updatedEvent);
+        }
+
         showSuccess(json?.message || "Event updated successfully.");
+
+        if (updatedEvent && options?.onSuccess) {
+          window.setTimeout(() => {
+            options.onSuccess?.(updatedEvent);
+          }, 700);
+          return;
+        }
 
         window.setTimeout(() => {
           router.push("/admin/events");
@@ -235,7 +281,18 @@ export function useEditEventForm() {
         setSubmitting(false);
       }
     },
-    [clear, eventId, form, isDirty, router, showError, showSuccess, submitting]
+    [
+      clear,
+      eventId,
+      eventRecord,
+      form,
+      isDirty,
+      options,
+      router,
+      showError,
+      showSuccess,
+      submitting,
+    ]
   );
 
   return {

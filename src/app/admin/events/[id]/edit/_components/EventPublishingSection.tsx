@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Ticket } from "lucide-react";
+import { Award, Ticket } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { EventFormSection } from "./EventFormSection";
+import { AdminDetailCardShell } from "@/components/admin/AdminDetailPrimitives";
 import {
   EventFieldShell,
   EVENT_INPUT_CLASSNAME,
@@ -33,12 +33,18 @@ export function EventPublishingSection({
   onSetField,
 }: EventPublishingSectionProps) {
   return (
-    <EventFormSection
-      eyebrow="Capacity & Check-In"
+    <AdminDetailCardShell
       title="Registration, Points, and Description"
-      description="Manage attendance limits, points value, and the published event description."
+      eyebrow="Capacity & Check-In"
+      icon={<Award className="h-4 w-4" />}
     >
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="space-y-1.5">
+        <p className="text-[13px] leading-6 text-muted-foreground">
+          Manage attendance limits, points value, and the published event description.
+        </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
         <EventFieldShell label="Capacity">
           <Input
             type="number"
@@ -95,6 +101,6 @@ export function EventPublishingSection({
           </EventFieldShell>
         </div>
       </div>
-    </EventFormSection>
+    </AdminDetailCardShell>
   );
 }

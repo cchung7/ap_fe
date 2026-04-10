@@ -21,7 +21,7 @@ export function EventEditActionBar({
     <div className="flex flex-wrap items-center justify-center gap-3 pt-4 sm:pt-5">
       <Button
         type="button"
-        className="min-w-[176px] rounded-2xl border border-primary/10 bg-[linear-gradient(135deg,rgba(11,45,91,1)_0%,rgba(22,67,128,1)_100%)] px-5 text-primary-foreground shadow-[0_18px_38px_-20px_rgba(11,45,91,0.55)] hover:bg-[linear-gradient(135deg,rgba(10,40,82,1)_0%,rgba(18,60,116,1)_100%)]"
+        className="min-w-[176px] rounded-2xl border border-red-700/10 bg-[linear-gradient(135deg,rgba(220,38,38,1)_0%,rgba(185,28,28,1)_100%)] px-5 text-white shadow-[0_18px_38px_-20px_rgba(185,28,28,0.48)] hover:bg-[linear-gradient(135deg,rgba(185,28,28,1)_0%,rgba(153,27,27,1)_100%)]"
         onClick={onCancel}
         disabled={isBusy}
       >

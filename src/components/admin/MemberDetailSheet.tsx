@@ -67,10 +67,10 @@ export function MemberDetailSheet({
               <MemberDetailContent member={member} />
             </DialogBody>
 
-            <DialogFooter className="shrink-0 justify-center gap-3 border-t border-[rgba(11,45,91,0.12)] bg-white px-4 py-4 sm:px-5 sm:justify-center lg:px-6">
+            <DialogFooter className="shrink-0 justify-center gap-3 border-t border-[rgba(11,45,91,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] px-4 py-3 sm:px-5 sm:justify-center sm:py-4 lg:px-6">
               <Button
                 type="button"
-                className="min-w-[140px] rounded-2xl bg-red-600 text-white shadow-[0_16px_34px_-18px_rgba(185,28,28,0.35)] hover:bg-red-700 focus-visible:ring-red-200"
+                className="min-w-[152px] rounded-2xl border border-red-700/10 bg-[linear-gradient(135deg,rgba(220,38,38,1)_0%,rgba(185,28,28,1)_100%)] px-4 text-white shadow-[0_14px_30px_-18px_rgba(185,28,28,0.42)] hover:bg-[linear-gradient(135deg,rgba(185,28,28,1)_0%,rgba(153,27,27,1)_100%)]"
                 onClick={() => onOpenChange(false)}
               >
                 Close

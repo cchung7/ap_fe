@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { EventDetailContent } from "@/components/admin/EventDetailContent";
 import type {
   AdminEventDetail as EventDetailData,
@@ -118,6 +119,18 @@ export function EventDetailSheet({
                 attendanceError={attendanceError}
               />
             </DialogBody>
+
+            <div className="shrink-0 border-t border-[rgba(11,45,91,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(244,247,252,0.96)_100%)] px-4 py-3 sm:px-5 sm:py-4 lg:px-6">
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  className="min-w-[152px] rounded-2xl border border-red-700/10 bg-[linear-gradient(135deg,rgba(220,38,38,1)_0%,rgba(185,28,28,1)_100%)] px-4 text-white shadow-[0_14px_30px_-18px_rgba(185,28,28,0.42)] hover:bg-[linear-gradient(135deg,rgba(185,28,28,1)_0%,rgba(153,27,27,1)_100%)]"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </DialogContent>

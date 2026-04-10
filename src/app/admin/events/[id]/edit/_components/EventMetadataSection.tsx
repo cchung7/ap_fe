@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { Ticket } from "lucide-react";
 
 import { formatShortDate } from "@/components/admin/AdminEntityUI";
-import { EventFormSection } from "./EventFormSection";
+import { AdminDetailCardShell } from "@/components/admin/AdminDetailPrimitives";
 import type { AdminEvent } from "../../../_components/eventsShared";
 import {
   formatEventCategory,
@@ -37,12 +38,18 @@ export function EventMetadataSection({
   eventRecord,
 }: EventMetadataSectionProps) {
   return (
-    <EventFormSection
-      eyebrow="Snapshot"
+    <AdminDetailCardShell
       title="Event Metadata"
-      description="Review key publishing details before saving changes."
+      eyebrow="Snapshot"
+      icon={<Ticket className="h-4 w-4" />}
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="space-y-1.5">
+        <p className="text-[13px] leading-6 text-muted-foreground">
+          Review key publishing details before saving changes.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryTile
           label="Check-In Code"
           value={getEventCheckInCode(eventRecord)}
@@ -60,6 +67,6 @@ export function EventMetadataSection({
           value={eventRecord?.category ? formatEventCategory(eventRecord.category) : "—"}
         />
       </div>
-    </EventFormSection>
+    </AdminDetailCardShell>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { CalendarDays } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { EventFormSection } from "./EventFormSection";
+import { AdminDetailCardShell } from "@/components/admin/AdminDetailPrimitives";
 import {
   EventFieldShell,
   EVENT_INPUT_CLASSNAME,
@@ -25,12 +26,18 @@ export function EventDetailsSection({
   onSetField,
 }: EventDetailsSectionProps) {
   return (
-    <EventFormSection
-      eyebrow="Event Details"
+    <AdminDetailCardShell
       title="Schedule and Publishing"
-      description="Update the primary event information shown to members and administrators."
+      eyebrow="Event Details"
+      icon={<CalendarDays className="h-4 w-4" />}
     >
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="space-y-1.5">
+        <p className="text-[13px] leading-6 text-muted-foreground">
+          Update the primary event information shown to members and administrators.
+        </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="md:col-span-2">
           <EventFieldShell label="Title">
             <Input
@@ -107,6 +114,6 @@ export function EventDetailsSection({
           </EventFieldShell>
         </div>
       </div>
-    </EventFormSection>
+    </AdminDetailCardShell>
   );
 }

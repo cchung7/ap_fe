@@ -4,9 +4,9 @@ import * as React from "react";
 import { Mail, User as UserIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { MajorAutocomplete } from "@/components/signup/MajorAutocomplete";
 import { FieldShell } from "./FieldShell";
+import { ProfileEditPageCardShell } from "./ProfileEditPageSections";
 import {
   academicYearOptions,
   type EditProfileFormValues,
@@ -21,8 +21,6 @@ const SELECT_BASE_CLASSNAME =
 type ProfileDetailsSectionProps = {
   values: EditProfileFormValues;
   isBusy: boolean;
-  isDirty: boolean;
-  onReset: () => void;
   onSetField: <K extends keyof EditProfileFormValues>(
     field: K,
     value: EditProfileFormValues[K]
@@ -33,37 +31,16 @@ type ProfileDetailsSectionProps = {
 export function ProfileDetailsSection({
   values,
   isBusy,
-  isDirty,
-  onReset,
   onSetField,
   onClearError,
 }: ProfileDetailsSectionProps) {
   return (
-    <section className="rounded-[1.9rem] border border-border/60 bg-white/72 p-6 shadow-master backdrop-blur-md sm:p-7">
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-1.5">
-          <p className="ui-eyebrow text-muted-foreground">Account Details</p>
-          <h2 className="text-[1.55rem] font-black tracking-tight text-foreground sm:text-[1.7rem]">
-            Edit Profile Information
-          </h2>
-          <p className="max-w-xl text-[13px] leading-6 text-muted-foreground">
-            Manage your personal and academic profile details.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            className="rounded-2xl border border-red-700/10 bg-[linear-gradient(135deg,rgba(220,38,38,1)_0%,rgba(185,28,28,1)_100%)] px-4 text-white shadow-[0_14px_28px_-18px_rgba(185,28,28,0.45)] hover:bg-[linear-gradient(135deg,rgba(200,30,30,1)_0%,rgba(153,27,27,1)_100%)]"
-            onClick={onReset}
-            disabled={!isDirty || isBusy}
-          >
-            Reset
-          </Button>
-        </div>
-      </div>
-
-      <div className="mt-7 grid grid-cols-1 gap-5 md:grid-cols-2">
+    <ProfileEditPageCardShell
+      eyebrow="Account Details"
+      title="Profile Information"
+      description="Manage your personal and academic profile details."
+    >
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <FieldShell label="Name">
           <div className="relative">
             <UserIcon className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -121,6 +98,6 @@ export function ProfileDetailsSection({
           </FieldShell>
         </div>
       </div>
-    </section>
+    </ProfileEditPageCardShell>
   );
 }
