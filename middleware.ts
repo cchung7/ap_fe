@@ -1,4 +1,3 @@
-// Decodes JWT payload, treating expired/invalid tokens as "logged out".
 import { NextRequest, NextResponse } from "next/server";
 
 function redirectToLogin(req: NextRequest, pathname: string) {
@@ -15,7 +14,10 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
     const base64Url = parts[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    );
 
     const json = atob(padded);
     const payload = JSON.parse(json) as Record<string, unknown>;
@@ -87,5 +89,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/profile", "/login", "/signup"],
+  matcher: ["/admin/:path*", "/profile/:path*", "/login", "/signup"],
 };

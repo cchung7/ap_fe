@@ -2,11 +2,13 @@
 
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogBody,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -17,10 +19,10 @@ export function MemberDetailSheet({
   member,
   open,
   onOpenChange,
-  actionMemberId,
-  onApprove,
-  onSetInactive,
-  onReactivate,
+  actionMemberId: _actionMemberId,
+  onApprove: _onApprove,
+  onSetInactive: _onSetInactive,
+  onReactivate: _onReactivate,
 }: {
   member: AdminMemberRow | null;
   open: boolean;
@@ -30,13 +32,11 @@ export function MemberDetailSheet({
   onSetInactive: (memberId: string) => void;
   onReactivate: (memberId: string) => void;
 }) {
-  const isActing = !!member && actionMemberId === member.id;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={[
-          "w-[min(64rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] p-0 overflow-hidden",
+          "w-[min(64rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)] overflow-hidden p-0",
           "sm:w-[min(64rem,calc(100vw-2rem))] sm:max-w-[calc(100vw-2rem)]",
           "rounded-[1.75rem] border-2 border-[rgba(11,45,91,0.28)] bg-white",
           "shadow-[0_32px_90px_-24px_rgba(11,18,32,0.42),0_18px_36px_-22px_rgba(11,45,91,0.30)]",
@@ -64,14 +64,18 @@ export function MemberDetailSheet({
             </DialogHeader>
 
             <DialogBody className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden bg-white px-4 py-4 sm:px-5 sm:py-5 lg:px-6">
-              <MemberDetailContent
-                member={member}
-                isActing={isActing}
-                onApprove={() => onApprove(member.id)}
-                onSetInactive={() => onSetInactive(member.id)}
-                onReactivate={() => onReactivate(member.id)}
-              />
+              <MemberDetailContent member={member} />
             </DialogBody>
+
+            <DialogFooter className="shrink-0 justify-center gap-3 border-t border-[rgba(11,45,91,0.12)] bg-white px-4 py-4 sm:px-5 sm:justify-center lg:px-6">
+              <Button
+                type="button"
+                className="min-w-[140px] rounded-2xl bg-red-600 text-white shadow-[0_16px_34px_-18px_rgba(185,28,28,0.35)] hover:bg-red-700 focus-visible:ring-red-200"
+                onClick={() => onOpenChange(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
           </div>
         )}
       </DialogContent>

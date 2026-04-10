@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\auth\AuthProvider.tsx
 "use client";
 
 import * as React from "react";
@@ -23,6 +22,9 @@ type AuthContextValue = {
 };
 
 const AuthContext = React.createContext<AuthContextValue | null>(null);
+
+const ACTIVITY_REFRESH_THROTTLE_MS = 5 * 60 * 1000;
+const BACKGROUND_SESSION_CHECK_MS = 30 * 60 * 1000;
 
 async function fetchMe(): Promise<Me | null> {
   const res = await fetch("/api/auth/me", {
@@ -53,6 +55,7 @@ async function fetchMe(): Promise<Me | null> {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const mountedRef = React.useRef(false);
+  const lastSilentRefreshAtRef = React.useRef(0);
 
   const [me, setMe] = React.useState<Me | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -92,10 +95,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const clearAuth = React.useCallback(() => {
+    lastSilentRefreshAtRef.current = 0;
     setMe(null);
     setLoading(false);
     setError(null);
   }, []);
+
+  const silentRefresh = React.useCallback(
+    async (force = false) => {
+      const now = Date.now();
+
+      if (
+        !force &&
+        now - lastSilentRefreshAtRef.current < ACTIVITY_REFRESH_THROTTLE_MS
+      ) {
+        return null;
+      }
+
+      lastSilentRefreshAtRef.current = now;
+      return refresh({ silent: true });
+    },
+    [refresh]
+  );
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -105,6 +126,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mountedRef.current = false;
     };
   }, [refresh]);
+
+  React.useEffect(() => {
+    if (!me) return;
+
+    const handleFocus = () => {
+      void silentRefresh(true);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void silentRefresh(true);
+      }
+    };
+
+    const handleActivity = () => {
+      if (document.visibilityState === "hidden") return;
+      void silentRefresh(false);
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pointerdown", handleActivity, { passive: true });
+    window.addEventListener("keydown", handleActivity);
+    window.addEventListener("touchstart", handleActivity, { passive: true });
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      void silentRefresh(true);
+    }, BACKGROUND_SESSION_CHECK_MS);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pointerdown", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+      window.removeEventListener("touchstart", handleActivity);
+      window.clearInterval(intervalId);
+    };
+  }, [me, silentRefresh]);
 
   const value = React.useMemo<AuthContextValue>(
     () => ({
