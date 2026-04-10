@@ -101,11 +101,13 @@ export function SignUpForm({ isPending = false }: SignUpFormProps) {
         return;
       }
 
-      showSuccess("Account created!");
+      showSuccess(
+        "Account created successfully. Your account is pending approval. Please sign in after your account has been approved."
+      );
 
       window.setTimeout(() => {
-        router.replace("/");
-      }, 700);
+        router.replace("/login");
+      }, 1200);
     } catch (err: any) {
       console.error("Signup error:", err);
       const msg = err?.message || "An error occurred during signup";
