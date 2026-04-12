@@ -1,6 +1,3 @@
-// D:\ap_fe\src\app\events\page.tsx
-// [Events Main Page]: high-level composition + fetch + loading state
-
 "use client";
 
 import * as React from "react";
@@ -11,26 +8,37 @@ import { Button } from "@/components/ui/button";
 import type { Event, AttendanceStatus } from "@/types/events";
 import { EventsGrid } from "@/components/events/EventsGrid";
 import { EventsHeroSection } from "@/components/events/EventsHeroSection";
+import { useMe } from "@/hooks/useMe";
 
-function toIsoFromDateAndTime(dateValue: unknown, timeValue?: unknown) {
+function toLocalDateTimeString(dateValue: unknown, timeValue?: unknown) {
   if (!dateValue) return "";
 
-  const base = new Date(dateValue as any);
-  if (!Number.isFinite(base.getTime())) return "";
+  const raw =
+    typeof dateValue === "string"
+      ? dateValue
+      : dateValue instanceof Date
+        ? dateValue.toISOString()
+        : String(dateValue);
 
-  if (!timeValue) return base.toISOString();
+  const dateMatch = raw.match(/^\d{4}-\d{2}-\d{2}/);
+  if (!dateMatch) return "";
+
+  const datePart = dateMatch[0];
+
+  if (!timeValue) {
+    return `${datePart}T00:00:00`;
+  }
 
   const t = String(timeValue);
-  const match = /^(\d{1,2}):(\d{2})$/.exec(t);
-  if (!match) return base.toISOString();
+  const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(t);
+  if (!timeMatch) {
+    return `${datePart}T00:00:00`;
+  }
 
-  const hh = Number(match[1]);
-  const mm = Number(match[2]);
-  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return base.toISOString();
+  const hh = timeMatch[1].padStart(2, "0");
+  const mm = timeMatch[2];
 
-  const local = new Date(base);
-  local.setHours(hh, mm, 0, 0);
-  return local.toISOString();
+  return `${datePart}T${hh}:${mm}:00`;
 }
 
 function normalizeEvent(raw: any): Event | null {
@@ -43,22 +51,23 @@ function normalizeEvent(raw: any): Event | null {
   if (!id || !title || !category) return null;
 
   const startsAt =
-    typeof raw.startsAt === "string" && raw.startsAt
-      ? raw.startsAt
-      : toIsoFromDateAndTime(raw.date, raw.startTime);
+    raw.date && raw.startTime
+      ? toLocalDateTimeString(raw.date, raw.startTime)
+      : typeof raw.startsAt === "string" && raw.startsAt
+        ? raw.startsAt
+        : "";
 
   const endsAt =
-    typeof raw.endsAt === "string" && raw.endsAt
-      ? raw.endsAt
-      : raw.endTime
-        ? toIsoFromDateAndTime(raw.date, raw.endTime)
+    raw.date && raw.endTime
+      ? toLocalDateTimeString(raw.date, raw.endTime)
+      : typeof raw.endsAt === "string" && raw.endsAt
+        ? raw.endsAt
         : undefined;
 
   if (!startsAt) return null;
 
   const attendanceStatus =
-    raw.attendanceStatus ??
-    (raw.isRegistered ? "REGISTERED" : undefined);
+    raw.attendanceStatus ?? (raw.isRegistered ? "REGISTERED" : undefined);
 
   return {
     id,
@@ -103,6 +112,8 @@ function normalizeEvent(raw: any): Event | null {
 }
 
 export default function EventsPage() {
+  const { loading: authLoading, isPendingMember } = useMe();
+
   const [events, setEvents] = React.useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = React.useState(true);
 
@@ -125,7 +136,7 @@ export default function EventsPage() {
         if (!alive) return;
 
         const normalized = Array.isArray(list)
-          ? (list as any[]).map(normalizeEvent).filter(Boolean) as Event[]
+          ? ((list as any[]).map(normalizeEvent).filter(Boolean) as Event[])
           : [];
 
         setEvents(normalized);
@@ -199,6 +210,14 @@ export default function EventsPage() {
     <div className="w-full overflow-x-hidden">
       <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
         <EventsHeroSection totalEvents={loadingEvents ? 0 : events.length} />
+
+        {!authLoading && isPendingMember ? (
+          <div className="mx-auto w-full max-w-4xl rounded-[1.6rem] border border-amber-300/60 bg-amber-50/85 px-5 py-4 text-sm text-amber-900 shadow-[0_14px_34px_-24px_rgba(146,64,14,0.32)] backdrop-blur">
+            You are signed in, but your account is still pending approval. You can
+            browse upcoming events now, but registration and check-in will remain
+            unavailable until an administrator approves your account.
+          </div>
+        ) : null}
 
         <div className="max-w-6xl mx-auto w-full">
           <EventsGrid

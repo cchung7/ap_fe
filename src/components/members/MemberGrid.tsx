@@ -1,7 +1,22 @@
-// D:\ap_fe\src\components\members\MemberGrid.tsx
-// Page layout (e.g. Grouping + section rendering + empty/loading state)
-import type { User } from "@/types/user";
 import { MemberCard } from "./MemberCard";
+
+type DirectoryUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  subRole?: string | null;
+  status?: string | null;
+  pointsTotal?: number | null;
+  academicYear?: string | null;
+  major?: string | null;
+  profileImageUrl?: string | null;
+};
+
+function isVisibleDirectoryUser(user: DirectoryUser) {
+  const status = String(user.status || "").toUpperCase();
+  return status !== "PENDING" && status !== "SUSPENDED";
+}
 
 function Section({
   title,
@@ -9,14 +24,13 @@ function Section({
   isLeadership = false,
 }: {
   title: string;
-  users: User[];
+  users: DirectoryUser[];
   isLeadership?: boolean;
 }) {
   if (users.length === 0) return null;
 
   return (
     <section className="space-y-6">
-      {/* Centered section title */}
       <div className="text-center">
         <h2 className="ui-title text-3xl md:text-4xl lg:text-5xl">
           {title}:
@@ -48,20 +62,24 @@ function Section({
   );
 }
 
-export function MemberGrid({ users }: { users: User[] }) {
-  const ranked = [...(Array.isArray(users) ? users : [])].sort((a: any, b: any) => {
+export function MemberGrid({ users }: { users: DirectoryUser[] }) {
+  const visibleUsers = (Array.isArray(users) ? users : []).filter(
+    isVisibleDirectoryUser
+  );
+
+  const ranked = [...visibleUsers].sort((a, b) => {
     const ap = Number(a?.pointsTotal ?? 0);
     const bp = Number(b?.pointsTotal ?? 0);
     return bp - ap;
   });
 
-  const admins = ranked.filter((u: any) => u.role === "ADMIN");
-  const members = ranked.filter((u: any) => u.role !== "ADMIN");
+  const admins = ranked.filter((u) => u.role === "ADMIN");
+  const members = ranked.filter((u) => u.role !== "ADMIN");
 
   return (
     <div className="mt-2 space-y-16">
-      <Section title="Leadership" users={admins as any} isLeadership />
-      <Section title="Membership" users={members as any} />
+      <Section title="Leadership" users={admins} isLeadership />
+      <Section title="Membership" users={members} />
     </div>
   );
 }

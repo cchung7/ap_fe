@@ -1,6 +1,3 @@
-// D:\ap_fe\src\app\members\page.tsx 
-// [Members Main Page]: High-level composition + fetch + loading state
-
 "use client";
 
 import * as React from "react";
@@ -24,6 +21,40 @@ type MemberUser = {
   profileImageUrl?: string | null;
 };
 
+function normalizeMemberUser(raw: any): MemberUser | null {
+  if (!raw || typeof raw !== "object") return null;
+
+  const id = String(raw.id || raw._id || "").trim();
+  const name = String(raw.name || "").trim();
+  const email = String(raw.email || "").trim();
+  const role = String(raw.role || "").trim();
+
+  if (!id || !name || !email || !role) return null;
+
+  return {
+    id,
+    name,
+    email,
+    role,
+    subRole: raw.subRole ?? null,
+    status: raw.status != null ? String(raw.status) : null,
+    pointsTotal:
+      typeof raw.pointsTotal === "number"
+        ? raw.pointsTotal
+        : raw.pointsTotal != null
+          ? Number(raw.pointsTotal)
+          : null,
+    academicYear: raw.academicYear ?? null,
+    major: raw.major ?? null,
+    profileImageUrl: raw.profileImageUrl ?? null,
+  };
+}
+
+function isVisibleMemberUser(user: MemberUser) {
+  const status = String(user.status || "").toUpperCase();
+  return status !== "PENDING" && status !== "SUSPENDED";
+}
+
 export default function MembersPage() {
   const [users, setUsers] = React.useState<MemberUser[]>([]);
   const [loadingUsers, setLoadingUsers] = React.useState(true);
@@ -45,7 +76,12 @@ export default function MembersPage() {
         const list = (json as any)?.data ?? (json as any)?.users ?? [];
 
         if (!alive) return;
-        setUsers(Array.isArray(list) ? list : []);
+
+        const normalized = Array.isArray(list)
+          ? (list.map(normalizeMemberUser).filter(Boolean) as MemberUser[])
+          : [];
+
+        setUsers(normalized);
       } catch {
         if (!alive) return;
         setUsers([]);
@@ -55,32 +91,37 @@ export default function MembersPage() {
       }
     }
 
-    runUsers();
+    void runUsers();
 
     return () => {
       alive = false;
     };
   }, []);
 
+  const visibleUsers = React.useMemo(
+    () => users.filter(isVisibleMemberUser),
+    [users]
+  );
+
   return (
     <div className="w-full overflow-x-hidden">
       <div className="mx-auto w-full max-w-7xl px-4 pt-32 pb-28 md:pb-36 sm:px-6 sm:pt-36 lg:px-8 space-y-20">
         <MembersHeroSection />
 
-        {/* Centered content width */}
         <div className="max-w-6xl mx-auto w-full">
           {loadingUsers ? (
             <div className="rounded-2xl border-2 border-dashed border-border/40 bg-secondary/5 p-10 text-center text-sm text-muted-foreground">
               Loading members…
             </div>
+          ) : visibleUsers.length === 0 ? (
+            <div className="rounded-2xl border-2 border-dashed border-border/40 bg-secondary/5 p-10 text-center text-sm text-muted-foreground">
+              No active members are available to display right now.
+            </div>
           ) : (
-            <MemberGrid
-              users={Array.isArray(users) ? (users as any) : ([] as any)}
-            />
+            <MemberGrid users={visibleUsers as any} />
           )}
         </div>
 
-        {/* Back to Home */}
         <div className="pt-4 text-center">
           <Button
             asChild

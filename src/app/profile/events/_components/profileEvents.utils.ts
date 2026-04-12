@@ -4,6 +4,29 @@ import type {
   ProfileEventItem,
 } from "./profileEvents.types";
 
+function getChicagoDateKey(input: Date | string | number) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Chicago",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(input));
+}
+
+function getChicagoNowHHMM() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+
+  const hour = parts.find((part) => part.type === "hour")?.value ?? "00";
+  const minute = parts.find((part) => part.type === "minute")?.value ?? "00";
+
+  return `${hour}:${minute}`;
+}
+
 function parseEventDate(date?: string) {
   if (!date) return null;
 
@@ -69,13 +92,28 @@ function getDisplayStatus(row: AttendanceRow): ProfileEventDisplayStatus {
   return "UPCOMING";
 }
 
+function isUpcomingRegisteredEvent(row: AttendanceRow) {
+  if (row.status !== "REGISTERED") return false;
+
+  const eventDate = row.event?.date;
+  if (!eventDate) return false;
+
+  const todayKey = getChicagoDateKey(new Date());
+  const eventKey = getChicagoDateKey(eventDate);
+  const nowHHMM = getChicagoNowHHMM();
+  const startTime = row.event?.startTime || "00:00";
+
+  if (eventKey > todayKey) return true;
+  if (eventKey < todayKey) return false;
+
+  return startTime >= nowHHMM;
+}
+
 export function toProfileEventItem(row: AttendanceRow): ProfileEventItem {
   const eventDate = parseEventDate(row.event?.date);
   const displayStatus = getDisplayStatus(row);
 
-  const isUpcoming =
-    row.status === "REGISTERED" && !!eventDate && eventDate.getTime() >= Date.now();
-
+  const isUpcoming = isUpcomingRegisteredEvent(row);
   const isPast = !isUpcoming;
 
   return {

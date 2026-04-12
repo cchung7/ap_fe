@@ -17,6 +17,8 @@ type AuthContextValue = {
   error: Error | null;
   isAuthed: boolean;
   isAdmin: boolean;
+  isActiveMember: boolean;
+  isPendingMember: boolean;
   refresh: (options?: { silent?: boolean }) => Promise<Me | null>;
   clearAuth: () => void;
 };
@@ -173,6 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       error,
       isAuthed: Boolean(me),
       isAdmin: me?.role === "ADMIN",
+      isActiveMember: me?.role === "MEMBER" && me?.status === "ACTIVE",
+      isPendingMember: me?.role === "MEMBER" && me?.status === "PENDING",
       refresh,
       clearAuth,
     }),

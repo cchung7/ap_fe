@@ -27,6 +27,7 @@ type LoginSuccessPayload = {
   data?: {
     token?: string;
     role?: "ADMIN" | "MEMBER" | string;
+    status?: "PENDING" | "ACTIVE" | "SUSPENDED" | string;
   };
 };
 
@@ -52,26 +53,6 @@ function normalizeLoginError(
   const payloadMessage = (payload?.message || "").trim();
   const rawMessage = payloadMessage.toLowerCase();
 
-  if (
-    status === 404 ||
-    rawMessage.includes("email") ||
-    rawMessage.includes("user") ||
-    rawMessage.includes("account") ||
-    rawMessage.includes("not found")
-  ) {
-    return "Please enter a valid email address.";
-  }
-
-  if (
-    status === 400 ||
-    status === 401 ||
-    rawMessage.includes("password") ||
-    rawMessage.includes("credential") ||
-    rawMessage.includes("credentials")
-  ) {
-    return "Please enter a valid password.";
-  }
-
   if (status === 403) {
     if (rawMessage.includes("suspend")) {
       return (
@@ -91,6 +72,30 @@ function normalizeLoginError(
       payloadMessage ||
       "Your account does not currently have access to sign in."
     );
+  }
+
+  if (status === 400 || status === 401) {
+    if (
+      rawMessage.includes("password") ||
+      rawMessage.includes("credential") ||
+      rawMessage.includes("credentials")
+    ) {
+      return "Please enter a valid password.";
+    }
+
+    return payloadMessage || "Invalid sign-in request.";
+  }
+
+  if (status === 404) {
+    return "Please enter a valid email address.";
+  }
+
+  if (
+    rawMessage.includes("not found") ||
+    rawMessage.includes("email") ||
+    rawMessage.includes("user")
+  ) {
+    return "Please enter a valid email address.";
   }
 
   if (status >= 500) {
@@ -162,14 +167,21 @@ export default function LoginClient() {
         return;
       }
 
-      showSuccess("Signed in successfully!");
-
+      const loginData = data as LoginSuccessPayload;
       const safeNext = isSafeInternalPath(nextParam) ? nextParam : null;
       const nextIsAdminRoute = Boolean(
         safeNext && safeNext.startsWith("/admin")
       );
-      const role = (((data as LoginSuccessPayload)?.data?.role || "") as string)
-        .toString();
+      const role = (loginData?.data?.role || "").toString();
+      const status = (loginData?.data?.status || "").toString();
+
+      if (status === "PENDING") {
+        showSuccess(
+          "Signed in successfully. Your account is pending approval, so event registration is not available yet."
+        );
+      } else {
+        showSuccess(loginData?.message || "Signed in successfully!");
+      }
 
       let destination = "/";
 

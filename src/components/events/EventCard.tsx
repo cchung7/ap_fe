@@ -1,4 +1,3 @@
-// D:\ap_fe\src\components\events\EventCard.tsx
 "use client";
 
 import * as React from "react";
@@ -144,9 +143,13 @@ function EventCardInner({
 
       const json = (await res.json().catch(() => null)) as ApiResponse | null;
 
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401) {
         router.push("/login?next=/events");
         return;
+      }
+
+      if (res.status === 403) {
+        throw new Error(json?.message || "You do not have permission to register.");
       }
 
       if (!res.ok || !json?.success) {
@@ -220,10 +223,14 @@ function EventCardInner({
         | ApiResponse<CheckInResponseData>
         | null;
 
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401) {
         setCheckInOpen(false);
         router.push("/login?next=/events");
         return;
+      }
+
+      if (res.status === 403) {
+        throw new Error(json?.message || "You do not have permission to check in.");
       }
 
       if (!res.ok || !json?.success) {
