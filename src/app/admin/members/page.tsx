@@ -31,17 +31,22 @@ export default function AdminMembersPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const [viewingMember, setViewingMember] = React.useState<AdminMemberRow | null>(null);
-  const [editingMember, setEditingMember] = React.useState<AdminMemberRow | null>(null);
-  const [deletingMember, setDeletingMember] = React.useState<AdminMemberRow | null>(null);
+  const [viewingMember, setViewingMember] =
+    React.useState<AdminMemberRow | null>(null);
+  const [editingMember, setEditingMember] =
+    React.useState<AdminMemberRow | null>(null);
+  const [deletingMember, setDeletingMember] =
+    React.useState<AdminMemberRow | null>(null);
 
-  const [editRole, setEditRole] = React.useState<AdminMemberRow["role"]>("MEMBER");
-  const [editStatus, setEditStatus] =
-    React.useState<AdminMemberRow["status"]>("ACTIVE");
+  const [editRole, setEditRole] =
+    React.useState<AdminMemberRow["role"]>("MEMBER");
   const [editSubRole, setEditSubRole] = React.useState("");
 
-  const [actionMemberId, setActionMemberId] = React.useState<string | null>(null);
+  const [actionMemberId, setActionMemberId] = React.useState<string | null>(
+    null
+  );
   const [savingEdit, setSavingEdit] = React.useState(false);
+  const [savingEditStatus, setSavingEditStatus] = React.useState(false);
 
   const pendingCount = React.useMemo(
     () => members.filter((member) => member.status === "PENDING").length,
@@ -60,10 +65,16 @@ export default function AdminMembersPage() {
 
   const upsertMemberInState = React.useCallback((updatedMember: AdminMemberRow) => {
     setMembers((prev) =>
-      prev.map((member) => (member.id === updatedMember.id ? updatedMember : member))
+      prev.map((member) =>
+        member.id === updatedMember.id ? updatedMember : member
+      )
     );
-    setViewingMember((prev) => (prev?.id === updatedMember.id ? updatedMember : prev));
-    setEditingMember((prev) => (prev?.id === updatedMember.id ? updatedMember : prev));
+    setViewingMember((prev) =>
+      prev?.id === updatedMember.id ? updatedMember : prev
+    );
+    setEditingMember((prev) =>
+      prev?.id === updatedMember.id ? updatedMember : prev
+    );
   }, []);
 
   const removeMemberFromState = React.useCallback((memberId: string) => {
@@ -84,7 +95,9 @@ export default function AdminMembersPage() {
         cache: "no-store",
       });
 
-      const json = (await res.json().catch(() => null)) as MembersApiResponse | null;
+      const json = (await res.json().catch(() => null)) as
+        | MembersApiResponse
+        | null;
 
       if (!res.ok || !json?.success) {
         throw new Error(json?.message || "Failed to fetch members");
@@ -92,7 +105,8 @@ export default function AdminMembersPage() {
 
       setMembers(Array.isArray(json.data) ? json.data : []);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to fetch members";
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch members";
       setError(message);
       setMembers([]);
     } finally {
@@ -107,7 +121,6 @@ export default function AdminMembersPage() {
   const handleOpenEdit = React.useCallback((member: AdminMemberRow) => {
     setEditingMember(member);
     setEditRole(member.role);
-    setEditStatus(member.status);
     setEditSubRole(member.subRole ?? "");
   }, []);
 
@@ -128,7 +141,9 @@ export default function AdminMembersPage() {
           body: JSON.stringify(payload),
         });
 
-        const json = (await res.json().catch(() => null)) as MemberApiResponse | null;
+        const json = (await res.json().catch(() => null)) as
+          | MemberApiResponse
+          | null;
 
         if (!res.ok || !json?.success || !json?.data || Array.isArray(json.data)) {
           throw new Error(json?.message || "Failed to update member");
@@ -136,7 +151,9 @@ export default function AdminMembersPage() {
 
         const updatedMember = json.data as AdminMemberRow;
         upsertMemberInState(updatedMember);
-        showSuccess(successMessage || json.message || "Member updated successfully.");
+        showSuccess(
+          successMessage || json.message || "Member updated successfully."
+        );
         return updatedMember;
       } catch (err) {
         showError(err instanceof Error ? err.message : "Failed to update member");
@@ -157,37 +174,86 @@ export default function AdminMembersPage() {
 
   const handleSetInactive = React.useCallback(
     async (memberId: string) => {
-      await patchMember(memberId, { status: "SUSPENDED" }, "Member set as inactive.");
+      await patchMember(
+        memberId,
+        { status: "SUSPENDED" },
+        "Member set as inactive."
+      );
     },
     [patchMember]
   );
 
   const handleReactivate = React.useCallback(
     async (memberId: string) => {
-      await patchMember(memberId, { status: "ACTIVE" }, "Member reactivated successfully.");
+      await patchMember(
+        memberId,
+        { status: "ACTIVE" },
+        "Member reactivated successfully."
+      );
     },
     [patchMember]
+  );
+
+  const handleEditDialogStatusShortcut = React.useCallback(
+    async (nextStatus: AdminMemberRow["status"]) => {
+      if (!editingMember) return;
+      if (nextStatus === editingMember.status) return;
+
+      const successMessage =
+        nextStatus === "SUSPENDED"
+          ? "Member set as inactive."
+          : editingMember.status === "PENDING"
+            ? "Member set as active."
+            : "Member reactivated successfully.";
+
+      setSavingEditStatus(true);
+
+      try {
+        await patchMember(editingMember.id, { status: nextStatus }, successMessage);
+      } finally {
+        setSavingEditStatus(false);
+      }
+    },
+    [editingMember, patchMember]
   );
 
   const handleSaveEdit = React.useCallback(async () => {
     if (!editingMember) return;
 
-    setSavingEdit(true);
-    const updated = await patchMember(
-      editingMember.id,
-      {
-        role: editRole,
-        status: editStatus,
-        subRole: editSubRole.trim(),
-      },
-      "Member updated successfully."
-    );
-    setSavingEdit(false);
+    const trimmedSubRole = editSubRole.trim();
+    const currentSubRole = String(editingMember.subRole ?? "").trim();
 
-    if (updated) {
-      setEditingMember(null);
+    const payload: Partial<Pick<AdminMemberRow, "role" | "subRole">> = {};
+
+    if (editRole !== editingMember.role) {
+      payload.role = editRole;
     }
-  }, [editingMember, editRole, editStatus, editSubRole, patchMember]);
+
+    if (trimmedSubRole !== currentSubRole) {
+      payload.subRole = trimmedSubRole;
+    }
+
+    if (!Object.keys(payload).length) {
+      setEditingMember(null);
+      return;
+    }
+
+    setSavingEdit(true);
+
+    try {
+      const updated = await patchMember(
+        editingMember.id,
+        payload,
+        "Member updated successfully."
+      );
+
+      if (updated) {
+        setEditingMember(null);
+      }
+    } finally {
+      setSavingEdit(false);
+    }
+  }, [editingMember, editRole, editSubRole, patchMember]);
 
   const handleConfirmDelete = React.useCallback(async () => {
     if (!deletingMember) return;
@@ -201,7 +267,9 @@ export default function AdminMembersPage() {
         credentials: "include",
       });
 
-      const json = (await res.json().catch(() => null)) as MemberApiResponse | null;
+      const json = (await res.json().catch(() => null)) as
+        | MemberApiResponse
+        | null;
 
       if (!res.ok || !json?.success) {
         throw new Error(json?.message || "Failed to delete member");
@@ -215,6 +283,8 @@ export default function AdminMembersPage() {
       setActionMemberId(null);
     }
   }, [clear, deletingMember, removeMemberFromState, showError, showSuccess]);
+
+  const editDialogBusy = savingEdit || savingEditStatus;
 
   return (
     <div className="relative min-w-0 space-y-5 overflow-x-clip pt-5 pb-10 sm:space-y-6 sm:pt-6">
@@ -255,11 +325,12 @@ export default function AdminMembersPage() {
         onOpenChange={(open) => !open && setEditingMember(null)}
         editRole={editRole}
         setEditRole={setEditRole}
-        editStatus={editStatus}
-        setEditStatus={setEditStatus}
         editSubRole={editSubRole}
         setEditSubRole={setEditSubRole}
         saving={savingEdit}
+        busy={editDialogBusy}
+        statusActionLoading={savingEditStatus}
+        onStatusShortcut={(value) => void handleEditDialogStatusShortcut(value)}
         onSave={() => void handleSaveEdit()}
       />
 

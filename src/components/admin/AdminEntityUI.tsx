@@ -281,7 +281,7 @@ export function MemberQuickStatusButton({
         ) : (
           <CheckCircle2 className="h-4 w-4" />
         )}
-        Set as Active
+        Activate Member
       </Button>
     );
   }
@@ -300,7 +300,7 @@ export function MemberQuickStatusButton({
         ) : (
           <PauseCircle className="h-4 w-4" />
         )}
-        Set as Inactive
+        Deactivate Member
       </Button>
     );
   }
@@ -318,7 +318,7 @@ export function MemberQuickStatusButton({
       ) : (
         <RotateCcw className="h-4 w-4" />
       )}
-      Reactivate
+      Reactivate Member
     </Button>
   );
 }

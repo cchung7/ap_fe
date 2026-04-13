@@ -51,27 +51,31 @@ const INPUT_CLASS =
 export function HeaderStatusShortcut({
   status,
   disabled,
+  loading,
   onChange,
 }: {
   status: AdminMemberRow["status"];
   disabled?: boolean;
+  loading?: boolean;
   onChange: (value: AdminMemberRow["status"]) => void;
 }) {
+  const isDisabled = Boolean(disabled || loading);
+
   if (status === "PENDING") {
     return (
       <Button
         type="button"
         size="sm"
-        disabled={disabled}
+        disabled={isDisabled}
         onClick={() => onChange("ACTIVE")}
         className="min-w-[170px] rounded-2xl border border-green-300 bg-green-600 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(22,101,52,0.35)] hover:border-green-700 hover:bg-green-700"
       >
-        {disabled ? (
+        {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <CheckCircle2 className="h-4 w-4" />
         )}
-        Set as Active
+        Activate Member
       </Button>
     );
   }
@@ -81,16 +85,16 @@ export function HeaderStatusShortcut({
       <Button
         type="button"
         size="sm"
-        disabled={disabled}
+        disabled={isDisabled}
         onClick={() => onChange("SUSPENDED")}
         className="min-w-[170px] rounded-2xl border border-orange-300 bg-orange-500 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(194,65,12,0.35)] hover:border-orange-600 hover:bg-orange-600"
       >
-        {disabled ? (
+        {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <PauseCircle className="h-4 w-4" />
         )}
-        Set as Inactive
+        Deaactive Member
       </Button>
     );
   }
@@ -99,28 +103,30 @@ export function HeaderStatusShortcut({
     <Button
       type="button"
       size="sm"
-      disabled={disabled}
+      disabled={isDisabled}
       onClick={() => onChange("ACTIVE")}
       className="min-w-[170px] rounded-2xl border border-green-300 bg-green-600 px-4 text-sm font-semibold text-white shadow-[0_16px_34px_-18px_rgba(22,101,52,0.35)] hover:border-green-700 hover:bg-green-700"
     >
-      {disabled ? (
+      {loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
         <RotateCcw className="h-4 w-4" />
       )}
-      Reactivate
+      Reactivate Member
     </Button>
   );
 }
 
 export function MemberEditDialogHeader({
-  saving,
-  editStatus,
-  setEditStatus,
+  disabled,
+  statusActionLoading,
+  status,
+  onStatusShortcut,
 }: {
-  saving: boolean;
-  editStatus: AdminMemberRow["status"];
-  setEditStatus: (value: AdminMemberRow["status"]) => void;
+  disabled: boolean;
+  statusActionLoading: boolean;
+  status: AdminMemberRow["status"];
+  onStatusShortcut: (value: AdminMemberRow["status"]) => void;
 }) {
   return (
     <DialogHeader className="relative shrink-0 overflow-hidden border-b border-[rgba(11,45,91,0.14)] bg-[linear-gradient(180deg,rgba(238,243,251,0.92)_0%,rgba(255,255,255,1)_100%)] px-4 py-4 pr-16 sm:px-5 sm:py-5 sm:pr-20 lg:px-6 lg:pr-24">
@@ -133,15 +139,17 @@ export function MemberEditDialogHeader({
             Edit Member Access
           </DialogTitle>
           <DialogDescription className="max-w-2xl text-[13px] leading-6 text-muted-foreground">
-            Update user access, status, and sub-role settings.
+            Update the member’s role and sub-role here. Account status is
+            updated instantly using the shortcut button.
           </DialogDescription>
         </div>
 
         <div className="flex w-full shrink-0 justify-center sm:w-auto sm:justify-end">
           <HeaderStatusShortcut
-            status={editStatus}
-            disabled={saving}
-            onChange={setEditStatus}
+            status={status}
+            disabled={disabled}
+            loading={statusActionLoading}
+            onChange={onStatusShortcut}
           />
         </div>
       </div>
@@ -152,12 +160,12 @@ export function MemberEditDialogHeader({
 export function MemberProfileOverviewSection({
   member,
   editRole,
-  editStatus,
+  status,
   editSubRole,
 }: {
   member: AdminMemberRow;
   editRole: AdminMemberRow["role"];
-  editStatus: AdminMemberRow["status"];
+  status: AdminMemberRow["status"];
   editSubRole: string;
 }) {
   return (
@@ -171,7 +179,7 @@ export function MemberProfileOverviewSection({
 
         <div className="flex flex-wrap items-center gap-2">
           <MemberRoleBadge role={editRole} />
-          <MemberStatusBadge status={editStatus} />
+          <MemberStatusBadge status={status} />
           {editSubRole.trim() ? (
             <span className="inline-flex rounded-full border border-[rgba(11,45,91,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,249,252,0.98)_100%)] px-3 py-1 text-[11px] font-semibold text-foreground shadow-[0_8px_20px_-16px_rgba(11,18,32,0.18)]">
               {editSubRole.trim()}
@@ -202,17 +210,17 @@ export function MemberProfileOverviewSection({
 export function MemberAccessControlsSection({
   editRole,
   setEditRole,
-  editStatus,
-  setEditStatus,
+  status,
   editSubRole,
   setEditSubRole,
+  disabled = false,
 }: {
   editRole: AdminMemberRow["role"];
   setEditRole: (value: AdminMemberRow["role"]) => void;
-  editStatus: AdminMemberRow["status"];
-  setEditStatus: (value: AdminMemberRow["status"]) => void;
+  status: AdminMemberRow["status"];
   editSubRole: string;
   setEditSubRole: (value: string) => void;
+  disabled?: boolean;
 }) {
   return (
     <AdminDetailCardShell
@@ -222,7 +230,9 @@ export function MemberAccessControlsSection({
     >
       <div className="space-y-1.5">
         <p className="text-[13px] leading-6 text-muted-foreground">
-          Adjust the member’s role, account status, and admin-facing sub-role.
+          Adjust the member’s role and admin-facing sub-role here. Account
+          status is controlled separately using the shortcut button in the
+          dialog header.
         </p>
       </div>
 
@@ -231,6 +241,7 @@ export function MemberAccessControlsSection({
           <label className={FIELD_LABEL_CLASS}>Role</label>
           <Select
             value={editRole}
+            disabled={disabled}
             onValueChange={(value) =>
               setEditRole(value as AdminMemberRow["role"])
             }
@@ -246,28 +257,20 @@ export function MemberAccessControlsSection({
         </div>
 
         <div className="space-y-2">
-          <label className={FIELD_LABEL_CLASS}>Status</label>
-          <Select
-            value={editStatus}
-            onValueChange={(value) =>
-              setEditStatus(value as AdminMemberRow["status"])
-            }
-          >
-            <SelectTrigger className={INPUT_CLASS + " w-full"}>
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="ACTIVE">Active</SelectItem>
-              <SelectItem value="SUSPENDED">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+          <label className={FIELD_LABEL_CLASS}>Account Status</label>
+          <div className="flex min-h-11 items-center gap-2 rounded-[1rem] border border-[rgba(11,45,91,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(247,249,252,0.98)_100%)] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_10px_24px_-18px_rgba(11,18,32,0.10)]">
+            <MemberStatusBadge status={status} />
+            <span className="text-[12px] leading-5 text-muted-foreground">
+              Updated instantly from the header button.
+            </span>
+          </div>
         </div>
 
         <div className="space-y-2 sm:col-span-2 xl:col-span-1">
           <label className={FIELD_LABEL_CLASS}>Sub-Role</label>
           <Input
             value={editSubRole}
+            disabled={disabled}
             onChange={(e) => setEditSubRole(e.target.value)}
             placeholder="e.g. Treasurer"
             className={INPUT_CLASS}
@@ -302,10 +305,12 @@ export function MemberPointsSummarySection({
 
 export function MemberEditDialogFooter({
   saving,
+  disabled,
   onCancel,
   onSave,
 }: {
   saving: boolean;
+  disabled: boolean;
   onCancel: () => void;
   onSave: () => void;
 }) {
@@ -315,7 +320,7 @@ export function MemberEditDialogFooter({
         type="button"
         className={ADMIN_DIALOG_CANCEL_BUTTON_CLASSNAME}
         onClick={onCancel}
-        disabled={saving}
+        disabled={disabled}
       >
         Cancel
       </Button>
@@ -324,7 +329,7 @@ export function MemberEditDialogFooter({
         type="button"
         className={ADMIN_DIALOG_SAVE_BUTTON_CLASSNAME}
         onClick={onSave}
-        disabled={saving}
+        disabled={disabled}
       >
         {saving ? "Saving..." : "Save Changes"}
       </Button>
