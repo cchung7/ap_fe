@@ -324,6 +324,15 @@ export default function LoginClient() {
                   </div>
                 </div>
 
+                <div className="flex justify-center">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm font-semibold text-accent underline underline-offset-4 transition-colors hover:text-foreground"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full h-11 md:h-12 rounded-full px-6 md:px-7 text-sm md:text-base font-semibold tracking-[0.02em] md:tracking-wide shadow-none transition-all hover:-translate-y-0.5 hover:bg-accent"
