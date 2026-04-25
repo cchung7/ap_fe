@@ -194,7 +194,7 @@ export default function OtpClient() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <main className="relative min-h-screen w-full overflow-hidden">
       <Image
         src="/auth/sva_auth.jpg"
         alt="SVA Authentication Background"
@@ -204,18 +204,18 @@ export default function OtpClient() {
         className="object-cover object-center"
       />
 
-      <div className="absolute inset-0 bg-black/10" />
+      <div className="absolute inset-0 bg-black/25" />
 
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-[-10%] left-[-10%] h-[40%] w-[40%] rounded-full bg-primary/10 blur-[110px]" />
         <div className="absolute bottom-[-10%] right-[-10%] h-[40%] w-[40%] rounded-full bg-accent/10 blur-[110px]" />
       </div>
 
-      <div className="relative z-10 min-h-screen px-6 pt-2 pb-12 md:pt-6">
-        <div className="flex flex-col items-center justify-start pt-4 md:pt-6">
-          <Card className="w-full max-w-md border-2 border-border/40 bg-card/90 backdrop-blur-xl shadow-2xl">
-            <CardHeader className="space-y-4 text-center pb-8 pt-4">
-              <div className="flex justify-center mb-2">
+      <section className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
+        <div className="w-full max-w-md">
+          <Card className="w-full border-2 border-border/40 bg-card/92 backdrop-blur-xl shadow-2xl">
+            <CardHeader className="space-y-5 px-7 pb-8 pt-7 text-center">
+              <div className="flex justify-center">
                 <div className="relative h-20 w-20">
                   <Image
                     src="/logo/logo.png"
@@ -227,11 +227,11 @@ export default function OtpClient() {
                 </div>
               </div>
 
-              <CardTitle className="ui-title text-[2rem] md:text-[2.3rem] uppercase italic">
+              <CardTitle className="ui-title text-[2rem] uppercase italic tracking-tight md:text-[2.3rem]">
                 Enter Code
               </CardTitle>
 
-              <CardDescription className="ui-body max-w-sm mx-auto text-sm md:text-base font-medium text-muted-foreground">
+              <CardDescription className="mx-auto max-w-sm text-center text-sm font-medium leading-7 text-muted-foreground md:text-base">
                 We sent a 6-digit code to{" "}
                 <span className="font-semibold text-foreground">
                   {email || "your email"}
@@ -240,7 +240,7 @@ export default function OtpClient() {
               </CardDescription>
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="px-7 pb-7">
               <form onSubmit={onSubmit} noValidate className="space-y-6">
                 <div className="flex justify-between gap-2 sm:gap-3">
                   {Array.from({ length: OTP_LENGTH }).map((_, index) => (
@@ -297,13 +297,13 @@ export default function OtpClient() {
             </CardContent>
           </Card>
 
-          <p className="mt-4 text-center text-xs text-white/80 font-semibold uppercase tracking-widest">
+          <p className="mt-4 text-center text-xs font-semibold uppercase tracking-widest text-white/85">
             All Rights Reserved. &copy;
             <span suppressHydrationWarning>{new Date().getFullYear()}</span>{" "}
             SVA | UT-Dallas
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

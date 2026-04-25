@@ -6,12 +6,24 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
+const CHROME_HIDDEN_ROUTES = [
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+];
+
+function shouldHideChrome(pathname: string) {
+  if (pathname.startsWith("/admin")) return true;
+
+  return CHROME_HIDDEN_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+}
+
 export function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideChrome =
-    pathname === "/login" ||
-    pathname === "/signup" ||
-    pathname.startsWith("/admin");
+  const hideChrome = shouldHideChrome(pathname);
 
   return (
     <>
