@@ -56,10 +56,7 @@ export default function ForgotPasswordPage() {
         return;
       }
 
-      showSuccess(
-        data?.message ||
-          "If an account exists for that email, a password reset code has been sent."
-      );
+      showSuccess(data?.message || "A password reset code has been sent to your email.");
 
       window.setTimeout(() => {
         router.push(

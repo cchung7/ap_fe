@@ -127,6 +127,11 @@ export default function OtpClient() {
 
       if (!response.ok) {
         showError(data?.message || "Unable to resend password reset code.");
+        if (response.status === 404) {
+          window.setTimeout(() => {
+            router.replace("/forgot-password");
+          }, 900);
+        }
         return;
       }
 
